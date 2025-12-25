@@ -39,6 +39,7 @@ namespace ee {
 				}
 				break;
 			}
+			default : {}
 		}
 		rRet.ncType = EE_NC_INVALID;
 		rRet.u.poObj = nullptr;
@@ -80,6 +81,7 @@ namespace ee {
 					 return _rObj.u.poObj->ToString( m_sObj, 0 );
 				}
 			}
+			default : {}
 		}
 		return false;
 	}
@@ -294,6 +296,7 @@ namespace ee {
 				}
 				return false;
 			}
+			default : {}
 		}
 		return false;
 	}

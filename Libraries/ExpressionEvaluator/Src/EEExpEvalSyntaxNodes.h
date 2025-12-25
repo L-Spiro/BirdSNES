@@ -245,7 +245,11 @@ namespace ee {
 	typedef uint64_t (* Intrins0Unsigned)( uint64_t );
 	typedef double (__cdecl * Intrins1_Float_Float)( double );
 	typedef uint16_t (__cdecl * Intrins1_Unsigned16_Unsigned16)( uint16_t );
+#if defined( _MSC_VER )
 	typedef unsigned long (__cdecl * Intrins1_Unsigned32_Unsigned32)( unsigned long );							// Because of ::_byteswap_ulong().
+#elif defined( __APPLE__ )
+	typedef uint32_t (__cdecl * Intrins1_Unsigned32_Unsigned32)( uint32_t );
+#endif	// #if defined( _MSC_VER )
 	typedef uint64_t (__cdecl * Intrins1_Unsigned64_Unsigned64)( uint64_t );
 	typedef bool (__cdecl * Intrins1_Bool_Float)( double );
 	typedef int (__cdecl * Intrins1_Signed_Float)( double );

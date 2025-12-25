@@ -1,4 +1,4 @@
-﻿#include "EEExpEvalContainer.h"
+#include "EEExpEvalContainer.h"
 #include "Api/EEBaseApi.h"
 #include "Array/EEDefaultArray.h"
 #include "Array/EEDoubleArray.h"
@@ -118,6 +118,7 @@ namespace ee {
 					rRes.u.ui64Val = static_cast<uint64_t>(_rRes.u.dVal);
 					break;
 				}
+				default : {}
 			}
 		}
 		else if ( (_rRes.ncType) == ee::EE_NC_SIGNED ) {
@@ -130,6 +131,7 @@ namespace ee {
 					rRes.u.dVal = static_cast<double>(_rRes.u.i64Val);
 					break;
 				}
+				default : {}
 			}
 		}
 		else if ( (_rRes.ncType) == ee::EE_NC_UNSIGNED ) {
@@ -142,6 +144,7 @@ namespace ee {
 					rRes.u.i64Val = static_cast<int64_t>(_rRes.u.ui64Val);
 					break;
 				}
+				default : {}
 			}
 		}
 		return rRes;
@@ -172,6 +175,7 @@ namespace ee {
 					rRes.ncType = ee::EE_NC_INVALID;
 					break;
 				}
+				default : {}
 			}
 		}
 		else if ( (_rRes.ncType) == ee::EE_NC_SIGNED ) {
@@ -188,6 +192,7 @@ namespace ee {
 					rRes.ncType = ee::EE_NC_INVALID;
 					break;
 				}
+				default : {}
 			}
 		}
 		else if ( (_rRes.ncType) == ee::EE_NC_UNSIGNED ) {
@@ -204,6 +209,7 @@ namespace ee {
 					rRes.ncType = ee::EE_NC_INVALID;
 					break;
 				}
+				default : {}
 			}
 		}
 		else if ( (_rRes.ncType) == ee::EE_NC_OBJECT ) {
@@ -224,13 +230,13 @@ namespace ee {
 		switch ( _rRes.ncType ) {
 			case ee::EE_NC_SIGNED : {
 				char szFormat[32];
-				std::snprintf( szFormat, std::size( szFormat ), "%I64d", _rRes.u.i64Val );
+				std::snprintf( szFormat, std::size( szFormat ), "%" PRIi64, _rRes.u.i64Val );
 				_sReturn = szFormat;
 				break;
 			}
 			case ee::EE_NC_UNSIGNED : {
 				char szFormat[32];
-				std::snprintf( szFormat, std::size( szFormat ), "%I64u", _rRes.u.ui64Val );
+				std::snprintf( szFormat, std::size( szFormat ), "%" PRIu64, _rRes.u.ui64Val );
 				_sReturn = szFormat;
 				break;
 			}
@@ -670,6 +676,7 @@ namespace ee {
 				//_rLeft.u.poObj->Ord
 				break;
 			}
+			default : {}
 		}
 
 #undef EE_INT_CHECK
@@ -807,6 +814,7 @@ namespace ee {
 				}
 				break;
 			}
+			default : {}
 		}
 
 #undef EE_INT_CHECK
@@ -831,21 +839,43 @@ namespace ee {
 		if ( _uiIntrinsic == CExpEvalParser::token::EE_BYTESWAPUSHORT ) {
 			_rExp = ConvertResultOrObject( _rExp, EE_NC_UNSIGNED );
 			if ( _rExp.ncType == EE_NC_INVALID ) { _rResult.ncType = EE_NC_INVALID; return EE_EC_INVALIDCAST; }
-			_rResult.u.ui64Val = ::_byteswap_ushort( static_cast<uint16_t>(_rExp.u.ui64Val) );
+			_rResult.u.ui64Val =
+#if defined( _MSC_VER )
+				::_byteswap_ushort( static_cast<uint16_t>(_rExp.u.ui64Val) );
+#elif defined( __clang__ ) || defined( __GNUC__ )
+			static_cast<uint16_t>(::__builtin_bswap16( static_cast<uint16_t>(_rExp.u.ui64Val) ));
+#else
+#error "EE_BYTESWAPUSHORT not implemented."
+#endif	// #if defined( _MSC_VER )
 			_rResult.ncType = EE_NC_UNSIGNED;
 			return EE_EC_SUCCESS;
 		}
 		if ( _uiIntrinsic == CExpEvalParser::token::EE_BYTESWAPULONG ) {
 			_rExp = ConvertResultOrObject( _rExp, EE_NC_UNSIGNED );
 			if ( _rExp.ncType == EE_NC_INVALID ) { _rResult.ncType = EE_NC_INVALID; return EE_EC_INVALIDCAST; }
-			_rResult.u.ui64Val = ::_byteswap_ulong( static_cast<uint32_t>(_rExp.u.ui64Val) );
+			_rResult.u.ui64Val =
+#if defined( _MSC_VER )
+				::_byteswap_ulong( static_cast<uint32_t>(_rExp.u.ui64Val) );
+#elif defined( __clang__ ) || defined( __GNUC__ )
+			static_cast<uint32_t>(::__builtin_bswap32( static_cast<uint32_t>(_rExp.u.ui64Val) ));
+#else
+#error "EE_BYTESWAPULONG not implemented."
+#endif	// #if defined( _MSC_VER )
+
 			_rResult.ncType = EE_NC_UNSIGNED;
 			return EE_EC_SUCCESS;
 		}
 		if ( _uiIntrinsic == CExpEvalParser::token::EE_BYTESWAPUINT64 ) {
 			_rExp = ConvertResultOrObject( _rExp, EE_NC_UNSIGNED );
 			if ( _rExp.ncType == EE_NC_INVALID ) { _rResult.ncType = EE_NC_INVALID; return EE_EC_INVALIDCAST; }
-			_rResult.u.ui64Val = ::_byteswap_uint64( _rExp.u.ui64Val );
+			_rResult.u.ui64Val =
+#if defined( _MSC_VER )
+				::_byteswap_uint64( _rExp.u.ui64Val );
+#elif defined( __clang__ ) || defined( __GNUC__ )
+			static_cast<uint64_t>(::__builtin_bswap64( _rExp.u.ui64Val ));
+#else
+#error "EE_BYTESWAPUINT64 not implemented."
+#endif	// #if defined( _MSC_VER )
 			_rResult.ncType = EE_NC_UNSIGNED;
 			return EE_EC_SUCCESS;
 		}
@@ -1815,6 +1845,21 @@ namespace ee {
 		CreateNumber( static_cast<int64_t>(_lVal), _ndNode );
 	}
 
+#ifdef __APPLE__
+	// Creates a numeric constant.
+	void CExpEvalContainer::CreateNumber( long double _dVal, YYSTYPE::EE_NODE_DATA &_ndNode ) {
+		CreateDouble( static_cast<double>(_dVal), _ndNode );
+	}
+
+	// Creates a numeric constant.
+	void CExpEvalContainer::CreateNumber( ::clock_t _cVal, YYSTYPE::EE_NODE_DATA &_ndNode ) {
+		_ndNode.nType = EE_N_NUMERICCONSTANT;
+		_ndNode.u.ui64Val = _cVal;
+		_ndNode.v.ncConstType = EE_NC_UNSIGNED;
+		AddNode( _ndNode );
+	}
+#endif	// #ifdef __APPLE__
+
 	// Creates an oct constant.
 	void CExpEvalContainer::CreateOct( const char * _pcText, YYSTYPE::EE_NODE_DATA &_ndNode ) {
 		_ndNode.nType = EE_N_NUMERICCONSTANT;
@@ -1923,6 +1968,7 @@ namespace ee {
 					}
 					break;
 				}
+				default : {}
 			}
 		}
 #endif	// #ifdef EE_OPTIMIZE_FOR_RUNTIME
@@ -2223,6 +2269,7 @@ namespace ee {
 					_ndNode = rExp.u.dVal ? _ndLeft : _ndRight;
 					break;
 				}
+				default : {}
 			}
 		}
 #endif	// #ifdef EE_OPTIMIZE_FOR_RUNTIME
@@ -2659,21 +2706,42 @@ namespace ee {
 			}
 			case CExpEvalParser::token::EE_BYTESWAPUSHORT : {
 				_ndNode.nType = EE_N_INTRINSIC_1_UNSIGNED_UNSIGNED16;
-				_ndNode.uFuncPtr.pfIntrins1Unsigned_Unsigned16 = ::_byteswap_ushort;
+				_ndNode.uFuncPtr.pfIntrins1Unsigned_Unsigned16 =
+#if defined( _MSC_VER )
+				::_byteswap_ushort;
+#elif defined( __APPLE__ )
+				::_OSSwapInt16;
+#else
+#error "EE_BYTESWAPUSHORT not implemented."
+#endif	// #if defined( _MSC_VER )
 				_ndNode.v.sNodeIndex = _ndExp.sNodeIndex;
 				AddNode( _ndNode );
 				return;
 			}
 			case CExpEvalParser::token::EE_BYTESWAPULONG : {
 				_ndNode.nType = EE_N_INTRINSIC_1_UNSIGNED_UNSIGNED32;
-				_ndNode.uFuncPtr.pfIntrins1Unsigned_Unsigned32 = ::_byteswap_ulong;
+				_ndNode.uFuncPtr.pfIntrins1Unsigned_Unsigned32 =
+#if defined( _MSC_VER )
+				::_byteswap_ulong;
+#elif defined( __APPLE__ )
+				::_OSSwapInt32;
+#else
+#error "EE_BYTESWAPULONG not implemented."
+#endif	// #if defined( _MSC_VER )
 				_ndNode.v.sNodeIndex = _ndExp.sNodeIndex;
 				AddNode( _ndNode );
 				return;
 			}
 			case CExpEvalParser::token::EE_BYTESWAPUINT64 : {
 				_ndNode.nType = EE_N_INTRINSIC_1_UNSIGNED_UNSIGNED64;
-				_ndNode.uFuncPtr.pfIntrins1Unsigned_Unsigned64 = ::_byteswap_uint64;
+				_ndNode.uFuncPtr.pfIntrins1Unsigned_Unsigned64 =
+#if defined( _MSC_VER )
+				::_byteswap_uint64;
+#elif defined( __APPLE__ )
+				::_OSSwapInt64;
+#else
+#error "EE_BYTESWAPUINT64 not implemented."
+#endif	// #if defined( _MSC_VER )
 				_ndNode.v.sNodeIndex = _ndExp.sNodeIndex;
 				AddNode( _ndNode );
 				return;
@@ -3049,6 +3117,7 @@ namespace ee {
 					}
 					break;
 				}
+				default : {}
 			}
 		}
 #endif	// #ifdef EE_OPTIMIZE_FOR_RUNTIME
@@ -3077,6 +3146,7 @@ namespace ee {
 					_ndNode = rExp.u.dVal ? _ndStatements0 : _ndStatements1;
 					break;
 				}
+				default : {}
 			}
 		}
 #endif	// #ifdef EE_OPTIMIZE_FOR_RUNTIME
@@ -3558,6 +3628,7 @@ namespace ee {
 				}
 				break;
 			}
+			default : {}
 		}
 		return false;
 	}
@@ -4169,6 +4240,7 @@ namespace ee {
 								--aFind->second.rRes.u.dVal;
 								break;
 							}
+							default : {}
 						}
 						++aFind->second.ui64UpdateCounter;
 						EE_DONE;
@@ -4191,6 +4263,7 @@ namespace ee {
 								++aFind->second.rRes.u.dVal;
 								break;
 							}
+							default : {}
 						}
 						++aFind->second.ui64UpdateCounter;
 						EE_DONE;
@@ -4212,6 +4285,7 @@ namespace ee {
 								--aFind->second.rRes.u.dVal;
 								break;
 							}
+							default : {}
 						}
 						(*soProcessMe.prResult) = aFind->second.rRes;
 						++aFind->second.ui64UpdateCounter;
@@ -4234,6 +4308,7 @@ namespace ee {
 								++aFind->second.rRes.u.dVal;
 								break;
 							}
+							default : {}
 						}
 						(*soProcessMe.prResult) = aFind->second.rRes;
 						++aFind->second.ui64UpdateCounter;
@@ -4607,6 +4682,7 @@ namespace ee {
 						EE_PUSH( _ndExp.u.sNodeIndex );		// soProcessMe.sSubResults[0] = PARM0.
 						continue;
 					}
+					default : {}
 				}
 			}
 			else {
@@ -5793,6 +5869,7 @@ namespace ee {
 								if ( !m_vArrayData[_ndExp.w.sNodeIndex].m_pabBase->AndEquals( static_cast<size_t>(rTemp.u.ui64Val), (*soProcessMe.prResult) ) ) { EE_ERROR( EE_EC_PROCESSINGERROR ); }
 								break;
 							}
+							default : {}
 						}
 						break;
 					}
@@ -6254,7 +6331,6 @@ namespace ee {
 						}
 						else { (*soProcessMe.prResult).ncType = EE_NC_INVALID; EE_ERROR( EE_EC_INVALID_OBJECT ); }
 						break;
-						continue;
 					}
 					case EE_N_VECTOR_RESERVE_IDENT : {
 						auto aFind = m_mCustomVariables.find( _ndExp.u.sNodeIndex );
@@ -6979,6 +7055,7 @@ namespace ee {
 
 								EE_FULL( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								EE_FULL( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 #undef EE_FULL
 							}
 						}
@@ -7049,6 +7126,7 @@ namespace ee {
 
 								EE_FULL( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								EE_FULL( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 #undef EE_FULL
 							}
 						}
@@ -7112,6 +7190,7 @@ namespace ee {
 
 								EE_GEOMSPACE( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								EE_GEOMSPACE( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 
 							}
 						}
@@ -7150,6 +7229,7 @@ namespace ee {
 								EE_LINSPACE( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								case CExpEvalParser::token::EE_DEFAULT : {}				EE_FALLTHROUGH
 								EE_LINSPACE( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 
 							}
 						}
@@ -7190,6 +7270,7 @@ namespace ee {
 								EE_LINSPACE( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								case CExpEvalParser::token::EE_DEFAULT : {}				EE_FALLTHROUGH
 								EE_LINSPACE( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 
 							}
 						}
@@ -7233,6 +7314,7 @@ namespace ee {
 								EE_LINSPACE( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								case CExpEvalParser::token::EE_DEFAULT : {}				EE_FALLTHROUGH
 								EE_LINSPACE( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 
 							}
 						}
@@ -7299,6 +7381,7 @@ namespace ee {
 
 								EE_LOGSPACE( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								EE_LOGSPACE( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 
 							}
 						}
@@ -7356,6 +7439,7 @@ namespace ee {
 
 								EE_ONES( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								EE_ONES( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 
 							}
 						}
@@ -7421,6 +7505,7 @@ namespace ee {
 
 								EE_ONES( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								EE_ONES( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 
 							}
 						}
@@ -7543,6 +7628,7 @@ namespace ee {
 
 								EE_ZEROS( CExpEvalParser::token::EE_FLOAT, float, dVal, EE_NC_FLOATING )
 								EE_ZEROS( CExpEvalParser::token::EE_DOUBLE, double, dVal, EE_NC_FLOATING )
+								default : {}
 
 							}
 						}
@@ -7550,6 +7636,7 @@ namespace ee {
 #undef EE_ZEROS
 						break;
 					}
+					default : {}
 				}
 
 

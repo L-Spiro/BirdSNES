@@ -1,7 +1,7 @@
 
 L. Spiro NES.VC.db
 Tests/*
-.vs/*
+.vs/
 *.obj
 *.ipch
 Src/MiniZ/examples/*
@@ -17,11 +17,6 @@ Release/*
 Research/*
 !Research/nes-test-roms-master/
 !Research/Instructions/
-Libraries/ExpressionEvaluator/.vs/*
-Libraries/LSWindows/x64/
-Libraries/LSWindows/.vs/*
-Libraries/ExpressionEvaluator/x64/
-Libraries/LSon/.vs/*
 *.sdf
 *.user
 *.lib

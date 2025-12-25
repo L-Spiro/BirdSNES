@@ -1,8 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include "SinCos/EESinCos.h"
 
 #include <cassert>
+#include <cfloat>
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <cinttypes>
@@ -17,9 +18,13 @@
 #include <string>
 #include <vector>
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <Windows.h>					// For QueryPerformanceCounter() and QueryPerformanceFrequency().
+	#define WIN32_LEAN_AND_MEAN
+	#define NOMINMAX
+	#include <Windows.h>				// For ::QueryPerformanceCounter() and ::QueryPerformanceFrequency().
+#elif defined( __APPLE__ )
+	#include <mach/mach_time.h>			// For ::mach_absolute_time() and ::mach_timebase_info().
+#else
+	#include <time.h>					// For ::clock_gettime().
 #endif
 
 #ifndef EE_MIN_
@@ -52,9 +57,12 @@
 
 #if defined( _MSC_VER )
 #define EE_FALLTHROUGH					[[fallthrough]];
+#define EE_CALLBACK						__stdcall
 #else
-#define EE_FALLTHROUGH					
+#define EE_FALLTHROUGH
+#define EE_CALLBACK						__cdecl
 #endif	// #if defined( _MSC_VER )
+
 
 
 namespace ee {
@@ -131,10 +139,10 @@ namespace ee {
 		template <typename _tType = std::vector<double>>
 		static inline typename _tType::value_type
 										MaxVec( const _tType &_tA ) {
-			typename _tType::value_type dRet = _tType::value_type( 0 );
+			typename _tType::value_type dRet = typename _tType::value_type( 0 );
 			for ( auto I = _tA.size(); I--; ) {
 				typename _tType::value_type dTmp = _tA[I];
-				dTmp = dTmp < _tType::value_type( 0 ) ? -dTmp : dTmp;
+				dTmp = dTmp < typename _tType::value_type( 0 ) ? -dTmp : dTmp;
 				dRet = Max( dRet, dTmp );
 			}
 			return dRet;
@@ -837,11 +845,11 @@ namespace ee {
 		static _tType					EscapeQuotes( const _tType &_sInput, bool _bEscapeSlashes ) {
 			_tType sRet;
 			for ( size_t I = 0; I < _sInput.size(); ++I ) {
-				if ( _sInput[I] == _tType::value_type( '\"' ) ) {
-					sRet.push_back( _tType::value_type( '\\' ) );
+				if ( _sInput[I] == typename _tType::value_type( '\"' ) ) {
+					sRet.push_back( typename _tType::value_type( '\\' ) );
 				}
-				else if ( _bEscapeSlashes && _sInput[I] == _tType::value_type( '\\' ) ) {
-					sRet.push_back( _tType::value_type( '\\' ) );
+				else if ( _bEscapeSlashes && _sInput[I] == typename _tType::value_type( '\\' ) ) {
+					sRet.push_back( typename _tType::value_type( '\\' ) );
 				}
 				sRet.push_back( _sInput[I] );
 			}
@@ -1142,7 +1150,7 @@ namespace ee {
 		 **/
 		template <typename _tType>
 		static inline std::string		ToHexString( const _tType &_tIn, bool _bSpaces = true, bool * _pbSuccess = nullptr ) {
-			static_assert( sizeof( typename _tType::value_type ) == 1U, "_tType::value_type must be 1 byte." );
+			static_assert( sizeof( typename _tType::value_type ) == 1U, "val_type must be 1 byte." );
 			using _tVal = typename _tType::value_type;
 
 			std::string sStr;
@@ -1296,26 +1304,26 @@ namespace ee {
 		/**
 		 * Finds the index of the highest set bit in a 64-bit unsigned value.
 		 * 
-		 * \param _ui64Value		The value to examine.
-		 * \return					The zero-based index of the most significant bit set to 1. Returns 0 if no bits are set.
+		 * \param _ui64Value	The value to examine.
+		 * \return				The zero-based index of the most significant bit set to 1. Returns 0 if no bits are set.
 		 **/
-		static inline uint32_t			HighestSetBit( uint64_t _ui64Value ) {
-			unsigned long ulPos;
-#if defined( _AMD64_ ) && (defined(_M_AMD64) && !defined(RC_INVOKED) && !defined(MIDL_PASS))
-			if ( _BitScanReverse64( &ulPos, _ui64Value ) ) {
-				return static_cast<uint32_t>(ulPos);
-			}
+		static inline uint32_t 			HighestSetBit( uint64_t _ui64Value ) {
+			if ( !_ui64Value ) { return 0; }
 
+#if defined( _MSC_VER )
+			unsigned long ulPos = 0;
+		#if defined( _M_X64 ) || defined( _M_AMD64 )
+				_BitScanReverse64( &ulPos, _ui64Value );
+		#else
+				// 32-bit MSVC fallback.
+				if ( _BitScanReverse( &ulPos, static_cast<unsigned long>( _ui64Value >> 32ULL ) ) ) { return static_cast<uint32_t>( ulPos + 32UL ); }
+				_BitScanReverse( &ulPos, static_cast<unsigned long>( _ui64Value ) );
+		#endif
+			return static_cast<uint32_t>( ulPos );
 #else
-			unsigned long ulPosHi;
-			if ( _BitScanReverse( &ulPosHi, static_cast<unsigned long>(_ui64Value >> 32ULL) ) ) {
-				return ulPosHi + 32UL;
-			}
-			if ( _BitScanReverse( &ulPos, static_cast<unsigned long>(_ui64Value) ) ) {
-				return ulPos;
-			}
-#endif	// #if defined( _AMD64_ ) && (defined(_M_AMD64) && !defined(RC_INVOKED) && !defined(MIDL_PASS))
-			return 0;
+			// Clang/GCC (including Xcode): msb index = 63 - clz(value).
+			return static_cast<uint32_t>( 63U - static_cast<uint32_t>( __builtin_clzll( _ui64Value ) ) );
+#endif
 		}
 
 		/**
@@ -1525,24 +1533,73 @@ namespace ee {
 			return fDiff / Min( (fA + fB), FLT_MAX ) < _fEpsilon;
 		}
 
-		// Gets the current time in system units.
-		static inline uint64_t			Time() {
-#ifdef _WIN32
+		/**
+		 * \brief Gets the current monotonic time value in platform-specific "system units."
+		 *
+		 * The returned value is suitable for measuring elapsed time by taking differences
+		 * between two samples taken on the same machine and within the same process lifetime.
+		 *
+		 * - Windows: Returns the raw tick value from QueryPerformanceCounter().
+		 * - Apple: Returns the raw tick value from mach_absolute_time().
+		 * - Other POSIX: Returns CLOCK_MONOTONIC time in nanoseconds packed into a 64-bit value.
+		 *
+		 * \return Returns a monotonically increasing counter value. Returns 0 only if the platform
+		 * implementation returns 0 (which is valid as a counter value).
+		 *
+		 * \note The unit and epoch are platform dependent. Only differences of two values are meaningful
+		 * when paired with TimeFrequency() (or when using the POSIX nanosecond path, where the unit is ns).
+		 *
+		 * \note This is not a wall-clock timestamp and is not subject to system time adjustments.
+		 */
+		static inline uint64_t Time() {
+#if defined( _WIN32 )
 			LARGE_INTEGER liInt;
 			::QueryPerformanceCounter( &liInt );
-			return liInt.QuadPart;
+			return static_cast<uint64_t>( liInt.QuadPart );
+
+#elif defined( __APPLE__ )
+			return static_cast<uint64_t>( ::mach_absolute_time() );
+
 #else
-#error "No implementation for Time()."
-#endif	// #ifdef _WIN32
+			timespec ts{};
+			::clock_gettime( CLOCK_MONOTONIC, &ts );
+			return static_cast<uint64_t>( ts.tv_sec ) * 1000000000ULL + static_cast<uint64_t>( ts.tv_nsec );
+#endif
 		}
 
-		// Gets the timer frequency.
+		/**
+		 * \brief Gets the frequency (units per second) for values returned by Time().
+		 *
+		 * Use this to convert a difference of two Time() samples into seconds:
+		 * \code
+		 * uint64_t ui64Start = Time();
+		 * // ... work ...
+		 * uint64_t ui64End = Time();
+		 * double dSeconds = double( ui64End - ui64Start ) / double( TimeFrequency() );
+		 * \endcode
+		 *
+		 * - Windows: Returns QueryPerformanceFrequency() (ticks per second).
+		 * - Apple: Converts mach timebase into an equivalent ticks-per-second value.
+		 * - Other POSIX: Returns 1,000,000,000 because Time() returns nanoseconds.
+		 *
+		 * \return Returns the number of Time() units per second. Guaranteed non-zero on supported
+		 * platforms.
+		 *
+		 * \note The returned value is intended only for converting Time() deltas. Do not assume it
+		 * matches any CPU frequency.
+		 */
 		static uint64_t					TimerFrequency();
 
-		// Converts ticks to microseconds.
-		static inline uint64_t			TicksToMicroseconds( uint64_t _ui64Ticks ) {
-			return (_ui64Ticks * 1000000ULL) / TimerFrequency();
-		}
+		/**
+		 * \brief Converts timer ticks to microseconds using TimerFrequency().
+		 *
+		 * \param _ui64Ticks		The number of timer ticks to convert.
+		 * \return				The equivalent duration in microseconds. Returns 0 if TimerFrequency() is 0.
+		 *
+		 * \note This performs integer conversion (truncating toward zero). It uses an overflow-safe
+		 * multiply/divide path on supported compilers.
+		 */
+		static uint64_t					TicksToMicroseconds( uint64_t _ui64Ticks );
 
 		// Parse a string into an array of strings given a delimiter.
 		template <typename _tType = std::string>
@@ -1551,7 +1608,7 @@ namespace ee {
 			try {
 				_tType tCurLine;
 				for ( size_t I = 0; I < _sInput.size(); ++I ) {
-					if ( _sInput[I] == _tType::value_type( _ui32Token ) ) {
+					if ( _sInput[I] == typename _tType::value_type( _ui32Token ) ) {
 						if ( tCurLine.size() || _bIncludeEmptyTokens ) {
 							vRet.push_back( tCurLine );
 						}
@@ -1575,16 +1632,17 @@ namespace ee {
 		// Parse a string into an array of strings given a UTF-32 delimiter.
 		template <typename _tType = std::string>
 		static std::vector<_tType>		TokenizeUtf( const _tType &_sInput, uint32_t _ui32Token, bool _bIncludeEmptyTokens = true, bool * pbErrored = nullptr ) {
+			using val_type = typename _tType::value_type;
 			std::vector<_tType> vRet;
 			try {
 				_tType tCurLine;
 				size_t sSize = 1;
 				for ( size_t I = 0; I < _sInput.size(); I += sSize ) {
 					uint32_t ui32Char;
-					if constexpr ( sizeof( _tType::value_type ) == sizeof( char8_t ) ) {
+					if constexpr ( sizeof( val_type ) == sizeof( char8_t ) ) {
 						ui32Char = NextUtf8Char( reinterpret_cast<const char *>(&_sInput[I]), _sInput.size() - I, &sSize );
 					}
-					else if constexpr ( sizeof( _tType::value_type ) == sizeof( char16_t ) ) {
+					else if constexpr ( sizeof( val_type ) == sizeof( char16_t ) ) {
 						ui32Char = NextUtf16Char( &_sInput[I], _sInput.size() - I, &sSize );
 					}
 					else {
@@ -1620,7 +1678,7 @@ namespace ee {
 			try {
 				for ( size_t I = 0; I < _vArray.size(); ++I ) {
 					sRet.append( _vArray[I] );
-					sRet.push_back( _tType::value_type( _ui32Token ) );
+					sRet.push_back( typename _tType::value_type( _ui32Token ) );
 				}
 				if ( pbErrored ) { (*pbErrored) = false; }
 			}
@@ -1664,80 +1722,81 @@ namespace ee {
 		//	text position is the start of a code-format string.
 		template <typename _tType = std::string>
 		static size_t					CodeStringLength( const _tType &_sInput, size_t _sPos ) {
-#define EE_PREVIEW( OFF )			(((_sPos + (OFF)) < _sInput.size()) ? _sInput[_sPos+(OFF)] : _tType::value_type( '\0' ))
+			using val_type = typename _tType::value_type;
+#define EE_PREVIEW( OFF )			(((_sPos + (OFF)) < _sInput.size()) ? _sInput[_sPos+(OFF)] : val_type( '\0' ))
 			size_t sStart = _sPos;
-			if ( _sInput[_sPos] == _tType::value_type( '\'' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\'' ) && EE_PREVIEW( 2 ) == _tType::value_type( '\'' ) ) {
+			if ( _sInput[_sPos] == val_type( '\'' ) && EE_PREVIEW( 1 ) == val_type( '\'' ) && EE_PREVIEW( 2 ) == val_type( '\'' ) ) {
 				_sPos += 2;	// Eat the 2nd and 3rd '.
 				// Eat string quotes.
 				while ( ++_sPos < _sInput.size() ) {
-					if ( _sInput[_sPos] == _tType::value_type( '\\' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\\' ) ) {
+					if ( _sInput[_sPos] == val_type( '\\' ) && EE_PREVIEW( 1 ) == val_type( '\\' ) ) {
 						// \\ sequence.  Skip.
 						++_sPos;
 					}
-					else if ( _sInput[_sPos] == _tType::value_type( '\\' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\'' ) ) {
+					else if ( _sInput[_sPos] == val_type( '\\' ) && EE_PREVIEW( 1 ) == val_type( '\'' ) ) {
 						// \' sequence.  Skip.
 						++_sPos;
 					}
-					else if ( _sInput[_sPos] == _tType::value_type( '\'' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\'' ) && EE_PREVIEW( 2 ) == _tType::value_type( '\'' ) ) {
+					else if ( _sInput[_sPos] == val_type( '\'' ) && EE_PREVIEW( 1 ) == val_type( '\'' ) && EE_PREVIEW( 2 ) == val_type( '\'' ) ) {
 						return _sPos - sStart + 3;
 					}
 				}
 			}
-			else if ( _sInput[_sPos] == _tType::value_type( '\"' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\"' ) && EE_PREVIEW( 2 ) == _tType::value_type( '\"' ) ) {
+			else if ( _sInput[_sPos] == val_type( '\"' ) && EE_PREVIEW( 1 ) == val_type( '\"' ) && EE_PREVIEW( 2 ) == val_type( '\"' ) ) {
 				_sPos += 2;	// Eat the 2nd and 3rd ".
 				// Eat string quotes.
 				while ( ++_sPos < _sInput.size() ) {
-					if ( _sInput[_sPos] == _tType::value_type( '\\' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\\' ) ) {
+					if ( _sInput[_sPos] == val_type( '\\' ) && EE_PREVIEW( 1 ) == val_type( '\\' ) ) {
 						// \\ sequence.  Skip.
 						++_sPos;
 					}
-					else if ( _sInput[_sPos] == _tType::value_type( '\\' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\"' ) ) {
+					else if ( _sInput[_sPos] == val_type( '\\' ) && EE_PREVIEW( 1 ) == val_type( '\"' ) ) {
 						// \" sequence.  Skip.
 						++_sPos;
 					}
-					else if ( _sInput[_sPos] == _tType::value_type( '\"' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\"' ) && EE_PREVIEW( 2 ) == _tType::value_type( '\"' ) ) {
+					else if ( _sInput[_sPos] == val_type( '\"' ) && EE_PREVIEW( 1 ) == val_type( '\"' ) && EE_PREVIEW( 2 ) == val_type( '\"' ) ) {
 						return _sPos - sStart + 3;
 					}
 				}
 			}
-			else if ( (_sInput[_sPos] == _tType::value_type( 'r' ) || _sInput[_sPos] == _tType::value_type( 'R' )) &&
-				EE_PREVIEW( 1 ) == _tType::value_type( '\"' ) ) {
+			else if ( (_sInput[_sPos] == val_type( 'r' ) || _sInput[_sPos] == val_type( 'R' )) &&
+				EE_PREVIEW( 1 ) == val_type( '\"' ) ) {
 				++_sPos;	// Eat the R.
 				// Eat raw string quotes.
 				while ( ++_sPos < _sInput.size() ) {
-					if ( _sInput[_sPos] == _tType::value_type( '\"' ) ) {
+					if ( _sInput[_sPos] == val_type( '\"' ) ) {
 						return _sPos - sStart + 1;
 					}
 				}
 			}
-			else if ( _sInput[_sPos] == _tType::value_type( '\"' ) ) {
+			else if ( _sInput[_sPos] == val_type( '\"' ) ) {
 				// Eat string quotes.
 				while ( ++_sPos < _sInput.size() ) {
-					if ( _sInput[_sPos] == _tType::value_type( '\\' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\\' ) ) {
+					if ( _sInput[_sPos] == val_type( '\\' ) && EE_PREVIEW( 1 ) == val_type( '\\' ) ) {
 						// \\ sequence.  Skip.
 						++_sPos;
 					}
-					else if ( _sInput[_sPos] == _tType::value_type( '\\' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\"' ) ) {
+					else if ( _sInput[_sPos] == val_type( '\\' ) && EE_PREVIEW( 1 ) == val_type( '\"' ) ) {
 						// \" sequence.  Skip.
 						++_sPos;
 					}
-					else if ( _sInput[_sPos] == _tType::value_type( '\"' ) ) {
+					else if ( _sInput[_sPos] == val_type( '\"' ) ) {
 						return _sPos - sStart + 1;
 					}
 				}
 			}
-			else if ( _sInput[_sPos] == _tType::value_type( '\'' ) ) {
+			else if ( _sInput[_sPos] == val_type( '\'' ) ) {
 				// Eat character quotes.
 				while ( ++_sPos < _sInput.size() ) {
-					if ( _sInput[_sPos] == _tType::value_type( '\\' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\\' ) ) {
+					if ( _sInput[_sPos] == val_type( '\\' ) && EE_PREVIEW( 1 ) == val_type( '\\' ) ) {
 						// \\ sequence.  Skip.
 						++_sPos;
 					}
-					else if ( _sInput[_sPos] == _tType::value_type( '\\' ) && EE_PREVIEW( 1 ) == _tType::value_type( '\'' ) ) {
+					else if ( _sInput[_sPos] == val_type( '\\' ) && EE_PREVIEW( 1 ) == val_type( '\'' ) ) {
 						// \" sequence.  Skip.
 						++_sPos;
 					}
-					else if ( _sInput[_sPos] == _tType::value_type( '\'' ) ) {
+					else if ( _sInput[_sPos] == val_type( '\'' ) ) {
 						return _sPos - sStart + 1;
 					}
 				}
@@ -1749,8 +1808,9 @@ namespace ee {
 		// Removes C-style comments from a string.
 		template <typename _tType = std::string>
 		static _tType &					RemoveCComments( _tType &_sInput ) {
+			using val_type = typename _tType::value_type;
 			size_t sIdx = 0;
-#define EE_PREVIEW( OFF )			(((sIdx + (OFF)) < _sInput.size()) ? _sInput[sIdx+(OFF)] : _tType::value_type( '\0' ))
+#define EE_PREVIEW( OFF )			(((sIdx + (OFF)) < _sInput.size()) ? _sInput[sIdx+(OFF)] : val_type( '\0' ))
 
 			while ( sIdx < _sInput.size() ) {
 				size_t stStrLen = CodeStringLength( _sInput, sIdx );
@@ -1759,20 +1819,20 @@ namespace ee {
 					continue;
 				}
 
-				if ( _sInput[sIdx] == _tType::value_type( '/' ) && EE_PREVIEW( 1 ) == _tType::value_type( '/' ) ) {
+				if ( _sInput[sIdx] == val_type( '/' ) && EE_PREVIEW( 1 ) == val_type( '/' ) ) {
 					size_t stStart = sIdx;
 					sIdx += 2;
 					uint32_t ui32LastChar = '\0';
 					size_t stNewLines = 0;
 					while ( sIdx < _sInput.size() ) {
-						if ( _sInput[sIdx] == _tType::value_type( '\n' ) ) {
+						if ( _sInput[sIdx] == val_type( '\n' ) ) {
 							if ( ui32LastChar == '\\' ) {
 								++stNewLines;
 							}
 							else {
 								// Add back the new lines we skipped.
 								for ( auto J = stNewLines; J--; ) {
-									_sInput[stStart++] = _tType::value_type( '\n' );
+									_sInput[stStart++] = val_type( '\n' );
 								}
 								_sInput.erase( stStart, sIdx - stStart );
 								sIdx = stStart;
@@ -1797,8 +1857,9 @@ namespace ee {
 		// Removes C++-style comments from a string.
 		template <typename _tType = std::string>
 		static _tType &					RemoveCPlusPlusComments( _tType &_sInput ) {
+			using val_type = typename _tType::value_type;
 			size_t sIdx = 0;
-#define EE_PREVIEW( OFF )			(((sIdx + (OFF)) < _sInput.size()) ? _sInput[sIdx+(OFF)] : _tType::value_type( '\0' ))
+#define EE_PREVIEW( OFF )			(((sIdx + (OFF)) < _sInput.size()) ? _sInput[sIdx+(OFF)] : val_type( '\0' ))
 			_tType sNewLines;
 			while ( sIdx < _sInput.size() ) {
 				size_t stStrLen = CodeStringLength( _sInput, sIdx );
@@ -1807,11 +1868,11 @@ namespace ee {
 					continue;
 				}
 
-				if ( _sInput[sIdx] == _tType::value_type( '/' ) && EE_PREVIEW( 1 ) == _tType::value_type( '*' ) ) {
+				if ( _sInput[sIdx] == val_type( '/' ) && EE_PREVIEW( 1 ) == val_type( '*' ) ) {
 					size_t I = sIdx++;
 					while ( ++sIdx < _sInput.size() ) {
-						if ( _sInput[sIdx] == _tType::value_type( '*' ) && EE_PREVIEW( 1 ) == _tType::value_type( '/' ) ) { sIdx += 2; break; }
-						if ( _sInput[sIdx] == _tType::value_type( '\n' ) ) { sNewLines.push_back( '\n' ); }
+						if ( _sInput[sIdx] == val_type( '*' ) && EE_PREVIEW( 1 ) == val_type( '/' ) ) { sIdx += 2; break; }
+						if ( _sInput[sIdx] == val_type( '\n' ) ) { sNewLines.push_back( '\n' ); }
 					}
 					_sInput.erase( I, sIdx - I );
 					_sInput.insert( I, sNewLines );
@@ -1829,7 +1890,7 @@ namespace ee {
 		template <typename _tType = std::string>
 		static _tType &					RemoveComments( _tType &_sInput ) {
 			size_t sIdx = 0;
-#define EE_PREVIEW( OFF )			(((sIdx + (OFF)) < _sInput.size()) ? _sInput[sIdx+(OFF)] : _tType::value_type( '\0' ))
+#define EE_PREVIEW( OFF )			(((sIdx + (OFF)) < _sInput.size()) ? _sInput[sIdx+(OFF)] : typename _tType::value_type( '\0' ))
 			_tType sNewLines;
 			while ( sIdx < _sInput.size() ) {
 				size_t stStrLen = CodeStringLength( _sInput, sIdx );
@@ -1838,20 +1899,20 @@ namespace ee {
 					continue;
 				}
 
-				if ( _sInput[sIdx] == _tType::value_type( '/' ) && EE_PREVIEW( 1 ) == _tType::value_type( '/' ) ) {
+				if ( _sInput[sIdx] == typename _tType::value_type( '/' ) && EE_PREVIEW( 1 ) == typename _tType::value_type( '/' ) ) {
 					size_t stStart = sIdx;
 					sIdx += 2;
 					uint32_t ui32LastChar = '\0';
 					size_t stNewLines = 0;
 					while ( sIdx < _sInput.size() ) {
-						if ( _sInput[sIdx] == _tType::value_type( '\n' ) ) {
+						if ( _sInput[sIdx] == typename _tType::value_type( '\n' ) ) {
 							if ( ui32LastChar == '\\' ) {
 								++stNewLines;
 							}
 							else {
 								// Add back the new lines we skipped.
 								for ( auto J = stNewLines; J--; ) {
-									_sInput[stStart++] = _tType::value_type( '\n' );
+									_sInput[stStart++] = typename _tType::value_type( '\n' );
 								}
 								_sInput.erase( stStart, sIdx - stStart );
 								sIdx = stStart;
@@ -1866,11 +1927,11 @@ namespace ee {
 					continue;
 				}
 
-				if ( _sInput[sIdx] == _tType::value_type( '/' ) && EE_PREVIEW( 1 ) == _tType::value_type( '*' ) ) {
+				if ( _sInput[sIdx] == typename _tType::value_type( '/' ) && EE_PREVIEW( 1 ) == typename _tType::value_type( '*' ) ) {
 					size_t I = sIdx++;
 					while ( ++sIdx < _sInput.size() ) {
-						if ( _sInput[sIdx] == _tType::value_type( '*' ) && EE_PREVIEW( 1 ) == _tType::value_type( '/' ) ) { sIdx += 2; break; }
-						if ( _sInput[sIdx] == _tType::value_type( '\n' ) ) { sNewLines.push_back( '\n' ); }
+						if ( _sInput[sIdx] == typename _tType::value_type( '*' ) && EE_PREVIEW( 1 ) == typename _tType::value_type( '/' ) ) { sIdx += 2; break; }
+						if ( _sInput[sIdx] == typename _tType::value_type( '\n' ) ) { sNewLines.push_back( '\n' ); }
 					}
 					_sInput.erase( I, sIdx - I );
 					_sInput.insert( I, sNewLines );
@@ -4972,10 +5033,11 @@ namespace ee {
 		 * \throws					std::runtime_error on allocation or window error.
 		 **/
 		template <typename _tType = std::vector<double>>
-		static inline _tType			SincFilterLpf( double _dHz, double _dFc, size_t &_sM, PfWindowFunc<typename _tType::value_type> _pfWindowFunc = &BlackmanWindow<_tType::value_type> ) {
+		static inline _tType			SincFilterLpf( double _dHz, double _dFc, size_t &_sM, PfWindowFunc<typename _tType::value_type> _pfWindowFunc = &BlackmanWindow<typename _tType::value_type> ) {
+			using val_type = typename _tType::value_type;
 			_tType vFilter;
 			if ( _dFc > _dHz / 2.0 || _dHz <= 0.0 ) {
-				vFilter.push_back( _tType::value_type( 1.0 ) );
+				vFilter.push_back( val_type( 1.0 ) );
 				_sM = 0;
 				return vFilter;
 			}
@@ -4990,13 +5052,13 @@ namespace ee {
 			int64_t i64SignedL = int64_t( sL );
 			for ( auto I = _sM; I--; ) {
 				int64_t N = int64_t( I ) - i64SignedL;
-				vFilter[I] = _tType::value_type( vFilter[I] * dFc2 * Sinc( dFc2 * N ) );
+				vFilter[I] = val_type( vFilter[I] * dFc2 * Sinc( dFc2 * N ) );
 			}
 
 			// Normalize.
 			double dSum = 0.0;
 			for ( auto & I : vFilter ) { dSum += double( I ); }
-			for ( auto & I : vFilter ) { I = _tType::value_type( I / dSum ); }
+			for ( auto & I : vFilter ) { I = val_type( I / dSum ); }
 			_sM = sL;
 			return vFilter;
 		}
@@ -5013,10 +5075,11 @@ namespace ee {
 		 * \throws					std::runtime_error on allocation or window error.
 		 */
 		template <typename _tType = std::vector<double>>
-		static inline _tType			SincFilterHpf( double _dHz, double _dFc, size_t &_sM, PfWindowFunc<typename _tType::value_type> _pfWindowFunc = &BlackmanWindow<_tType::value_type> ) {
+		static inline _tType			SincFilterHpf( double _dHz, double _dFc, size_t &_sM, PfWindowFunc<typename _tType::value_type> _pfWindowFunc = &BlackmanWindow<typename _tType::value_type> ) {
+			using val_type = typename _tType::value_type;
 			_tType vFilter;
 			if ( _dFc > _dHz / 2.0 || _dHz <= 0.0 ) {
-				vFilter.push_back( _tType::value_type( 1.0 ) );
+				vFilter.push_back( val_type( 1.0 ) );
 				_sM = 0;
 				return vFilter;
 			}
@@ -5033,17 +5096,17 @@ namespace ee {
 				int64_t N = int64_t( I ) - i64SignedL;
 				if ( N == 0 ) {
 					// Center tap for HPF
-					vFilter[I] = _tType::value_type( vFilter[I] * (1.0 - dFc2) );
+					vFilter[I] = val_type( vFilter[I] * (1.0 - dFc2) );
 				}
 				else {
-					vFilter[I] = _tType::value_type( vFilter[I] * (-dFc2 * Sinc( dFc2 * N )) );
+					vFilter[I] = val_type( vFilter[I] * (-dFc2 * Sinc( dFc2 * N )) );
 				}
 			}
 
 			// Normalize.
 			double dSum = 0.0;
 			for ( auto & I : vFilter ) { dSum += double( I ); }
-			for ( auto & I : vFilter ) { I = _tType::value_type( I / dSum ); }
+			for ( auto & I : vFilter ) { I = val_type( I / dSum ); }
 			_sM = sL;
 			return vFilter;
 		}
@@ -5061,13 +5124,14 @@ namespace ee {
 		 * \throws					std::runtime_error on allocation or window error.
 		 **/
 		template <typename _tType = std::vector<double>>
-		static inline _tType			SincFilterBpf( double _dHz, double _dF1, double _dF2, size_t &_sM, PfWindowFunc<typename _tType::value_type> _pfWindowFunc = &BlackmanWindow<_tType::value_type> ) {
+		static inline _tType			SincFilterBpf( double _dHz, double _dF1, double _dF2, size_t &_sM, PfWindowFunc<typename _tType::value_type> _pfWindowFunc = &BlackmanWindow<typename _tType::value_type> ) {
+			using val_type = typename _tType::value_type;
 			_tType vFilter;
 			if ( _dHz <= 0.0 ||
 				 _dF1 >= _dF2 ||
 				 _dF2 > _dHz * 0.5 ||
 				 _dF1 < 0.0 ) {
-				vFilter.push_back( _tType::value_type( 1.0 ) );
+				vFilter.push_back( val_type( 1.0 ) );
 				_sM = 0;
 				return vFilter;
 			}
@@ -5090,20 +5154,20 @@ namespace ee {
 				int64_t N = int64_t( I ) - i64L;
 				if ( N == 0 ) {
 					// Center tap: difference of DC gains.
-					vFilter[I] = _tType::value_type( vFilter[I] * (dF22 - dF12) );
+					vFilter[I] = val_type( vFilter[I] * (dF22 - dF12) );
 				}
 				else {
 					// Off-center taps: difference of sinc kernels.
 					double dLo = dF12 * Sinc( dF12 * N );
 					double dHi = dF22 * Sinc( dF22 * N );
-					vFilter[I] = _tType::value_type( vFilter[I] * (dHi - dLo) );
+					vFilter[I] = val_type( vFilter[I] * (dHi - dLo) );
 				}
 			}
 
 			// Normalize.
 			double dSum = 0.0;
 			for ( auto & I : vFilter ) { dSum += double( I ); }
-			for ( auto & I : vFilter ) { I = _tType::value_type( I / dSum ); }
+			for ( auto & I : vFilter ) { I = val_type( I / dSum ); }
 
 			_sM = sL;
 			return vFilter;
@@ -5146,6 +5210,14 @@ namespace ee {
 			double dMeanSq = dSumSq / static_cast<double>(sCount);
 			return std::sqrt( dMeanSq );
 		}
+		
+		
+	protected :
+		// == Members.
+#ifdef __GNUC__
+		static ::mach_timebase_info_data_t
+										m_mtidInfoData;
+#endif	// #ifdef __GNUC__
 
 	};
 
@@ -5168,7 +5240,7 @@ inline unsigned int						CountLeadingZeros( uint16_t _ui16X ) {
 	auto ucIsNonZero = ::_BitScanReverse( &ulIndex, _ui16X );
 	return ucIsNonZero ? (15 - static_cast<int>(ulIndex - 16)) : 16;
 #else
-	return _ui32X != 0 ? (__builtin_clz( static_cast<uint32_t>(_ui16X) ) - 16) : 16;
+	return _ui16X != 0 ? (__builtin_clz( static_cast<uint32_t>(_ui16X) ) - 16) : 16;
 #endif  // #if defined( _MSC_VER )
 }
 

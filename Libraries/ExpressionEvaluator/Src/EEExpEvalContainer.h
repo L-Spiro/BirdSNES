@@ -123,19 +123,19 @@ namespace ee {
 		};
 
 		/** Address ([<address>]) handler. */
-		typedef bool (__stdcall *			PfAddressHandler)( uint64_t _ui64Address, EE_CAST_TYPES _tType, uintptr_t _uiptrData, CExpEvalContainer * _peecContainer, EE_RESULT &_rResult );
+		typedef bool (EE_CALLBACK *			PfAddressHandler)( uint64_t _ui64Address, EE_CAST_TYPES _tType, uintptr_t _uiptrData, CExpEvalContainer * _peecContainer, EE_RESULT &_rResult );
 
 		/** User-variable function handler. */
-		typedef bool (__stdcall *			PfUserVarHandler)( uintptr_t _uiptrData, CExpEvalContainer * _peecContainer, EE_RESULT &_rResult );
+		typedef bool (EE_CALLBACK *			PfUserVarHandler)( uintptr_t _uiptrData, CExpEvalContainer * _peecContainer, EE_RESULT &_rResult );
 
 		/** String handler. */
-		typedef bool (__stdcall *			PfStringHandler)( const std::string &_sString, uintptr_t _uiptrData, CExpEvalContainer * _peecContainer, EE_RESULT &_rResult );
+		typedef bool (EE_CALLBACK *			PfStringHandler)( const std::string &_sString, uintptr_t _uiptrData, CExpEvalContainer * _peecContainer, EE_RESULT &_rResult );
 
 		/** Member-access handler. */
-		typedef bool (__stdcall *			PfMemberAccessHandler)( const EE_RESULT &_rLeft, const std::string &_sMember, uintptr_t _uiptrData, CExpEvalContainer * _peecContainer, EE_RESULT &_rResult );
+		typedef bool (EE_CALLBACK *			PfMemberAccessHandler)( const EE_RESULT &_rLeft, const std::string &_sMember, uintptr_t _uiptrData, CExpEvalContainer * _peecContainer, EE_RESULT &_rResult );
 
 		/** ToString() function. */
-		typedef std::wstring (__stdcall *	PfToStringHandler)( EE_RESULT &_rResult, uint64_t _ui64Options );
+		typedef std::wstring (EE_CALLBACK *	PfToStringHandler)( EE_RESULT &_rResult, uint64_t _ui64Options );
 
 
 		// == Functions.
@@ -421,6 +421,7 @@ namespace ee {
 							_rResult.u.dVal = -_rExp.u.dVal;
 							return EE_EC_SUCCESS;
 						}
+						default : {}
 					}
 					return EE_EC_UNRECOGNIZEDUNARYOPERATOR;
 				}
@@ -439,6 +440,7 @@ namespace ee {
 						case EE_NC_FLOATING : {
 							return EE_EC_INVALIDOPERATOR;
 						}
+						default : {}
 					}
 					return EE_EC_UNRECOGNIZEDUNARYOPERATOR;
 				}
@@ -459,9 +461,11 @@ namespace ee {
 							_rResult.u.ui64Val = !_rExp.u.dVal;
 							return EE_EC_SUCCESS;
 						}
+						default : {}
 					}
 					return EE_EC_UNRECOGNIZEDUNARYOPERATOR;
 				}
+				default : {}
 			}
 			return EE_EC_UNRECOGNIZEDUNARYOPERATOR;
 		}
@@ -727,6 +731,14 @@ namespace ee {
 
 		// Creates a numeric constant.
 		void								CreateNumber( long _lVal, YYSTYPE::EE_NODE_DATA &_ndNode );
+		
+#ifdef __APPLE__
+		// Creates a numeric constant.
+		void								CreateNumber( long double _dVal, YYSTYPE::EE_NODE_DATA &_ndNode );
+		
+		// Creates a numeric constant.
+		void								CreateNumber( ::clock_t _cVal, YYSTYPE::EE_NODE_DATA &_ndNode );
+#endif	// #ifdef __APPLE__
 
 		// Creates an oct constant.
 		void								CreateOct( const char * _pcText, YYSTYPE::EE_NODE_DATA &_ndNode );

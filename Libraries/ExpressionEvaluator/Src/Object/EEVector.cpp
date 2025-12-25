@@ -1,4 +1,4 @@
-﻿#include "EEVector.h"
+#include "EEVector.h"
 
 
 namespace ee {
@@ -40,6 +40,7 @@ namespace ee {
 				}
 				break;
 			}
+			default : {}
 		}
 		return false;
 	}
@@ -199,6 +200,7 @@ namespace ee {
 				}
 				break;
 			}
+			default : {}
 		}
 		return false;
 	}

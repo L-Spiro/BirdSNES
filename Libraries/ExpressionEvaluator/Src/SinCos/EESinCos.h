@@ -1,19 +1,20 @@
 #pragma once
 
+#include <cmath>
+
+#if defined( __cplusplus )
 extern "C" {
+#endif
 
-#if defined( _M_AMD64 )
+#if defined( _MSC_VER ) && defined( _M_AMD64 )
 
-// 64-bit implementation in MASM.
-// Enable MASM by right clicking your project in solution explorer then:
-// Build Dependencies -> Build Customizations -> MASM
-extern void SinCos( double _dRadians, double * _pdSin, double * _pdCos );
-// Add your assembly file as a source, but exclude it from 32 bit build.
+// 64-bit implementation in MASM (MSVC only).
+extern void 		SinCos( double _dRadians, double * _pdSin, double * _pdCos );
 
-#else
+#elif defined( _MSC_VER ) && defined( _M_IX86 )
 
-// 32-bit implementation in inline assembly.
-inline void SinCos( double _dRadians, double * _pdSin, double * _pdCos ) {
+// 32-bit implementation in MSVC inline assembly (MSVC only).
+inline void 		SinCos( double _dRadians, double * _pdSin, double * _pdCos ) {
 	double dSin, dCos;
 	__asm {
 		fld QWORD PTR[_dRadians]
@@ -26,19 +27,42 @@ inline void SinCos( double _dRadians, double * _pdSin, double * _pdCos ) {
 	(*_pdCos) = dCos;
 }
 
-inline void SinCosF( float _fAngle, float * _pfSin, float * _pfCos ) {
-    float fSinT, fCosT;
-    __asm {
-        fld DWORD PTR[_fAngle]		// Load the 32-bit float into the FPU stack.
-        fsincos						// Compute cosine and sine.
-        fstp DWORD PTR[fCosT]		// Store the cosine value.
-        fstp DWORD PTR[fSinT]		// Store the sine value.
-        fwait						// Wait for the FPU to finish.
-    }
-    (*_pfSin) = fSinT;
-    (*_pfCos) = fCosT;
+inline void 		SinCosF( float _fAngle, float * _pfSin, float * _pfCos ) {
+	float fSinT, fCosT;
+	__asm {
+		fld DWORD PTR[_fAngle]
+		fsincos
+		fstp DWORD PTR[fCosT]
+		fstp DWORD PTR[fSinT]
+		fwait
+	}
+	(*_pfSin) = fSinT;
+	(*_pfCos) = fCosT;
+}
+
+#else
+
+// Clang/GCC (including Xcode): use libm.
+inline void 		SinCos( double _dRadians, double * _pdSin, double * _pdCos ) {
+#if defined( __APPLE__ ) || defined( __GNUC__ ) || defined( __clang__ )
+	::__sincos( _dRadians, _pdSin, _pdCos );
+#else
+	(*_pdSin) = std::sin( _dRadians );
+	(*_pdCos) = std::cos( _dRadians );
+#endif
+}
+
+inline void 		SinCosF( float _fAngle, float * _pfSin, float * _pfCos ) {
+#if defined( __APPLE__ ) || defined( __GNUC__ ) || defined( __clang__ )
+	::__sincosf( _fAngle, _pfSin, _pfCos );
+#else
+	(*_pfSin) = std::sinf( _fAngle );
+	(*_pfCos) = std::cosf( _fAngle );
+#endif
 }
 
 #endif
 
+#if defined( __cplusplus )
 } // extern "C"
+#endif

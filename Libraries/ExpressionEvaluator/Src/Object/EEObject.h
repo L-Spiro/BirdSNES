@@ -6,6 +6,12 @@
 
 #include <vector>
 
+#if defined( _MSC_VER )
+#define EE_PURE_DECL								{ return { EE_NC_INVALID }; }
+#else
+#define EE_PURE_DECL								;
+#endif	// #if defined( _MSC_VER )
+
 namespace ee {
 
 	class CObject : public CBaseApi {
@@ -39,21 +45,22 @@ namespace ee {
 
 		// == Functions.
 		// Gets the object type.
-		virtual uint32_t							Type() const = 0 { return 0; }
+		virtual uint32_t							Type() const { return 0; };
 
+#if defined( _MSC_VER )
 		// Creates a string representation of the object, with the string usually assumed to be in UTF-8 format.
 		virtual bool								ToString( std::string &_sString, uint32_t /*_ui32Depth*/, uint32_t _ui32Flags = EE_TF_NONE ) = 0 {
 			static_cast<void>(_ui32Flags);
 			_sString = "<null>";
 			return false;
 		}
-
+		
 		// Creates a formatted string representation of the object.
 		virtual std::string							FormattedString( const std::string &/*_sFormat*/, uint32_t _ui32Flags = EE_TF_NONE ) = 0 {
 			static_cast<void>(_ui32Flags);
 			return std::string( "<null>" );
 		}
-
+		
 		// Converts to another object of the given type.
 		virtual CExpEvalContainer::EE_RESULT		ConvertTo( EE_NUM_CONSTANTS /*_ncType*/ ) = 0 {
 			CExpEvalContainer::EE_RESULT rRet = { EE_NC_INVALID };
@@ -64,6 +71,19 @@ namespace ee {
 		virtual bool								InitializeFrom( const CExpEvalContainer::EE_RESULT &/*_rObj*/ ) = 0 {
 			return false;
 		}
+#else
+		// Creates a string representation of the object, with the string usually assumed to be in UTF-8 format.
+		virtual bool								ToString( std::string &_sString, uint32_t /*_ui32Depth*/, uint32_t _ui32Flags = EE_TF_NONE ) = 0;
+		
+		// Creates a formatted string representation of the object.
+		virtual std::string							FormattedString( const std::string &/*_sFormat*/, uint32_t _ui32Flags = EE_TF_NONE ) = 0;
+		
+		// Converts to another object of the given type.
+		virtual CExpEvalContainer::EE_RESULT		ConvertTo( EE_NUM_CONSTANTS /*_ncType*/ ) = 0;
+
+		// Initializes this object given another object.
+		virtual bool								InitializeFrom( const CExpEvalContainer::EE_RESULT &/*_rObj*/ ) = 0;
+#endif	// #if defined( _MSC_VER )
 
 		// Creates a Result from this object.
 		CExpEvalContainer::EE_RESULT				CreateResult() {
@@ -80,14 +100,10 @@ namespace ee {
 		}
 
 		// Array access.
-		virtual CExpEvalContainer::EE_RESULT		ArrayAccess( int64_t /*_i64Idx*/ ) = 0 {
-			return { EE_NC_OBJECT };
-		}
+		virtual CExpEvalContainer::EE_RESULT		ArrayAccess( int64_t /*_i64Idx*/ ) = 0 EE_PURE_DECL
 
 		// Extended array access.
-		virtual CExpEvalContainer::EE_RESULT		ArrayAccessEx( int64_t /*_i64Idx0*/, int64_t /*_i64Idx1*/, uint32_t /*_ui32Mask*/ ) = 0 {
-			return { EE_NC_OBJECT };
-		}
+		virtual CExpEvalContainer::EE_RESULT		ArrayAccessEx( int64_t /*_i64Idx0*/, int64_t /*_i64Idx1*/, uint32_t /*_ui32Mask*/ ) = 0 EE_PURE_DECL
 
 		// Gets the array length.
 		virtual size_t								ArrayLength() { return 1; }
@@ -144,3 +160,5 @@ namespace ee {
 	};
 
 }	// namespace ee
+
+#undef EE_PURE_DECL
