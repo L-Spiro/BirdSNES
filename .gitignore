@@ -1,0 +1,148 @@
+
+L. Spiro NES.VC.db
+Tests/*
+.vs/*
+*.obj
+*.ipch
+Src/MiniZ/examples/*
+*.recipe
+*.ilk
+*.enc
+*.iobj
+*.pdb
+*.tlog
+*.ipdb
+Debug/*
+Release/*
+Research/*
+!Research/nes-test-roms-master/
+!Research/Instructions/
+Libraries/ExpressionEvaluator/.vs/*
+Libraries/LSWindows/x64/
+Libraries/LSWindows/.vs/*
+Libraries/ExpressionEvaluator/x64/
+Libraries/LSon/.vs/*
+*.sdf
+*.user
+*.lib
+*.exe
+*.idb
+*.log
+x64/Debug/*
+x64/Release/*
+x64/CPU Verify/*
+x64/CPU Verify Release/*
+
+x64/DirectX 9 Debug/*
+x64/DirectX 9 Final/*
+x64/DirectX 9 Release/*
+x64/DirectX 12 Debug/*
+x64/DirectX 12 Final/*
+x64/DirectX 12 Release/*
+x64/Vulkan 1 Debug/*
+x64/Vulkan 1 Final/*
+x64/Vulkan 1 Release/*
+x64/Vulkan 1 DirectX 12 DirectX 9 Debug/*
+x64/Vulkan 1 DirectX 12 DirectX 9 Final/*
+x64/Vulkan 1 DirectX 12 DirectX 9 Release/*
+
+Win32/DirectX 9 Debug/*
+Win32/DirectX 9 Final/*
+Win32/DirectX 9 Release/*
+Win32/DirectX 12 Debug/*
+Win32/DirectX 12 Final/*
+Win32/DirectX 12 Release/*
+Win32/Vulkan 1 Debug/*
+Win32/Vulkan 1 Final/*
+Win32/Vulkan 1 Release/*
+Win32/Vulkan 1 DirectX 12 DirectX 9 Debug/*
+Win32/Vulkan 1 DirectX 12 DirectX 9 Final/*
+Win32/Vulkan 1 DirectX 12 DirectX 9 Release/*
+
+Libraries/ExpressionEvaluator/x64/*
+Libraries/ExpressionEvaluator/Win32/*
+Libraries/LSWindows/x64/*
+Libraries/LSWindows/Win32/*
+Libraries/LSon/x64/*
+Libraries/LSon/Win32/*
+x64/Final/*
+Win32/Final/*
+Licenses.txt
+
+
+
+
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+## User settings
+xcuserdata/
+
+## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
+*.xcscmblueprint
+*.xccheckout
+
+## compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
+build/
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+## Obj-C/Swift specific
+*.hmap
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+packages/
+*.nupkg
+
+# CocoaPods
+#
+# We recommend against adding the Pods directory to your .gitignore. However
+# you should judge for yourself, the pros and cons are mentioned at:
+# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
+#
+# Pods/
+#
+# Add this line if you want to avoid checking in source code from the Xcode workspace
+# *.xcworkspace
+
+# Carthage
+#
+# Add this line if you want to avoid checking in source code from Carthage dependencies.
+# Carthage/Checkouts
+
+Carthage/Build/
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo.
+# Instead, use fastlane to re-generate the screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/#source-control
+
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code Injection
+#
+# After new code Injection tools there's a generated folder /iOSInjectionProject
+# https://github.com/johnno1962/injectionforxcode
+
+iOSInjectionProject/
+
+.DS_Store
+Research/nes-test-roms-master/other/Irritating Ship (NESdev Compo 2022).nes
+/L. Spiro NES/x64
