@@ -4,9 +4,12 @@
 
 #include <cassert>
 #include <cfloat>
+#include <cinttypes>
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include <cinttypes>
+#if defined( _MSC_VER )
+	#include <corecrt_math_defines.h>
+#endif
 #include <cwctype>
 #include <fenv.h>
 #include <iomanip>
@@ -814,7 +817,17 @@ namespace ee {
 			return uiLeft;
 		}
 
-		// Convert a \U******** Unicode character to a uint32_t.
+		/**
+		 * \brief Converts a \U******** Unicode escape sequence to a 32-bit code point.
+		 *
+		 * \param _pcValue The input character buffer beginning at the character after the backslash (expected to be 'U').
+		 * \param _sLen The number of valid characters available in \p _pcValue.
+		 * \param _sCharsConsumed Receives the number of characters consumed from \p _pcValue on success; 0 on failure.
+		 * \return Returns the decoded Unicode code point on success; 0 on failure.
+		 *
+		 * \note This function accepts only the 8-hex-digit form: "U" followed by exactly 8 hexadecimal digits.
+		 * \note The returned value is not validated as a Unicode scalar value (e.g., surrogate range and > 0x10FFFF are not rejected).
+		 */
 		static inline uint32_t			EscapeUnicode8( const char * _pcValue, size_t _sLen, size_t &_sCharsConsumed ) {
 			_sCharsConsumed = 0;
 			if ( _sLen >= (8 + 1) && _pcValue[0] == 'U' ) {
@@ -834,13 +847,43 @@ namespace ee {
 			return 0;
 		}
 
-		// Converts a \N{*} named Unicode character to a uint32_t.
+		/**
+		 * \brief Converts a \N{...} named Unicode escape sequence to a 32-bit code point.
+		 *
+		 * \param _pcValue The input character buffer beginning at the character after the backslash (expected to be 'N').
+		 * \param _sLen The number of valid characters available in \p _pcValue.
+		 * \param _sCharsConsumed Receives the number of characters consumed from \p _pcValue on success; 0 on failure.
+		 * \return Returns the decoded Unicode code point on success; 0 on failure.
+		 *
+		 * \note The expected form is "N" followed by "{", then a name, then "}".
+		 * \note Name matching and supported aliases are implementation-defined.
+		 */
 		static uint32_t					EscapeNamedUnicode( const char * _pcValue, size_t _sLen, size_t &_sCharsConsumed );
 
-		// Converts an &#nnnn; or an &#xhhhh; HTML character to a uint64_t.
+		/**
+		 * \brief Converts an HTML numeric character reference to a 64-bit value.
+		 *
+		 * \param _pcValue The input character buffer beginning at the character after '&' (expected to be "#...;").
+		 * \param _sLen The number of valid characters available in \p _pcValue.
+		 * \param _sCharsConsumed Receives the number of characters consumed from \p _pcValue on success; 0 on failure.
+		 * \return Returns the decoded numeric value on success; 0 on failure.
+		 *
+		 * \note Supports both decimal and hexadecimal forms: "&#nnnn;" and "&#xhhhh;" (case-insensitive 'x' may be supported).
+		 * \note The returned value is not guaranteed to be a valid Unicode scalar value.
+		 */
 		static uint64_t					EscapeHtml( const char * _pcValue, size_t _sLen, size_t &_sCharsConsumed );
 
-		// Escapes double quotes in a string (" -> \").
+		/**
+		 * \brief Escapes quotation marks in a string, optionally escaping backslashes as well.
+		 *
+		 * \tparam _tType The string type to operate on (must provide value_type, size(), operator[], and push_back()).
+		 * \param _sInput The input string to escape.
+		 * \param _bEscapeSlashes If true, backslashes ('\\') are escaped as "\\\\" in addition to escaping quotes.
+		 * \return Returns a copy of \p _sInput with quote characters escaped.
+		 *
+		 * \note A quote (") is escaped by inserting a preceding backslash (\\), producing \" in the output.
+		 * \note If \p _bEscapeSlashes is true, each backslash is duplicated.
+		 */
 		template <typename _tType = std::string>
 		static _tType					EscapeQuotes( const _tType &_sInput, bool _bEscapeSlashes ) {
 			_tType sRet;
@@ -1489,17 +1532,45 @@ namespace ee {
 		 **/
 		static double					AtoF( const char * _pcText, size_t * _psEaten = nullptr, bool * _pbError = nullptr );
 
-		// Basic epsilon comparison.
+		/**
+		 * \brief Performs an absolute epsilon comparison between two double-precision values.
+		 *
+		 * \param _dLeft The first value to compare.
+		 * \param _dRight The second value to compare.
+		 * \param _dEpsilon The maximum allowed absolute difference for the values to be considered equal.
+		 * \return Returns true if |left - right| <= epsilon; false otherwise.
+		 *
+		 * \note This is an absolute comparison only. For values with large magnitude, prefer RelativeEpsilon().
+		 */
 		static inline bool __cdecl		Epsilon( double _dLeft, double _dRight, double _dEpsilon ) {
 			return std::abs( _dLeft - _dRight ) <= _dEpsilon;
 		}
 
-		// Basic epsilon comparison.
+		/**
+		 * \brief Performs an absolute epsilon comparison between two single-precision values.
+		 *
+		 * \param _fLeft The first value to compare.
+		 * \param _fRight The second value to compare.
+		 * \param _fEpsilon The maximum allowed absolute difference for the values to be considered equal.
+		 * \return Returns true if |left - right| <= epsilon; false otherwise.
+		 *
+		 * \note This is an absolute comparison only. For values with large magnitude, prefer RelativeEpsilon().
+		 */
 		static inline bool __cdecl		Epsilon( float _fLeft, float _fRight, float _fEpsilon ) {
 			return std::abs( _fLeft - _fRight ) <= _fEpsilon;
 		}
 
-		// More accurate epsilon comparison.
+		/**
+		 * \brief Performs a relative epsilon comparison between two double-precision values.
+		 *
+		 * \param _dLeft The first value to compare.
+		 * \param _dRight The second value to compare.
+		 * \param _dEpsilon The maximum allowed relative error for the values to be considered equal.
+		 * \return Returns true if the values are considered equal under a relative-error test; false otherwise.
+		 *
+		 * \note This function treats exact equality as equal, which also handles infinities of the same sign.
+		 * \note Near zero, a scaled absolute comparison is used to avoid division by very small values.
+		 */
 		static inline bool __cdecl		RelativeEpsilon( double _dLeft, double _dRight, double _dEpsilon ) {
 			if ( _dLeft == _dRight ) { return true; }	// Handle infinities.
 
@@ -1516,7 +1587,17 @@ namespace ee {
 			return dDiff / Min( (dA + dB), DBL_MAX ) < _dEpsilon;
 		}
 
-		// More accurate epsilon comparison.
+		/**
+		 * \brief Performs a relative epsilon comparison between two single-precision values.
+		 *
+		 * \param _fLeft The first value to compare.
+		 * \param _fRight The second value to compare.
+		 * \param _fEpsilon The maximum allowed relative error for the values to be considered equal.
+		 * \return Returns true if the values are considered equal under a relative-error test; false otherwise.
+		 *
+		 * \note This function treats exact equality as equal, which also handles infinities of the same sign.
+		 * \note Near zero, a scaled absolute comparison is used to avoid division by very small values.
+		 */
 		static inline bool __cdecl		RelativeEpsilon( float _fLeft, float _fRight, float _fEpsilon ) {
 			if ( _fLeft == _fRight ) { return true; }	// Handle infinities.
 
@@ -1551,7 +1632,7 @@ namespace ee {
 		 *
 		 * \note This is not a wall-clock timestamp and is not subject to system time adjustments.
 		 */
-		static inline uint64_t Time() {
+		static inline uint64_t			Time() {
 #if defined( _WIN32 )
 			LARGE_INTEGER liInt;
 			::QueryPerformanceCounter( &liInt );
@@ -1601,7 +1682,19 @@ namespace ee {
 		 */
 		static uint64_t					TicksToMicroseconds( uint64_t _ui64Ticks );
 
-		// Parse a string into an array of strings given a delimiter.
+		/**
+		 * \brief Splits a string into tokens using a single code-unit delimiter.
+		 *
+		 * \tparam _tType The string type to split (must provide value_type, size(), operator[], push_back(), and clear()).
+		 * \param _sInput The input string to tokenize.
+		 * \param _ui32Token The delimiter character, provided as a 32-bit value and converted to \c _tType::value_type.
+		 * \param _bIncludeEmptyTokens If true, empty tokens between consecutive delimiters (or at the ends) are included.
+		 * \param pbErrored Optional. Receives true if an exception occurred; false otherwise.
+		 * \return Returns a vector containing the tokens extracted from \p _sInput.
+		 *
+		 * \note This treats the delimiter as a single code unit, not a Unicode code point.
+		 * \note If \p pbErrored is supplied, it is set to false on success and true if an exception is thrown.
+		 */
 		template <typename _tType = std::string>
 		static std::vector<_tType>		Tokenize( const _tType &_sInput, uint32_t _ui32Token, bool _bIncludeEmptyTokens = true, bool * pbErrored = nullptr ) {
 			std::vector<_tType> vRet;
@@ -1629,7 +1722,22 @@ namespace ee {
 			return vRet;
 		}
 
-		// Parse a string into an array of strings given a UTF-32 delimiter.
+		/**
+		 * \brief Splits a string into tokens using a UTF-32 delimiter (Unicode code point).
+		 *
+		 * \tparam _tType The string type to split. Supported element sizes are 1 (UTF-8), 2 (UTF-16), or 4 (UTF-32).
+		 * \param _sInput The input string to tokenize.
+		 * \param _ui32Token The delimiter Unicode code point (UTF-32).
+		 * \param _bIncludeEmptyTokens If true, empty tokens between consecutive delimiters (or at the ends) are included.
+		 * \param pbErrored Optional. Receives true if an exception occurred; false otherwise.
+		 * \return Returns a vector containing the tokens extracted from \p _sInput.
+		 *
+		 * \note For UTF-8 input (sizeof(value_type)==1), delimiter matching is performed on decoded code points.
+		 * \note For UTF-16 input (sizeof(value_type)==2), surrogate pairs are decoded for delimiter matching.
+		 * \note For UTF-32 input (sizeof(value_type)==4), code points are compared directly.
+		 * \note If the input encoding is malformed, decoding behavior depends on NextUtf8Char()/NextUtf16Char().
+		 * \note If \p pbErrored is supplied, it is set to false on success and true if an exception is thrown.
+		 */
 		template <typename _tType = std::string>
 		static std::vector<_tType>		TokenizeUtf( const _tType &_sInput, uint32_t _ui32Token, bool _bIncludeEmptyTokens = true, bool * pbErrored = nullptr ) {
 			using val_type = typename _tType::value_type;
@@ -1671,7 +1779,18 @@ namespace ee {
 			return vRet;
 		}
 
-		// Recombines an array of strings back into a single string.
+		/**
+		 * \brief Recombines an array of strings into a single string separated by a delimiter.
+		 *
+		 * \tparam _tType The string type to build.
+		 * \param _vArray The array of strings to join.
+		 * \param _ui32Token The delimiter character, provided as a 32-bit value and converted to \c _tType::value_type.
+		 * \param pbErrored Optional. Receives true if an exception occurred; false otherwise.
+		 * \return Returns the concatenated string containing each element of \p _vArray followed by the delimiter.
+		 *
+		 * \note This function appends the delimiter after every element, including the last.
+		 * \note If \p pbErrored is supplied, it is set to false on success and true if an exception is thrown.
+		 */
 		template <typename _tType = std::string>
 		static _tType					Reconstitute( const std::vector<_tType> &_vArray, uint32_t _ui32Token, bool * pbErrored = nullptr ) {
 			_tType sRet;
@@ -1688,7 +1807,17 @@ namespace ee {
 			return sRet;
 		}
 
-		// Merges lines that end with \ with the next line below.
+		/**
+		 * \brief Merges lines that end with a backslash ('\\') into the following line(s).
+		 *
+		 * \tparam _tType The string type used by the vector.
+		 * \param _vArray The array of lines to modify in-place.
+		 * \return Returns \p _vArray.
+		 *
+		 * \note A trailing backslash is removed from the merged line.
+		 * \note If a line consists only of a single backslash after trimming whitespace, that line is cleared instead of merged.
+		 * \note Merged source lines are cleared (set to empty) rather than removed, so indices remain stable.
+		 */
 		template <typename _tType = std::string>
 		static std::vector<_tType> &	MergeBackslashedLines( std::vector<_tType> &_vArray ) {
 			for ( size_t I = 0; I < _vArray.size(); ++I ) {
@@ -1718,8 +1847,24 @@ namespace ee {
 			return _vArray;
 		}
 
-		// Detrmines the length of a C/C++/Python string inside the given text starting at the given position.  A non-0 return indicates the substring at the given
-		//	text position is the start of a code-format string.
+		/**
+		 * \brief Determines the length of a C/C++/Python-style string literal starting at a given position.
+		 *
+		 * \tparam _tType The string type to scan.
+		 * \param _sInput The text to scan.
+		 * \param _sPos The starting position within \p _sInput.
+		 * \return Returns the length of the string literal in code units if a supported string literal begins at \p _sPos; 0 otherwise.
+		 *
+		 * \note Supported forms:
+		 * - Triple-quoted single-quote strings: ''' ... '''
+		 * - Triple-quoted double-quote strings: """ ... """
+		 * - Python raw strings of the form r" ... " or R" ... "
+		 * - Double-quoted strings: " ... "
+		 * - Single-quoted character literals: ' ... '
+		 *
+		 * \note Escape handling is limited to skipping common sequences used to avoid prematurely terminating the scan (e.g., \\\\ and \\").
+		 * \note If the literal is unterminated, 0 is returned.
+		 */
 		template <typename _tType = std::string>
 		static size_t					CodeStringLength( const _tType &_sInput, size_t _sPos ) {
 			using val_type = typename _tType::value_type;
@@ -1805,7 +1950,16 @@ namespace ee {
 			return 0;
 		}
 
-		// Removes C-style comments from a string.
+		/**
+		 * \brief Removes C++-style single-line comments (// ...) from a string.
+		 *
+		 * \tparam _tType The string type to modify.
+		 * \param _sInput The string to modify in-place.
+		 * \return Returns \p _sInput.
+		 *
+		 * \note String/character literals detected by CodeStringLength() are skipped so comment markers inside them are preserved.
+		 * \note A backslash immediately preceding a newline continues a // comment onto the next line; such continued newlines are preserved.
+		 */
 		template <typename _tType = std::string>
 		static _tType &					RemoveCComments( _tType &_sInput ) {
 			using val_type = typename _tType::value_type;
@@ -1854,7 +2008,17 @@ namespace ee {
 			return _sInput;
 		}
 
-		// Removes C++-style comments from a string.
+		/**
+		 * \brief Removes C-style multi-line comments (/* ... *\/) from a string.
+		 *
+		 * \tparam _tType The string type to modify.
+		 * \param _sInput The string to modify in-place.
+		 * \return Returns \p _sInput.
+		 *
+		 * \note String/character literals detected by CodeStringLength() are skipped so comment markers inside them are preserved.
+		 * \note Newline characters within the removed comment are preserved by reinserting the same number of '\n' characters.
+		 * \note Only the first multi-line comment encountered is removed (the scan stops after removal).
+		 */
 		template <typename _tType = std::string>
 		static _tType &					RemoveCPlusPlusComments( _tType &_sInput ) {
 			using val_type = typename _tType::value_type;
@@ -1886,7 +2050,18 @@ namespace ee {
 			return _sInput;
 		}
 
-		// Removes C/C++ comments from a string.
+		/**
+		 * \brief Removes C/C++ comments from a string.
+		 *
+		 * \tparam _tType The string type to modify.
+		 * \param _sInput The string to modify in-place.
+		 * \return Returns \p _sInput.
+		 *
+		 * \note String/character literals detected by CodeStringLength() are skipped so comment markers inside them are preserved.
+		 * \note For // comments, backslash-newline continuation is handled by preserving the continued newline characters.
+		 * \note For /* ... *\/ comments, newline characters inside the comment are preserved by reinserting them.
+		 * \note Only the first /* ... *\/ comment encountered is removed (the scan stops after removal), matching RemoveCPlusPlusComments().
+		 */
 		template <typename _tType = std::string>
 		static _tType &					RemoveComments( _tType &_sInput ) {
 			size_t sIdx = 0;
@@ -1945,7 +2120,16 @@ namespace ee {
 			return _sInput;
 		}
 
-		// Pulls any preprocessing directives out of a single line.
+		/**
+		 * \brief Extracts preprocessing directive text and parameters from a single line.
+		 *
+		 * \param _sInput The input line to scan.
+		 * \param _sDirective Receives the directive name (for example, "include", "define", "if", etc.).
+		 * \param _sParms Receives the directive parameters (everything after the directive token).
+		 * \return Returns true if a preprocessing directive was found and extracted; false otherwise.
+		 *
+		 * \note This function only operates on a single line of text; line continuations are not handled here.
+		 */
 		static bool						PreprocessingDirectives( const std::string &_sInput, std::string &_sDirective, std::string &_sParms );
 
 		/**
@@ -5234,6 +5418,16 @@ namespace ee {
 	#endif  // #ifdef _WIN64
 #endif  // #if defined( _MSC_VER )
 
+/**
+ * \brief Counts the number of leading zero bits in a 16-bit unsigned integer.
+ *
+ * \param _ui16X The value whose leading zeros are to be counted.
+ * \return Returns the number of leading zero bits in \p _ui16X.
+ *
+ * \note If \p _ui16X is 0, this function returns 16.
+ * \note On MSVC, this uses _BitScanReverse on the 32-bit-promoted value.
+ * \note On GCC/Clang, this uses __builtin_clz on a 32-bit promotion and subtracts 16.
+ */
 inline unsigned int						CountLeadingZeros( uint16_t _ui16X ) {
 #if defined( _MSC_VER )
 	unsigned long ulIndex;
@@ -5244,6 +5438,16 @@ inline unsigned int						CountLeadingZeros( uint16_t _ui16X ) {
 #endif  // #if defined( _MSC_VER )
 }
 
+/**
+ * \brief Counts the number of leading zero bits in a 32-bit unsigned integer.
+ *
+ * \param _ui32X The value whose leading zeros are to be counted.
+ * \return Returns the number of leading zero bits in \p _ui32X.
+ *
+ * \note If \p _ui32X is 0, this function returns 32.
+ * \note On MSVC, this uses _BitScanReverse.
+ * \note On GCC/Clang, this uses __builtin_clz.
+ */
 inline unsigned int						CountLeadingZeros( uint32_t _ui32X ) {
 #if defined( _MSC_VER )
 	unsigned long ulIndex;
@@ -5254,6 +5458,17 @@ inline unsigned int						CountLeadingZeros( uint32_t _ui32X ) {
 #endif  // #if defined( _MSC_VER )
 }
 
+/**
+ * \brief Counts the number of leading zero bits in a 64-bit unsigned integer.
+ *
+ * \param _ui64X The value whose leading zeros are to be counted.
+ * \return Returns the number of leading zero bits in \p _ui64X.
+ *
+ * \note If \p _ui64X is 0, this function returns 64.
+ * \note On 64-bit MSVC targets, this uses _BitScanReverse64.
+ * \note On 32-bit MSVC targets, this uses a fast branch-based reduction to locate the highest set bit.
+ * \note On GCC/Clang, this uses __builtin_clzll.
+ */
 inline unsigned int						CountLeadingZeros( uint64_t _ui64X ) {
 #if defined( _MSC_VER )
 	#if defined( _WIN64 )
