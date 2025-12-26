@@ -303,7 +303,14 @@ namespace ee {
 		return ui32Ret;
 	}
 
-	// Returns the index of a string if it exists or static_cast<size_t>(-1) otherwise.
+	/**
+	 * \brief Returns the index of a string if it exists.
+	 *
+	 * Searches for the given string within the underlying string collection.
+	 *
+	 * \param _sText The string to search for.
+	 * \return Returns the index of the matching string if found; otherwise returns static_cast<size_t>(-1).
+	 */
 	size_t CPreProcContainer::HasString( const std::string &_sText ) const {
 		for ( size_t I = 0; I < m_vStringPool.size(); ++I ) {
 			if ( m_vStringPool[I] == _sText ) { return I; }

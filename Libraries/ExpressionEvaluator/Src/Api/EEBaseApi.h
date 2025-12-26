@@ -17,37 +17,98 @@ namespace ee {
 	class CBaseApi {
 	public :
 		// == Functions.
-		// Converts from UTF-8 to ASCII.
+		/**
+		 * \brief Converts the object from UTF-8 to ASCII.
+		 *
+		 * \return Returns the converted value as an EE_RESULT.
+		 *
+		 * \note Behavior is implementation-defined for code points that are not representable in ASCII.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Ascii() const = 0 EE_PURE_DECL
 
-		// Gets the binary form of the object as a string (0b****).
+		/**
+		 * \brief Gets the binary form of the object as a string.
+		 *
+		 * \return Returns an EE_RESULT containing a string formatted as 0b****.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Bin() const = 0 EE_PURE_DECL
 
-		// Gets the boolean form of the object as a string (0b****).
+		/**
+		 * \brief Gets the boolean form of the object as a string.
+		 *
+		 * \return Returns an EE_RESULT containing a string formatted as 0b0 or 0b1.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Bool() const = 0 EE_PURE_DECL
 
-		// Returns the character that represents the specified Unicode. 
+		/**
+		 * \brief Returns the character represented by the object as a Unicode code point.
+		 *
+		 * \return Returns an EE_RESULT containing the resulting character.
+		 *
+		 * \note This is typically the inverse of Ord() for values that represent a valid Unicode scalar value.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Chr() const = 0 EE_PURE_DECL
 
-		// Gets the string interpreted to its best fit and then converted to float. 
+		/**
+		 * \brief Interprets the object as its best-fit numeric representation and converts it to a float.
+		 *
+		 * \return Returns an EE_RESULT containing the converted floating-point value.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Float() const = 0 EE_PURE_DECL
 
-		// Gets the hexadecimal form of the object as a string (0x****).
+		/**
+		 * \brief Gets the hexadecimal form of the object as a string.
+		 *
+		 * \return Returns an EE_RESULT containing a string formatted as 0x****.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Hex() const = 0 EE_PURE_DECL
 
-		// Gets the string interpreted to its best fit and then converted to int64_t. 
+		/**
+		 * \brief Interprets the object as its best-fit numeric representation and converts it to an int64_t.
+		 *
+		 * \return Returns an EE_RESULT containing the converted integer value.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Int() const = 0 EE_PURE_DECL
 
-		// Gets the number of elements in the object.  For arrays, maps, sets, lists, etc., this is the number of items.  For Unicode strings, this is the number of UTF code points.
+		/**
+		 * \brief Gets the number of elements in the object.
+		 *
+		 * \return Returns an EE_RESULT containing the element count.
+		 *
+		 * \note For arrays, maps, sets, lists, etc., this is the number of items.
+		 * \note For Unicode strings, this is the number of UTF code points.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Len() const = 0 EE_PURE_DECL
 
-		// Gets the octadecimal form of the object as a string (0o****).
+		/**
+		 * \brief Gets the octal form of the object as a string.
+		 *
+		 * \return Returns an EE_RESULT containing a string formatted as 0o****.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Oct() const = 0 EE_PURE_DECL
 
-		// Returns the ordinal value of the object as a Unicode character (always EE_NC_UNSIGNED).
+		/**
+		 * \brief Returns the ordinal (numeric) value of the object as a Unicode code point.
+		 *
+		 * \return Returns an EE_RESULT containing the ordinal value (always EE_NC_UNSIGNED).
+		 *
+		 * \note This is typically the inverse of Chr() for values that represent a valid Unicode scalar value.
+		 */
 		virtual CExpEvalContainer::EE_RESULT					Ord() const = 0 EE_PURE_DECL
 
-		// Translates from a signed index to an actual index given an array's length.
+		/**
+		 * \brief Converts a signed array index into a zero-based linear index.
+		 *
+		 * \param _i64SignedIdx The signed index to translate. Non-negative values index from the beginning; negative values index from the end.
+		 * \param _stActualLen The length of the array.
+		 * \return Returns the translated zero-based index on success; EE_INVALID_IDX on failure.
+		 *
+		 * \note Negative indices behave like Python indexing:
+		 * - -1 refers to the last element.
+		 * - -2 refers to the second-to-last element, etc.
+		 * \note If \p _i64SignedIdx is out of range for \p _stActualLen, EE_INVALID_IDX is returned.
+		 * \note This function also rejects negative values that cannot be safely represented as size_t.
+		 */
 		static size_t											ArrayIndexToLinearIndex( int64_t _i64SignedIdx, size_t _stActualLen ) {
 			if ( _i64SignedIdx < 0 ) {
 				_i64SignedIdx = -_i64SignedIdx - 1;

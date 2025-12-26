@@ -191,7 +191,14 @@ namespace ee {
 		 */
 		uint32_t									AddIdentifier( const char * _pcText );
 
-		// Returns the index of a string if it exists or static_cast<size_t>(-1) otherwise.
+		/**
+		 * \brief Returns the index of a string if it exists.
+		 *
+		 * Searches for the given string within the underlying string collection.
+		 *
+		 * \param _sText The string to search for.
+		 * \return Returns the index of the matching string if found; otherwise returns static_cast<size_t>(-1).
+		 */
 		size_t										HasString( const std::string &_sText ) const;
 	};
 

@@ -159,6 +159,7 @@
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,7 +168,9 @@
       <AdditionalDependencies>$(SolutionDir)$(Platform)\Debug\ExpressionEvaluator.lib;$(SolutionDir)$(Platform)\Debug\LSWindows.lib;$(SolutionDir)$(Platform)\Debug\LSon.lib;openal32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i</Command>
+      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i
+xcopy "$(ProjectDir)Palettes" "$(SolutionDir)$(Platform)\$(Configuration)\Palettes" /y /s /e /i
+copy /b "$(ProjectDir)Libraries\OpenAL\Win32\soft_oal.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenAL32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -183,6 +186,7 @@
       <AdditionalIncludeDirectories>.\Libraries\ExpressionEvaluator\Src;.\Libraries\LSWindows\Src;.\Libraries\LSon\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
       <PrecompiledHeader />
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -193,7 +197,9 @@
       <AdditionalDependencies>$(SolutionDir)$(Platform)\Release\ExpressionEvaluator.lib;$(SolutionDir)$(Platform)\Release\LSWindows.lib;$(SolutionDir)$(Platform)\Release\LSon.lib;openal32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i</Command>
+      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i
+xcopy "$(ProjectDir)Palettes" "$(SolutionDir)$(Platform)\$(Configuration)\Palettes" /y /s /e /i
+copy /b "$(ProjectDir)Libraries\OpenAL\Win32\soft_oal.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenAL32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">
@@ -210,6 +216,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <PrecompiledHeader>
       </PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -220,7 +227,9 @@
       <AdditionalDependencies>$(SolutionDir)$(Platform)\Release\ExpressionEvaluator.lib;$(SolutionDir)$(Platform)\Release\LSWindows.lib;$(SolutionDir)$(Platform)\Release\LSon.lib;openal32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i</Command>
+      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i
+xcopy "$(ProjectDir)Palettes" "$(SolutionDir)$(Platform)\$(Configuration)\Palettes" /y /s /e /i
+copy /b "$(ProjectDir)Libraries\OpenAL\Win32\soft_oal.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenAL32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -235,6 +244,7 @@
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -243,7 +253,9 @@
       <AdditionalDependencies>$(SolutionDir)$(Platform)\Debug\ExpressionEvaluator.lib;$(SolutionDir)$(Platform)\Debug\LSWindows.lib;$(SolutionDir)$(Platform)\Debug\LSon.lib;openal32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i</Command>
+      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i
+xcopy "$(ProjectDir)Palettes" "$(SolutionDir)$(Platform)\$(Configuration)\Palettes" /y /s /e /i
+copy /b "$(ProjectDir)Libraries\OpenAL\Win64\soft_oal.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenAL32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -259,6 +271,7 @@
       <AdditionalIncludeDirectories>.\Libraries\ExpressionEvaluator\Src;.\Libraries\LSWindows\Src;.\Libraries\LSon\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
       <PrecompiledHeader />
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -269,7 +282,9 @@
       <AdditionalDependencies>$(SolutionDir)$(Platform)\Release\ExpressionEvaluator.lib;$(SolutionDir)$(Platform)\Release\LSWindows.lib;$(SolutionDir)$(Platform)\Release\LSon.lib;openal32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i</Command>
+      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i
+xcopy "$(ProjectDir)Palettes" "$(SolutionDir)$(Platform)\$(Configuration)\Palettes" /y /s /e /i
+copy /b "$(ProjectDir)Libraries\OpenAL\Win64\soft_oal.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenAL32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
@@ -286,6 +301,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <PrecompiledHeader>
       </PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -296,7 +312,9 @@
       <AdditionalDependencies>$(SolutionDir)$(Platform)\Release\ExpressionEvaluator.lib;$(SolutionDir)$(Platform)\Release\LSWindows.lib;$(SolutionDir)$(Platform)\Release\LSon.lib;openal32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i</Command>
+      <Command>xcopy "$(ProjectDir)Resources" "$(SolutionDir)$(Platform)\$(Configuration)\Resources" /y /s /e /i
+xcopy "$(ProjectDir)Palettes" "$(SolutionDir)$(Platform)\$(Configuration)\Palettes" /y /s /e /i
+copy /b "$(ProjectDir)Libraries\OpenAL\Win64\soft_oal.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenAL32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

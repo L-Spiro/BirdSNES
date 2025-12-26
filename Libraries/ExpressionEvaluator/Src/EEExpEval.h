@@ -125,11 +125,25 @@ namespace ee {
 			StartTime();
 		}
 
-		// Min.
+		/**
+		 * \brief Returns the smaller of two values.
+		 *
+		 * \tparam _tT The value type.
+		 * \param _tA The first value to compare.
+		 * \param _tB The second value to compare.
+		 * \return Returns \c _tA if \c _tA < _tB; otherwise returns \c _tB.
+		 */
 		template <typename _tT>
 		static inline _tT				Min( const _tT &_tA, const _tT &_tB ) { return _tA < _tB ? _tA : _tB; }
 
-		// Max.
+		/**
+		 * \brief Returns the larger of two values.
+		 *
+		 * \tparam _tT The value type.
+		 * \param _tA The first value to compare.
+		 * \param _tB The second value to compare.
+		 * \return Returns \c _tA if \c _tA > _tB; otherwise returns \c _tB.
+		 */
 		template <typename _tT>
 		static inline _tT				Max( const _tT &_tA, const _tT &_tB ) { return _tA > _tB ? _tA : _tB; }
 

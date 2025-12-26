@@ -237,13 +237,6 @@ namespace ee {
 			const CPreProc::EE_MACROS &_mMacros, const std::set<std::string> &_sUsedValues,
 			std::string &_sRet );
 
-		/**
-		 * Eats a macro-expansion token from the end of a line and 
-		 *
-		 * \param PARM DESC
-		 * \param PARM DESC
-		 * \return RETURN
-		 */
 	};
 
 }	// namespace ee

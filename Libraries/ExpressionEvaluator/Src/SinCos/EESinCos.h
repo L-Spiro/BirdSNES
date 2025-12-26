@@ -8,12 +8,28 @@ extern "C" {
 
 #if defined( _MSC_VER ) && defined( _M_AMD64 )
 
-// 64-bit implementation in MASM (MSVC only).
+/**
+ * \brief Computes the sine and cosine of an angle in radians.
+ *
+ * MSVC x64 builds use a MASM implementation.
+ *
+ * \param _dRadians Angle in radians.
+ * \param _pdSin Receives sin(_dRadians). Must be non-null.
+ * \param _pdCos Receives cos(_dRadians). Must be non-null.
+ */
 extern void 		SinCos( double _dRadians, double * _pdSin, double * _pdCos );
 
 #elif defined( _MSC_VER ) && defined( _M_IX86 )
 
-// 32-bit implementation in MSVC inline assembly (MSVC only).
+/**
+ * \brief Computes the sine and cosine of an angle in radians.
+ *
+ * MSVC x86 builds use inline x87 assembly (FSINCOS).
+ *
+ * \param _dRadians Angle in radians.
+ * \param _pdSin Receives sin(_dRadians). Must be non-null.
+ * \param _pdCos Receives cos(_dRadians). Must be non-null.
+ */
 inline void 		SinCos( double _dRadians, double * _pdSin, double * _pdCos ) {
 	double dSin, dCos;
 	__asm {
@@ -27,6 +43,15 @@ inline void 		SinCos( double _dRadians, double * _pdSin, double * _pdCos ) {
 	(*_pdCos) = dCos;
 }
 
+/**
+ * \brief Computes the sine and cosine of an angle in radians (single-precision).
+ *
+ * MSVC x86 builds use inline x87 assembly (FSINCOS).
+ *
+ * \param _fAngle Angle in radians.
+ * \param _pfSin Receives sin(_fAngle). Must be non-null.
+ * \param _pfCos Receives cos(_fAngle). Must be non-null.
+ */
 inline void 		SinCosF( float _fAngle, float * _pfSin, float * _pfCos ) {
 	float fSinT, fCosT;
 	__asm {
@@ -42,7 +67,16 @@ inline void 		SinCosF( float _fAngle, float * _pfSin, float * _pfCos ) {
 
 #else
 
-// Clang/GCC (including Xcode): use libm.
+/**
+ * \brief Computes the sine and cosine of an angle in radians.
+ *
+ * On Clang/GCC (including Xcode), attempts to call the platform/libm combined
+ * implementation when available; otherwise falls back to std::sin/std::cos.
+ *
+ * \param _dRadians Angle in radians.
+ * \param _pdSin Receives sin(_dRadians). Must be non-null.
+ * \param _pdCos Receives cos(_dRadians). Must be non-null.
+ */
 inline void 		SinCos( double _dRadians, double * _pdSin, double * _pdCos ) {
 #if defined( __APPLE__ ) || defined( __GNUC__ ) || defined( __clang__ )
 	::__sincos( _dRadians, _pdSin, _pdCos );
@@ -52,6 +86,16 @@ inline void 		SinCos( double _dRadians, double * _pdSin, double * _pdCos ) {
 #endif
 }
 
+/**
+ * \brief Computes the sine and cosine of an angle in radians (single-precision).
+ *
+ * On Clang/GCC (including Xcode), attempts to call the platform/libm combined
+ * implementation when available; otherwise falls back to std::sinf/std::cosf.
+ *
+ * \param _fAngle Angle in radians.
+ * \param _pfSin Receives sin(_fAngle). Must be non-null.
+ * \param _pfCos Receives cos(_fAngle). Must be non-null.
+ */
 inline void 		SinCosF( float _fAngle, float * _pfSin, float * _pfCos ) {
 #if defined( __APPLE__ ) || defined( __GNUC__ ) || defined( __clang__ )
 	::__sincosf( _fAngle, _pfSin, _pfCos );
