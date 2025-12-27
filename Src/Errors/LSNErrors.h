@@ -28,7 +28,7 @@ namespace lsn {
 	// == Types.
 	/** Error codes. */
 	enum LSN_ERRORS : uint16_t {
-#define LSN_E_ENUM( ENUM, TXT )			ENUM,
+#define LSN_E_ENUM( ENUM, TXT )										ENUM,
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 	};
@@ -149,6 +149,7 @@ namespace lsn {
 	 **/
 	inline LSN_ERRORS Errors::ErrNo_T_To_Native( errno_t _eCode ) {
 		switch ( _eCode ) {
+			case 0 : { return LSN_E_SUCCESS; }
 			case EINVAL : { return LSN_E_INVALID_PARAMETER; }
 			case EACCES : { return LSN_E_INVALID_PERMISSIONS; }
 			case ENOENT : { return LSN_E_FILE_NOT_FOUND; }
@@ -157,6 +158,75 @@ namespace lsn {
 			case EEXIST : { return LSN_E_FILES_EXISTS; }
 			case EOVERFLOW : { return LSN_E_FILE_ATTRIBUTE_TOO_LARGE; }
 			case EPERM : { return LSN_E_OPERATION_NOT_PERMITTED; }
+				
+#ifdef EBADF
+			case EBADF : { return LSN_E_INVALID_HANDLE; }
+#endif
+
+#ifdef ENFILE
+			case ENFILE : { return LSN_E_TOO_MANY_FILES; }
+#endif
+
+#ifdef ENOSPC
+			case ENOSPC : { return LSN_E_DISK_FULL; }
+#endif
+
+#ifdef EFBIG
+			case EFBIG : { return LSN_E_FILE_TOO_LARGE; }
+#endif
+
+#ifdef ENAMETOOLONG
+			case ENAMETOOLONG : { return LSN_E_INVALID_NAME; }
+#endif
+
+#ifdef ENOTDIR
+			case ENOTDIR : { return LSN_E_INVALID_NAME; }
+#endif
+
+#ifdef EISDIR
+			case EISDIR : { return LSN_E_INVALID_NAME; }
+#endif
+
+#ifdef ELOOP
+			case ELOOP : { return LSN_E_INVALID_NAME; }
+#endif
+
+#ifdef EROFS
+			case EROFS : { return LSN_E_INVALID_PERMISSIONS; }
+#endif
+
+#ifdef EBUSY
+			case EBUSY : { return LSN_E_LOCK_VIOLATION; }
+#endif
+
+#ifdef ETXTBSY
+			case ETXTBSY : { return LSN_E_LOCK_VIOLATION; }
+#endif
+
+#ifdef ENODEV
+			case ENODEV : { return LSN_E_NO_SUCH_DEVICE; }
+#endif
+
+#ifdef ENXIO
+			case ENXIO : { return LSN_E_NO_SUCH_DEVICE; }
+#endif
+
+#ifdef EAGAIN
+			case EAGAIN : { return LSN_E_TIMEOUT; }
+#endif
+
+#ifdef EINTR
+			case EINTR : { return LSN_E_TIMEOUT; }
+#endif
+
+#ifdef EIO
+			case EIO : { return LSN_E_READ_FAILED; }
+#endif
+
+#ifdef EPIPE
+			case EPIPE : { return LSN_E_WRITE_FAILED; }
+#endif
+				
 			default : { return LSN_E_OTHER; }
 		}
 	}

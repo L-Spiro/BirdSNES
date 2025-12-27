@@ -11,12 +11,9 @@
 
 #include "LSNFileBase.h"
 
-#include <string>
-#include <vector>
+#include <filesystem>
+#include <limits>
 
-#ifdef LSN_USE_WINDOWS
-#include <Helpers/LSWHelpers.h>
-#endif	// #ifdef LSN_USE_WINDOWS
 
 namespace lsn {
 
@@ -37,6 +34,8 @@ namespace lsn {
 		typedef HANDLE										Handle;
 #define FileMap_Null										INVALID_HANDLE_VALUE
 #else
+		typedef int											Handle;
+#define FileMap_Null										(-1)
 #endif	// #ifdef _WIN32
 
 
@@ -72,17 +71,14 @@ namespace lsn {
 
 	protected :
 		// == Members.
-#ifdef _WIN32
-		Handle												m_hFile = FileMap_Null;						/**< The file handle. */
-		Handle												m_hMap = FileMap_Null;						/**< The file-mapping handle. */
-		mutable PBYTE										m_pbMapBuffer = nullptr;					/**< Mapped bytes. */
-		bool												m_bIsEmpty = true;							/**< Is the file 0-sized? */
-		bool												m_bWritable = false;						/**< Read-only or read-write? */
-		mutable uint64_t									m_ui64Size = 0;								/**< Size of the file. */
-		mutable uint64_t									m_ui64MapStart = MAXUINT64;					/**< Map start. */
-		mutable DWORD										m_dwMapSize = 0;							/**< Mapped size. */
-#else
-#endif	// #ifdef _WIN32
+		mutable uint64_t									m_ui64Size = 0;												/**< Size of the file. */
+		mutable uint64_t									m_ui64MapStart = std::numeric_limits<uint64_t>::max();		/**< Map start. */
+		mutable uint8_t *									m_pbMapBuffer = nullptr;									/**< Mapped bytes. */
+		Handle												m_hFile = FileMap_Null;										/**< The file handle. */
+		Handle												m_hMap = FileMap_Null;										/**< The file-mapping handle. */
+		mutable uint32_t									m_ui32MapSize = 0;											/**< Mapped size. */
+		bool												m_bIsEmpty = true;											/**< Is the file 0-sized? */
+		bool												m_bWritable = false;										/**< Read-only or read-write? */
 
 
 		// == Functions.

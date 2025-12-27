@@ -32,18 +32,6 @@
 		126C277D2EFCBA590036A687 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 126C27392EFCBA590036A687 /* Assets.xcassets */; };
 		12CFC7AA2EFCBF9B00792565 /* ExpressionEvaluator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC6F62EFCBF4100792565 /* ExpressionEvaluator.framework */; };
 		12CFC7E22EFF913300792565 /* LSon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC7C42EFF90B100792565 /* LSon.framework */; };
-		12CFC8472EFF991100792565 /* ChangeLog.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC7FE2EFF991100792565 /* ChangeLog.md */; };
-		12CFC8482EFF991100792565 /* ChangeLog.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC7FE2EFF991100792565 /* ChangeLog.md */; };
-		12CFC8492EFF991100792565 /* ChangeLog.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC7FE2EFF991100792565 /* ChangeLog.md */; };
-		12CFC84A2EFF991100792565 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC7FF2EFF991100792565 /* LICENSE */; };
-		12CFC84B2EFF991100792565 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC7FF2EFF991100792565 /* LICENSE */; };
-		12CFC84C2EFF991100792565 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC7FF2EFF991100792565 /* LICENSE */; };
-		12CFC84D2EFF991100792565 /* miniz.c in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8002EFF991100792565 /* miniz.c */; };
-		12CFC84E2EFF991100792565 /* miniz.c in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8002EFF991100792565 /* miniz.c */; };
-		12CFC84F2EFF991100792565 /* miniz.c in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8002EFF991100792565 /* miniz.c */; };
-		12CFC8502EFF991100792565 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8022EFF991100792565 /* readme.md */; };
-		12CFC8512EFF991100792565 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8022EFF991100792565 /* readme.md */; };
-		12CFC8522EFF991100792565 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8022EFF991100792565 /* readme.md */; };
 		12CFC8532EFF991100792565 /* LSNFeatureSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8062EFF991100792565 /* LSNFeatureSet.cpp */; };
 		12CFC8542EFF991100792565 /* LSNFeatureSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8062EFF991100792565 /* LSNFeatureSet.cpp */; };
 		12CFC8552EFF991100792565 /* LSNFeatureSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8062EFF991100792565 /* LSNFeatureSet.cpp */; };
@@ -53,9 +41,6 @@
 		12CFC8592EFF991100792565 /* LSNFileMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC80C2EFF991100792565 /* LSNFileMap.cpp */; };
 		12CFC85A2EFF991100792565 /* LSNFileMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC80C2EFF991100792565 /* LSNFileMap.cpp */; };
 		12CFC85B2EFF991100792565 /* LSNFileMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC80C2EFF991100792565 /* LSNFileMap.cpp */; };
-		12CFC85C2EFF991100792565 /* LSNGzFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC80E2EFF991100792565 /* LSNGzFile.cpp */; };
-		12CFC85D2EFF991100792565 /* LSNGzFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC80E2EFF991100792565 /* LSNGzFile.cpp */; };
-		12CFC85E2EFF991100792565 /* LSNGzFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC80E2EFF991100792565 /* LSNGzFile.cpp */; };
 		12CFC85F2EFF991100792565 /* LSNStdFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8102EFF991100792565 /* LSNStdFile.cpp */; };
 		12CFC8602EFF991100792565 /* LSNStdFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8102EFF991100792565 /* LSNStdFile.cpp */; };
 		12CFC8612EFF991100792565 /* LSNStdFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8102EFF991100792565 /* LSNStdFile.cpp */; };
@@ -68,78 +53,6 @@
 		12CFC8682EFF991100792565 /* LSNUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8182EFF991100792565 /* LSNUtilities.cpp */; };
 		12CFC8692EFF991100792565 /* LSNUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8182EFF991100792565 /* LSNUtilities.cpp */; };
 		12CFC86A2EFF991100792565 /* LSNUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8182EFF991100792565 /* LSNUtilities.cpp */; };
-		12CFC86B2EFF991100792565 /* 14-4685-6265.mvt in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC81B2EFF991100792565 /* 14-4685-6265.mvt */; };
-		12CFC86C2EFF991100792565 /* 14-4685-6265.mvt in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC81B2EFF991100792565 /* 14-4685-6265.mvt */; };
-		12CFC86D2EFF991100792565 /* 14-4685-6265.mvt in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC81B2EFF991100792565 /* 14-4685-6265.mvt */; };
-		12CFC86E2EFF991100792565 /* run.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC81C2EFF991100792565 /* run.cpp */; };
-		12CFC86F2EFF991100792565 /* run.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC81C2EFF991100792565 /* run.cpp */; };
-		12CFC8702EFF991100792565 /* run.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC81C2EFF991100792565 /* run.cpp */; };
-		12CFC8712EFF991100792565 /* mason.cmake in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC81E2EFF991100792565 /* mason.cmake */; };
-		12CFC8722EFF991100792565 /* mason.cmake in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC81E2EFF991100792565 /* mason.cmake */; };
-		12CFC8732EFF991100792565 /* mason.cmake in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC81E2EFF991100792565 /* mason.cmake */; };
-		12CFC8742EFF991100792565 /* clang-tidy.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8272EFF991100792565 /* clang-tidy.sh */; };
-		12CFC8752EFF991100792565 /* clang-tidy.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8272EFF991100792565 /* clang-tidy.sh */; };
-		12CFC8762EFF991100792565 /* clang-tidy.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8272EFF991100792565 /* clang-tidy.sh */; };
-		12CFC8772EFF991100792565 /* coverage.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8282EFF991100792565 /* coverage.sh */; };
-		12CFC8782EFF991100792565 /* coverage.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8282EFF991100792565 /* coverage.sh */; };
-		12CFC8792EFF991100792565 /* coverage.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8282EFF991100792565 /* coverage.sh */; };
-		12CFC87A2EFF991100792565 /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8292EFF991100792565 /* format.sh */; };
-		12CFC87B2EFF991100792565 /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8292EFF991100792565 /* format.sh */; };
-		12CFC87C2EFF991100792565 /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8292EFF991100792565 /* format.sh */; };
-		12CFC87D2EFF991100792565 /* setup.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC82A2EFF991100792565 /* setup.sh */; };
-		12CFC87E2EFF991100792565 /* setup.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC82A2EFF991100792565 /* setup.sh */; };
-		12CFC87F2EFF991100792565 /* setup.sh in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC82A2EFF991100792565 /* setup.sh */; };
-		12CFC8802EFF991100792565 /* highly_compressed.gz in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC82C2EFF991100792565 /* highly_compressed.gz */; };
-		12CFC8812EFF991100792565 /* highly_compressed.gz in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC82C2EFF991100792565 /* highly_compressed.gz */; };
-		12CFC8822EFF991100792565 /* highly_compressed.gz in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC82C2EFF991100792565 /* highly_compressed.gz */; };
-		12CFC8832EFF991100792565 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC82E2EFF991100792565 /* main.cpp */; };
-		12CFC8842EFF991100792565 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC82E2EFF991100792565 /* main.cpp */; };
-		12CFC8852EFF991100792565 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC82E2EFF991100792565 /* main.cpp */; };
-		12CFC8862EFF991100792565 /* test_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC82F2EFF991100792565 /* test_io.cpp */; };
-		12CFC8872EFF991100792565 /* test_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC82F2EFF991100792565 /* test_io.cpp */; };
-		12CFC8882EFF991100792565 /* test_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC82F2EFF991100792565 /* test_io.cpp */; };
-		12CFC8892EFF991100792565 /* test_version.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8302EFF991100792565 /* test_version.cpp */; };
-		12CFC88A2EFF991100792565 /* test_version.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8302EFF991100792565 /* test_version.cpp */; };
-		12CFC88B2EFF991100792565 /* test_version.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8302EFF991100792565 /* test_version.cpp */; };
-		12CFC88C2EFF991100792565 /* .clang-format in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8322EFF991100792565 /* .clang-format */; };
-		12CFC88D2EFF991100792565 /* .clang-format in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8322EFF991100792565 /* .clang-format */; };
-		12CFC88E2EFF991100792565 /* .clang-format in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8322EFF991100792565 /* .clang-format */; };
-		12CFC88F2EFF991100792565 /* .clang-tidy in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8332EFF991100792565 /* .clang-tidy */; };
-		12CFC8902EFF991100792565 /* .clang-tidy in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8332EFF991100792565 /* .clang-tidy */; };
-		12CFC8912EFF991100792565 /* .clang-tidy in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8332EFF991100792565 /* .clang-tidy */; };
-		12CFC8922EFF991100792565 /* .dockerignore in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8342EFF991100792565 /* .dockerignore */; };
-		12CFC8932EFF991100792565 /* .dockerignore in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8342EFF991100792565 /* .dockerignore */; };
-		12CFC8942EFF991100792565 /* .dockerignore in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8342EFF991100792565 /* .dockerignore */; };
-		12CFC8952EFF991100792565 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8352EFF991100792565 /* .gitignore */; };
-		12CFC8962EFF991100792565 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8352EFF991100792565 /* .gitignore */; };
-		12CFC8972EFF991100792565 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8352EFF991100792565 /* .gitignore */; };
-		12CFC8982EFF991100792565 /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8362EFF991100792565 /* .travis.yml */; };
-		12CFC8992EFF991100792565 /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8362EFF991100792565 /* .travis.yml */; };
-		12CFC89A2EFF991100792565 /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8362EFF991100792565 /* .travis.yml */; };
-		12CFC89B2EFF991100792565 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8372EFF991100792565 /* CHANGELOG.md */; };
-		12CFC89C2EFF991100792565 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8372EFF991100792565 /* CHANGELOG.md */; };
-		12CFC89D2EFF991100792565 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8372EFF991100792565 /* CHANGELOG.md */; };
-		12CFC89E2EFF991100792565 /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8382EFF991100792565 /* CMakeLists.txt */; };
-		12CFC89F2EFF991100792565 /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8382EFF991100792565 /* CMakeLists.txt */; };
-		12CFC8A02EFF991100792565 /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8382EFF991100792565 /* CMakeLists.txt */; };
-		12CFC8A12EFF991100792565 /* codecov.yml in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8392EFF991100792565 /* codecov.yml */; };
-		12CFC8A22EFF991100792565 /* codecov.yml in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8392EFF991100792565 /* codecov.yml */; };
-		12CFC8A32EFF991100792565 /* codecov.yml in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8392EFF991100792565 /* codecov.yml */; };
-		12CFC8A42EFF991100792565 /* CONTRIBUTING.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83A2EFF991100792565 /* CONTRIBUTING.md */; };
-		12CFC8A52EFF991100792565 /* CONTRIBUTING.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83A2EFF991100792565 /* CONTRIBUTING.md */; };
-		12CFC8A62EFF991100792565 /* CONTRIBUTING.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83A2EFF991100792565 /* CONTRIBUTING.md */; };
-		12CFC8A72EFF991100792565 /* Dockerfile in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83B2EFF991100792565 /* Dockerfile */; };
-		12CFC8A82EFF991100792565 /* Dockerfile in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83B2EFF991100792565 /* Dockerfile */; };
-		12CFC8A92EFF991100792565 /* Dockerfile in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83B2EFF991100792565 /* Dockerfile */; };
-		12CFC8AA2EFF991100792565 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83C2EFF991100792565 /* LICENSE.md */; };
-		12CFC8AB2EFF991100792565 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83C2EFF991100792565 /* LICENSE.md */; };
-		12CFC8AC2EFF991100792565 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83C2EFF991100792565 /* LICENSE.md */; };
-		12CFC8AD2EFF991100792565 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC83D2EFF991100792565 /* Makefile */; };
-		12CFC8AE2EFF991100792565 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC83D2EFF991100792565 /* Makefile */; };
-		12CFC8AF2EFF991100792565 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC83D2EFF991100792565 /* Makefile */; };
-		12CFC8B02EFF991100792565 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83E2EFF991100792565 /* README.md */; };
-		12CFC8B12EFF991100792565 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83E2EFF991100792565 /* README.md */; };
-		12CFC8B22EFF991100792565 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC83E2EFF991100792565 /* README.md */; };
 		12CFC8B32EFF991100792565 /* ChangeLog.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8402EFF991100792565 /* ChangeLog.md */; };
 		12CFC8B42EFF991100792565 /* ChangeLog.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8402EFF991100792565 /* ChangeLog.md */; };
 		12CFC8B52EFF991100792565 /* ChangeLog.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8402EFF991100792565 /* ChangeLog.md */; };
@@ -152,6 +65,9 @@
 		12CFC8BC2EFF991100792565 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8442EFF991100792565 /* readme.md */; };
 		12CFC8BD2EFF991100792565 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8442EFF991100792565 /* readme.md */; };
 		12CFC8BE2EFF991100792565 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8442EFF991100792565 /* readme.md */; };
+		12CFC8C22F001F5000792565 /* LSNErrorEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */; };
+		12CFC8C32F001F5000792565 /* LSNErrorEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */; };
+		12CFC8C42F001F5000792565 /* LSNErrorEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -217,11 +133,6 @@
 		126C27742EFCBA590036A687 /* BirdSNES_macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BirdSNES_macOS.entitlements; sourceTree = "<group>"; };
 		12CFC6F12EFCBF4100792565 /* ExpressionEvaluator.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ExpressionEvaluator.xcodeproj; path = Libraries/ExpressionEvaluator/ExpressionEvaluator.xcodeproj; sourceTree = "<group>"; };
 		12CFC7BF2EFF90B100792565 /* LSon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LSon.xcodeproj; path = Libraries/LSon/LSon.xcodeproj; sourceTree = "<group>"; };
-		12CFC7FE2EFF991100792565 /* ChangeLog.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = ChangeLog.md; sourceTree = "<group>"; };
-		12CFC7FF2EFF991100792565 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		12CFC8002EFF991100792565 /* miniz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = miniz.c; sourceTree = "<group>"; };
-		12CFC8012EFF991100792565 /* miniz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniz.h; sourceTree = "<group>"; };
-		12CFC8022EFF991100792565 /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
 		12CFC8042EFF991100792565 /* LSNAlignmentAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNAlignmentAllocator.h; sourceTree = "<group>"; };
 		12CFC8052EFF991100792565 /* LSNBits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNBits.h; sourceTree = "<group>"; };
 		12CFC8062EFF991100792565 /* LSNFeatureSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LSNFeatureSet.cpp; sourceTree = "<group>"; };
@@ -231,8 +142,6 @@
 		12CFC80B2EFF991100792565 /* LSNFileBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNFileBase.h; sourceTree = "<group>"; };
 		12CFC80C2EFF991100792565 /* LSNFileMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LSNFileMap.cpp; sourceTree = "<group>"; };
 		12CFC80D2EFF991100792565 /* LSNFileMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNFileMap.h; sourceTree = "<group>"; };
-		12CFC80E2EFF991100792565 /* LSNGzFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LSNGzFile.cpp; sourceTree = "<group>"; };
-		12CFC80F2EFF991100792565 /* LSNGzFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNGzFile.h; sourceTree = "<group>"; };
 		12CFC8102EFF991100792565 /* LSNStdFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LSNStdFile.cpp; sourceTree = "<group>"; };
 		12CFC8112EFF991100792565 /* LSNStdFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNStdFile.h; sourceTree = "<group>"; };
 		12CFC8122EFF991100792565 /* LSNZipFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LSNZipFile.cpp; sourceTree = "<group>"; };
@@ -242,40 +151,13 @@
 		12CFC8172EFF991100792565 /* LSNTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNTimer.h; sourceTree = "<group>"; };
 		12CFC8182EFF991100792565 /* LSNUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LSNUtilities.cpp; sourceTree = "<group>"; };
 		12CFC8192EFF991100792565 /* LSNUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNUtilities.h; sourceTree = "<group>"; };
-		12CFC81B2EFF991100792565 /* 14-4685-6265.mvt */ = {isa = PBXFileReference; lastKnownFileType = file; path = "14-4685-6265.mvt"; sourceTree = "<group>"; };
-		12CFC81C2EFF991100792565 /* run.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = run.cpp; sourceTree = "<group>"; };
-		12CFC81E2EFF991100792565 /* mason.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mason.cmake; sourceTree = "<group>"; };
-		12CFC8202EFF991100792565 /* compress.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = compress.hpp; sourceTree = "<group>"; };
-		12CFC8212EFF991100792565 /* config.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = config.hpp; sourceTree = "<group>"; };
-		12CFC8222EFF991100792565 /* decompress.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = decompress.hpp; sourceTree = "<group>"; };
-		12CFC8232EFF991100792565 /* utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = utils.hpp; sourceTree = "<group>"; };
-		12CFC8242EFF991100792565 /* version.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version.hpp; sourceTree = "<group>"; };
-		12CFC8272EFF991100792565 /* clang-tidy.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "clang-tidy.sh"; sourceTree = "<group>"; };
-		12CFC8282EFF991100792565 /* coverage.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = coverage.sh; sourceTree = "<group>"; };
-		12CFC8292EFF991100792565 /* format.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = format.sh; sourceTree = "<group>"; };
-		12CFC82A2EFF991100792565 /* setup.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = setup.sh; sourceTree = "<group>"; };
-		12CFC82C2EFF991100792565 /* highly_compressed.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; path = highly_compressed.gz; sourceTree = "<group>"; };
-		12CFC82E2EFF991100792565 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		12CFC82F2EFF991100792565 /* test_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_io.cpp; sourceTree = "<group>"; };
-		12CFC8302EFF991100792565 /* test_version.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_version.cpp; sourceTree = "<group>"; };
-		12CFC8322EFF991100792565 /* .clang-format */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
-		12CFC8332EFF991100792565 /* .clang-tidy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".clang-tidy"; sourceTree = "<group>"; };
-		12CFC8342EFF991100792565 /* .dockerignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .dockerignore; sourceTree = "<group>"; };
-		12CFC8352EFF991100792565 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		12CFC8362EFF991100792565 /* .travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .travis.yml; sourceTree = "<group>"; };
-		12CFC8372EFF991100792565 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
-		12CFC8382EFF991100792565 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		12CFC8392EFF991100792565 /* codecov.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = codecov.yml; sourceTree = "<group>"; };
-		12CFC83A2EFF991100792565 /* CONTRIBUTING.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CONTRIBUTING.md; sourceTree = "<group>"; };
-		12CFC83B2EFF991100792565 /* Dockerfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Dockerfile; sourceTree = "<group>"; };
-		12CFC83C2EFF991100792565 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
-		12CFC83D2EFF991100792565 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		12CFC83E2EFF991100792565 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		12CFC8402EFF991100792565 /* ChangeLog.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = ChangeLog.md; sourceTree = "<group>"; };
 		12CFC8412EFF991100792565 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		12CFC8422EFF991100792565 /* miniz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = miniz.c; sourceTree = "<group>"; };
 		12CFC8432EFF991100792565 /* miniz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniz.h; sourceTree = "<group>"; };
 		12CFC8442EFF991100792565 /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
+		12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNErrorEnum.inl; sourceTree = "<group>"; };
+		12CFC8C02F001F5000792565 /* LSNErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNErrors.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -323,9 +205,9 @@
 			isa = PBXGroup;
 			children = (
 				12CFC8462EFF991100792565 /* Compression */,
+				12CFC8C12F001F5000792565 /* Errors */,
 				12CFC8142EFF991100792565 /* Files */,
 				12CFC8092EFF991100792565 /* Foundation */,
-				12CFC8032EFF991100792565 /* MiniZ */,
 				12CFC81A2EFF991100792565 /* Utilities */,
 				126C27352EFCBA580036A687 /* Renderer.h */,
 				126C27362EFCBA580036A687 /* Renderer.m */,
@@ -411,19 +293,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		12CFC8032EFF991100792565 /* MiniZ */ = {
-			isa = PBXGroup;
-			children = (
-				12CFC7FE2EFF991100792565 /* ChangeLog.md */,
-				12CFC7FF2EFF991100792565 /* LICENSE */,
-				12CFC8002EFF991100792565 /* miniz.c */,
-				12CFC8012EFF991100792565 /* miniz.h */,
-				12CFC8022EFF991100792565 /* readme.md */,
-			);
-			name = MiniZ;
-			path = Src/MiniZ;
-			sourceTree = SOURCE_ROOT;
-		};
 		12CFC8092EFF991100792565 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -444,8 +313,6 @@
 				12CFC80B2EFF991100792565 /* LSNFileBase.h */,
 				12CFC80C2EFF991100792565 /* LSNFileMap.cpp */,
 				12CFC80D2EFF991100792565 /* LSNFileMap.h */,
-				12CFC80E2EFF991100792565 /* LSNGzFile.cpp */,
-				12CFC80F2EFF991100792565 /* LSNGzFile.h */,
 				12CFC8102EFF991100792565 /* LSNStdFile.cpp */,
 				12CFC8112EFF991100792565 /* LSNStdFile.h */,
 				12CFC8122EFF991100792565 /* LSNZipFile.cpp */,
@@ -468,98 +335,6 @@
 			path = Src/Utilities;
 			sourceTree = SOURCE_ROOT;
 		};
-		12CFC81D2EFF991100792565 /* bench */ = {
-			isa = PBXGroup;
-			children = (
-				12CFC81B2EFF991100792565 /* 14-4685-6265.mvt */,
-				12CFC81C2EFF991100792565 /* run.cpp */,
-			);
-			path = bench;
-			sourceTree = "<group>";
-		};
-		12CFC81F2EFF991100792565 /* cmake */ = {
-			isa = PBXGroup;
-			children = (
-				12CFC81E2EFF991100792565 /* mason.cmake */,
-			);
-			path = cmake;
-			sourceTree = "<group>";
-		};
-		12CFC8252EFF991100792565 /* gzip */ = {
-			isa = PBXGroup;
-			children = (
-				12CFC8202EFF991100792565 /* compress.hpp */,
-				12CFC8212EFF991100792565 /* config.hpp */,
-				12CFC8222EFF991100792565 /* decompress.hpp */,
-				12CFC8232EFF991100792565 /* utils.hpp */,
-				12CFC8242EFF991100792565 /* version.hpp */,
-			);
-			path = gzip;
-			sourceTree = "<group>";
-		};
-		12CFC8262EFF991100792565 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				12CFC8252EFF991100792565 /* gzip */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		12CFC82B2EFF991100792565 /* scripts */ = {
-			isa = PBXGroup;
-			children = (
-				12CFC8272EFF991100792565 /* clang-tidy.sh */,
-				12CFC8282EFF991100792565 /* coverage.sh */,
-				12CFC8292EFF991100792565 /* format.sh */,
-				12CFC82A2EFF991100792565 /* setup.sh */,
-			);
-			path = scripts;
-			sourceTree = "<group>";
-		};
-		12CFC82D2EFF991100792565 /* data */ = {
-			isa = PBXGroup;
-			children = (
-				12CFC82C2EFF991100792565 /* highly_compressed.gz */,
-			);
-			path = data;
-			sourceTree = "<group>";
-		};
-		12CFC8312EFF991100792565 /* test */ = {
-			isa = PBXGroup;
-			children = (
-				12CFC82D2EFF991100792565 /* data */,
-				12CFC82E2EFF991100792565 /* main.cpp */,
-				12CFC82F2EFF991100792565 /* test_io.cpp */,
-				12CFC8302EFF991100792565 /* test_version.cpp */,
-			);
-			path = test;
-			sourceTree = "<group>";
-		};
-		12CFC83F2EFF991100792565 /* gzip */ = {
-			isa = PBXGroup;
-			children = (
-				12CFC81D2EFF991100792565 /* bench */,
-				12CFC81F2EFF991100792565 /* cmake */,
-				12CFC8262EFF991100792565 /* include */,
-				12CFC82B2EFF991100792565 /* scripts */,
-				12CFC8312EFF991100792565 /* test */,
-				12CFC8322EFF991100792565 /* .clang-format */,
-				12CFC8332EFF991100792565 /* .clang-tidy */,
-				12CFC8342EFF991100792565 /* .dockerignore */,
-				12CFC8352EFF991100792565 /* .gitignore */,
-				12CFC8362EFF991100792565 /* .travis.yml */,
-				12CFC8372EFF991100792565 /* CHANGELOG.md */,
-				12CFC8382EFF991100792565 /* CMakeLists.txt */,
-				12CFC8392EFF991100792565 /* codecov.yml */,
-				12CFC83A2EFF991100792565 /* CONTRIBUTING.md */,
-				12CFC83B2EFF991100792565 /* Dockerfile */,
-				12CFC83C2EFF991100792565 /* LICENSE.md */,
-				12CFC83D2EFF991100792565 /* Makefile */,
-				12CFC83E2EFF991100792565 /* README.md */,
-			);
-			path = gzip;
-			sourceTree = "<group>";
-		};
 		12CFC8452EFF991100792565 /* MiniZ */ = {
 			isa = PBXGroup;
 			children = (
@@ -575,11 +350,20 @@
 		12CFC8462EFF991100792565 /* Compression */ = {
 			isa = PBXGroup;
 			children = (
-				12CFC83F2EFF991100792565 /* gzip */,
 				12CFC8452EFF991100792565 /* MiniZ */,
 			);
 			name = Compression;
 			path = Src/Compression;
+			sourceTree = SOURCE_ROOT;
+		};
+		12CFC8C12F001F5000792565 /* Errors */ = {
+			isa = PBXGroup;
+			children = (
+				12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */,
+				12CFC8C02F001F5000792565 /* LSNErrors.h */,
+			);
+			name = Errors;
+			path = Src/Errors;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
@@ -710,34 +494,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12CFC8802EFF991100792565 /* highly_compressed.gz in Resources */,
-				12CFC87A2EFF991100792565 /* format.sh in Resources */,
-				12CFC89B2EFF991100792565 /* CHANGELOG.md in Resources */,
-				12CFC8712EFF991100792565 /* mason.cmake in Resources */,
-				12CFC8AA2EFF991100792565 /* LICENSE.md in Resources */,
-				12CFC89E2EFF991100792565 /* CMakeLists.txt in Resources */,
-				12CFC8A12EFF991100792565 /* codecov.yml in Resources */,
 				126C27492EFCBA590036A687 /* Base in Resources */,
-				12CFC8952EFF991100792565 /* .gitignore in Resources */,
-				12CFC86B2EFF991100792565 /* 14-4685-6265.mvt in Resources */,
-				12CFC88F2EFF991100792565 /* .clang-tidy in Resources */,
 				126C277B2EFCBA590036A687 /* Assets.xcassets in Resources */,
-				12CFC8B02EFF991100792565 /* README.md in Resources */,
-				12CFC8922EFF991100792565 /* .dockerignore in Resources */,
 				126C274C2EFCBA590036A687 /* Base in Resources */,
 				12CFC8B62EFF991100792565 /* LICENSE in Resources */,
 				12CFC8B32EFF991100792565 /* ChangeLog.md in Resources */,
-				12CFC87D2EFF991100792565 /* setup.sh in Resources */,
+				12CFC8C22F001F5000792565 /* LSNErrorEnum.inl in Resources */,
 				12CFC8BC2EFF991100792565 /* readme.md in Resources */,
-				12CFC8A72EFF991100792565 /* Dockerfile in Resources */,
-				12CFC8742EFF991100792565 /* clang-tidy.sh in Resources */,
-				12CFC8982EFF991100792565 /* .travis.yml in Resources */,
-				12CFC8A42EFF991100792565 /* CONTRIBUTING.md in Resources */,
-				12CFC8472EFF991100792565 /* ChangeLog.md in Resources */,
-				12CFC8502EFF991100792565 /* readme.md in Resources */,
-				12CFC8772EFF991100792565 /* coverage.sh in Resources */,
-				12CFC88C2EFF991100792565 /* .clang-format in Resources */,
-				12CFC84A2EFF991100792565 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -745,34 +508,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12CFC8812EFF991100792565 /* highly_compressed.gz in Resources */,
-				12CFC87B2EFF991100792565 /* format.sh in Resources */,
-				12CFC89C2EFF991100792565 /* CHANGELOG.md in Resources */,
-				12CFC8722EFF991100792565 /* mason.cmake in Resources */,
-				12CFC8AB2EFF991100792565 /* LICENSE.md in Resources */,
-				12CFC89F2EFF991100792565 /* CMakeLists.txt in Resources */,
-				12CFC8A22EFF991100792565 /* codecov.yml in Resources */,
 				126C275D2EFCBA590036A687 /* Base in Resources */,
-				12CFC8962EFF991100792565 /* .gitignore in Resources */,
-				12CFC86C2EFF991100792565 /* 14-4685-6265.mvt in Resources */,
-				12CFC8902EFF991100792565 /* .clang-tidy in Resources */,
 				126C277C2EFCBA590036A687 /* Assets.xcassets in Resources */,
-				12CFC8B12EFF991100792565 /* README.md in Resources */,
-				12CFC8932EFF991100792565 /* .dockerignore in Resources */,
 				126C27602EFCBA590036A687 /* Base in Resources */,
 				12CFC8B72EFF991100792565 /* LICENSE in Resources */,
 				12CFC8B42EFF991100792565 /* ChangeLog.md in Resources */,
-				12CFC87E2EFF991100792565 /* setup.sh in Resources */,
+				12CFC8C32F001F5000792565 /* LSNErrorEnum.inl in Resources */,
 				12CFC8BD2EFF991100792565 /* readme.md in Resources */,
-				12CFC8A82EFF991100792565 /* Dockerfile in Resources */,
-				12CFC8752EFF991100792565 /* clang-tidy.sh in Resources */,
-				12CFC8992EFF991100792565 /* .travis.yml in Resources */,
-				12CFC8A52EFF991100792565 /* CONTRIBUTING.md in Resources */,
-				12CFC8482EFF991100792565 /* ChangeLog.md in Resources */,
-				12CFC8512EFF991100792565 /* readme.md in Resources */,
-				12CFC8782EFF991100792565 /* coverage.sh in Resources */,
-				12CFC88D2EFF991100792565 /* .clang-format in Resources */,
-				12CFC84B2EFF991100792565 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -780,33 +522,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12CFC8972EFF991100792565 /* .gitignore in Resources */,
 				12CFC8BE2EFF991100792565 /* readme.md in Resources */,
-				12CFC87F2EFF991100792565 /* setup.sh in Resources */,
+				12CFC8C42F001F5000792565 /* LSNErrorEnum.inl in Resources */,
 				12CFC8B82EFF991100792565 /* LICENSE in Resources */,
-				12CFC8A32EFF991100792565 /* codecov.yml in Resources */,
 				126C277D2EFCBA590036A687 /* Assets.xcassets in Resources */,
-				12CFC89A2EFF991100792565 /* .travis.yml in Resources */,
-				12CFC88E2EFF991100792565 /* .clang-format in Resources */,
-				12CFC8B22EFF991100792565 /* README.md in Resources */,
-				12CFC8792EFF991100792565 /* coverage.sh in Resources */,
 				126C27712EFCBA590036A687 /* Base in Resources */,
 				12CFC8B52EFF991100792565 /* ChangeLog.md in Resources */,
-				12CFC89D2EFF991100792565 /* CHANGELOG.md in Resources */,
-				12CFC87C2EFF991100792565 /* format.sh in Resources */,
-				12CFC8762EFF991100792565 /* clang-tidy.sh in Resources */,
-				12CFC8A62EFF991100792565 /* CONTRIBUTING.md in Resources */,
-				12CFC8A92EFF991100792565 /* Dockerfile in Resources */,
-				12CFC8AC2EFF991100792565 /* LICENSE.md in Resources */,
-				12CFC8732EFF991100792565 /* mason.cmake in Resources */,
-				12CFC8942EFF991100792565 /* .dockerignore in Resources */,
-				12CFC8A02EFF991100792565 /* CMakeLists.txt in Resources */,
-				12CFC84C2EFF991100792565 /* LICENSE in Resources */,
-				12CFC8912EFF991100792565 /* .clang-tidy in Resources */,
-				12CFC8822EFF991100792565 /* highly_compressed.gz in Resources */,
-				12CFC8522EFF991100792565 /* readme.md in Resources */,
-				12CFC86D2EFF991100792565 /* 14-4685-6265.mvt in Resources */,
-				12CFC8492EFF991100792565 /* ChangeLog.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -817,26 +538,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12CFC86E2EFF991100792565 /* run.cpp in Sources */,
-				12CFC85C2EFF991100792565 /* LSNGzFile.cpp in Sources */,
 				12CFC8652EFF991100792565 /* LSNCrc.cpp in Sources */,
 				12CFC8562EFF991100792565 /* LSNFileBase.cpp in Sources */,
-				12CFC8AD2EFF991100792565 /* Makefile in Sources */,
 				12CFC85F2EFF991100792565 /* LSNStdFile.cpp in Sources */,
 				12CFC8682EFF991100792565 /* LSNUtilities.cpp in Sources */,
 				126C27752EFCBA590036A687 /* Renderer.m in Sources */,
 				126C27462EFCBA590036A687 /* GameViewController.m in Sources */,
 				126C274E2EFCBA590036A687 /* main.m in Sources */,
-				12CFC84D2EFF991100792565 /* miniz.c in Sources */,
 				12CFC8622EFF991100792565 /* LSNZipFile.cpp in Sources */,
 				126C27432EFCBA590036A687 /* AppDelegate.m in Sources */,
-				12CFC8892EFF991100792565 /* test_version.cpp in Sources */,
 				126C27782EFCBA590036A687 /* Shaders.metal in Sources */,
 				12CFC8B92EFF991100792565 /* miniz.c in Sources */,
 				12CFC8532EFF991100792565 /* LSNFeatureSet.cpp in Sources */,
-				12CFC8832EFF991100792565 /* main.cpp in Sources */,
 				12CFC8592EFF991100792565 /* LSNFileMap.cpp in Sources */,
-				12CFC8862EFF991100792565 /* test_io.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -844,26 +558,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12CFC86F2EFF991100792565 /* run.cpp in Sources */,
-				12CFC85D2EFF991100792565 /* LSNGzFile.cpp in Sources */,
 				12CFC8662EFF991100792565 /* LSNCrc.cpp in Sources */,
 				12CFC8572EFF991100792565 /* LSNFileBase.cpp in Sources */,
-				12CFC8AE2EFF991100792565 /* Makefile in Sources */,
 				12CFC8602EFF991100792565 /* LSNStdFile.cpp in Sources */,
 				12CFC8692EFF991100792565 /* LSNUtilities.cpp in Sources */,
 				126C27762EFCBA590036A687 /* Renderer.m in Sources */,
 				126C275A2EFCBA590036A687 /* GameViewController.m in Sources */,
 				126C27622EFCBA590036A687 /* main.m in Sources */,
-				12CFC84E2EFF991100792565 /* miniz.c in Sources */,
 				12CFC8632EFF991100792565 /* LSNZipFile.cpp in Sources */,
 				126C27572EFCBA590036A687 /* AppDelegate.m in Sources */,
-				12CFC88A2EFF991100792565 /* test_version.cpp in Sources */,
 				126C27792EFCBA590036A687 /* Shaders.metal in Sources */,
 				12CFC8BA2EFF991100792565 /* miniz.c in Sources */,
 				12CFC8542EFF991100792565 /* LSNFeatureSet.cpp in Sources */,
-				12CFC8842EFF991100792565 /* main.cpp in Sources */,
 				12CFC85A2EFF991100792565 /* LSNFileMap.cpp in Sources */,
-				12CFC8872EFF991100792565 /* test_io.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -871,26 +578,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12CFC8702EFF991100792565 /* run.cpp in Sources */,
-				12CFC85E2EFF991100792565 /* LSNGzFile.cpp in Sources */,
 				12CFC8672EFF991100792565 /* LSNCrc.cpp in Sources */,
 				12CFC8582EFF991100792565 /* LSNFileBase.cpp in Sources */,
-				12CFC8AF2EFF991100792565 /* Makefile in Sources */,
 				12CFC8612EFF991100792565 /* LSNStdFile.cpp in Sources */,
 				12CFC86A2EFF991100792565 /* LSNUtilities.cpp in Sources */,
 				126C27772EFCBA590036A687 /* Renderer.m in Sources */,
 				126C276E2EFCBA590036A687 /* GameViewController.m in Sources */,
 				126C27732EFCBA590036A687 /* main.m in Sources */,
-				12CFC84F2EFF991100792565 /* miniz.c in Sources */,
 				12CFC8642EFF991100792565 /* LSNZipFile.cpp in Sources */,
 				126C276B2EFCBA590036A687 /* AppDelegate.m in Sources */,
-				12CFC88B2EFF991100792565 /* test_version.cpp in Sources */,
 				126C277A2EFCBA590036A687 /* Shaders.metal in Sources */,
 				12CFC8BB2EFF991100792565 /* miniz.c in Sources */,
 				12CFC8552EFF991100792565 /* LSNFeatureSet.cpp in Sources */,
-				12CFC8852EFF991100792565 /* main.cpp in Sources */,
 				12CFC85B2EFF991100792565 /* LSNFileMap.cpp in Sources */,
-				12CFC8882EFF991100792565 /* test_io.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
