@@ -6,13 +6,13 @@
  * Description: A class for working with GZ files.
  */
 
-#include "NN9GzFile.h"
+#include "LSNGzFile.h"
 #include "../Compression/gzip/include/gzip/compress.hpp"
 #include "../Compression/gzip/include/gzip/decompress.hpp"
-#include "../Utilities/NN9Utilities.h"
+#include "../Utilities/LSNUtilities.h"
 
 
-namespace nn9 {
+namespace lsn {
 
 	GzFile::GzFile() {
 	}
@@ -42,18 +42,18 @@ namespace nn9 {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS GzFile::ExtractToMemory( std::vector<uint8_t> &_vResult ) const {
+	LSN_ERRORS GzFile::ExtractToMemory( std::vector<uint8_t> &_vResult ) const {
 		std::vector<uint8_t> vData;
 		auto eCode = LoadToMemory( vData );
-		if ( eCode != NN9_E_SUCCESS ) { return eCode; }
+		if ( eCode != LSN_E_SUCCESS ) { return eCode; }
 		try {
 			gzip::Decompressor dDecmop( SIZE_MAX );
 			dDecmop.decompress( _vResult, reinterpret_cast<const char *>(vData.data()), vData.size() );
 		}
 		catch ( ... ) {
-			return NN9_E_DECOMPRESSION_FAILED;
+			return LSN_E_DECOMPRESSION_FAILED;
 		}
-		return NN9_E_SUCCESS;
+		return LSN_E_SUCCESS;
 	}
 
-}	// namespace nn9
+}	// namespace lsn

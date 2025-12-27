@@ -10,9 +10,9 @@
 #pragma once
 
 #include "../Compression/MiniZ/miniz.h"
-#include "NN9StdFile.h"
+#include "LSNStdFile.h"
 
-namespace nn9 {
+namespace lsn {
 
 	/**
 	 * Class ZipFile
@@ -45,7 +45,7 @@ namespace nn9 {
 		 * \param _vResult The location where to store the file names.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									GatherArchiveFiles( std::vector<std::u16string> &_vResult ) const;
+		virtual LSN_ERRORS									GatherArchiveFiles( std::vector<std::u16string> &_vResult ) const;
 
 		/**
 		 * Extracts the given file from the archive.
@@ -54,7 +54,7 @@ namespace nn9 {
 		 * \param _vResult The location where to store the file in memory.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									ExtractToMemory( const std::u16string &_s16File, std::vector<uint8_t> &_vResult ) const;
+		virtual LSN_ERRORS									ExtractToMemory( const std::u16string &_s16File, std::vector<uint8_t> &_vResult ) const;
 
 
 	protected :
@@ -70,4 +70,4 @@ namespace nn9 {
 
 	};
 
-}	// namespace nn9
+}	// namespace lsn

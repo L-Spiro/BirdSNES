@@ -7,9 +7,9 @@
  */
 
 
-#include "NN9Crc.h"
+#include "LSNCrc.h"
 
-namespace nn9 {
+namespace lsn {
 
 	// == Members.
 	/**
@@ -108,4 +108,4 @@ namespace nn9 {
 		_ui32Crc = (_ui32Crc >> 8) ^ _pui32Table[_ui8Val^(_ui32Crc&0xFF)];
 	}
 
-}	// namespace nn9
+}	// namespace lsn

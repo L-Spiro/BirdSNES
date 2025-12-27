@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include "NN9StdFile.h"
+#include "LSNStdFile.h"
 
-namespace nn9 {
+namespace lsn {
 
 	/**
 	 * Class GzFile
@@ -44,7 +44,7 @@ namespace nn9 {
 		 * \param _vResult The location where to store the file in memory.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									ExtractToMemory( std::vector<uint8_t> &_vResult ) const;
+		virtual LSN_ERRORS									ExtractToMemory( std::vector<uint8_t> &_vResult ) const;
 
 		/**
 		 * Decompresses a file to memory.
@@ -54,7 +54,7 @@ namespace nn9 {
 		 * \return Returns an error code indicating the result of the operation.
 		 **/
 		template <typename _tStrType = char8_t>
-		static NN9_ERRORS									ExtractToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult );
+		static LSN_ERRORS									ExtractToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult );
 
 
 	protected :
@@ -77,11 +77,11 @@ namespace nn9 {
 	 * \return Returns an error code indicating the result of the operation.
 	 **/
 	template <typename _tStrType>
-	NN9_ERRORS GzFile::ExtractToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult ) {
+	LSN_ERRORS GzFile::ExtractToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult ) {
 		GzFile gfFile;
 		auto eCode = gfFile.Open( _pcFile );
-		if ( eCode != NN9_E_SUCCESS ) { return eCode; }
+		if ( eCode != LSN_E_SUCCESS ) { return eCode; }
 		return gfFile.ExtractToMemory( _vResult );
 	}
 
-}	// namespace nn9
+}	// namespace lsn

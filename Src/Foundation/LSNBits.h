@@ -14,11 +14,11 @@
 #endif  // #if defined( _MSC_VER )
 
 
-namespace nn9 {
+namespace lsn {
 
 
 
-}	// namespace nn9
+}	// namespace lsn
 
 
 // ===============================

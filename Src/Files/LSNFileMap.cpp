@@ -25,7 +25,7 @@ namespace lsn {
 	 * \param _pFile Path to the file to open.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS FileMap::Open( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS FileMap::Open( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			m_hFile = ::CreateFileW( _pFile.native().c_str(),
@@ -43,7 +43,7 @@ namespace lsn {
 			}
 			m_bWritable = true;
 		}
-		catch ( ... ) { return NN9_E_OUT_OF_MEMORY; }		// _pFile.native() fails if out of memory.
+		catch ( ... ) { return LSN_E_OUT_OF_MEMORY; }		// _pFile.native() fails if out of memory.
 		return CreateFileMap();
 	}
 
@@ -53,7 +53,7 @@ namespace lsn {
 	 * \param _pFile Path to the file to create.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS FileMap::Create( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS FileMap::Create( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			m_hFile = ::CreateFileW( _pFile.native().c_str(),
@@ -71,7 +71,7 @@ namespace lsn {
 			}
 			m_bWritable = true;
 		}
-		catch ( ... ) { return NN9_E_OUT_OF_MEMORY; }		// _pFile.native() fails if out of memory.
+		catch ( ... ) { return LSN_E_OUT_OF_MEMORY; }		// _pFile.native() fails if out of memory.
 
 
 		LARGE_INTEGER largeSize;
@@ -126,13 +126,13 @@ namespace lsn {
 	 * 
 	 * \return Returns true if the file mapping was successfully created.
 	 **/
-	NN9_ERRORS FileMap::CreateFileMap() {
+	LSN_ERRORS FileMap::CreateFileMap() {
 		if ( m_hFile == INVALID_HANDLE_VALUE ) {
-			return NN9_E_INVALID_HANDLE;
+			return LSN_E_INVALID_HANDLE;
 		}
 		// Can't open 0-sized files.
 		m_bIsEmpty = Size() == 0;
-		if ( m_bIsEmpty ) { return NN9_E_FILE_TOO_SMALL; }
+		if ( m_bIsEmpty ) { return LSN_E_FILE_TOO_SMALL; }
 		m_hMap = ::CreateFileMappingW( m_hFile,
 			NULL,
 			m_bWritable ? PAGE_READWRITE : PAGE_READONLY,
@@ -147,7 +147,7 @@ namespace lsn {
 		}
 		m_ui64MapStart = MAXUINT64;
 		m_dwMapSize = 0;
-		return NN9_E_SUCCESS;
+		return LSN_E_SUCCESS;
 	}
 #else
 	/**
@@ -156,8 +156,8 @@ namespace lsn {
 	 * \param _pcFile Path to the file to open.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS FileMap::Open( const std::filesystem::path &_pFile ) {
-		return NN9_E_NOT_IMPLEMENTED;
+	LSN_ERRORS FileMap::Open( const std::filesystem::path &_pFile ) {
+		return LSN_E_NOT_IMPLEMENTED;
 	}
 
 	/**
@@ -166,8 +166,8 @@ namespace lsn {
 	 * \param _pcFile Path to the file to create.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS FileMap::Create( const std::filesystem::path &_pFile ) {
-		return NN9_E_NOT_IMPLEMENTED;
+	LSN_ERRORS FileMap::Create( const std::filesystem::path &_pFile ) {
+		return LSN_E_NOT_IMPLEMENTED;
 	}
 #endif	// #ifdef _WIN32
 

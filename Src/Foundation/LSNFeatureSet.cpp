@@ -6,13 +6,13 @@
  * Description: Detects the processor feature set.
  */
 
-#include "NN9FeatureSet.h"
+#include "LSNFeatureSet.h"
 
-namespace nn9 {
+namespace lsn {
 
 	// == Members.
-#ifdef NN9_CPUID
+#ifdef LSN_CPUID
 	const FeatureSet::InstructionSet_Internal FeatureSet::m_iiCpuRep;
-#endif	// #ifdef NN9_CPUID
+#endif	// #ifdef LSN_CPUID
 
-}	// namespace nn9
+}	// namespace lsn

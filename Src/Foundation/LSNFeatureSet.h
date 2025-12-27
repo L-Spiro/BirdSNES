@@ -23,7 +23,7 @@
 
 
 #if (!defined( __APPLE__ ) && (defined( __i386__ ) || defined( __x86_64__ ))) || defined( _MSC_VER )
-#define NN9_CPUID
+#define LSN_CPUID
 #ifdef __GNUC__
 void __cpuid( int * _piCpuInfo, int _iInfo ) {
 	__asm__ __volatile__(
@@ -55,8 +55,8 @@ void __cpuidex( int * _piCpuInfo, int _iInfo, int _iSubFunc ) {
 #endif	// #if (!defined( __APPLE__ ) && (defined( __i386__ ) || defined( __x86_64__ ))) || defined( _MSC_VER )
 
 
-namespace nn9 {
-#ifdef NN9_CPUID
+namespace lsn {
+#ifdef LSN_CPUID
 	/**
 	 * Class FeatureSet
 	 * \brief Detects the processor feature set.
@@ -413,6 +413,6 @@ namespace nn9 {
 			return bIsArm;
 		}
 	};
-#endif	// #ifdef NN9_CPUID
+#endif	// #ifdef LSN_CPUID
 
-}   // namespace nn9
+}   // namespace lsn

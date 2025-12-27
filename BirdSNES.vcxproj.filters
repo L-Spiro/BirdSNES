@@ -13,10 +13,73 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Compression">
+      <UniqueIdentifier>{744d1098-7719-4faa-a186-574dee588fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Compression">
+      <UniqueIdentifier>{d2afca4e-a0a0-4b53-8eed-f671a7f9a8a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Compression\MiniZ">
+      <UniqueIdentifier>{5a665be7-28ab-420f-a9f9-0162a2d90602}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Compression\MiniZ">
+      <UniqueIdentifier>{976cef1a-026b-4d01-9419-333b901df48b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Files">
+      <UniqueIdentifier>{565d7bd5-e252-4833-bd07-72dffd9850d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Files">
+      <UniqueIdentifier>{c550c2cc-a9df-42fc-96d6-cdd907b3402c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Errors">
+      <UniqueIdentifier>{224619df-9c8a-4dc2-adf8-9f4a1bff9e19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Errors">
+      <UniqueIdentifier>{d793337f-287a-47b5-9b4c-6d562ef27c5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OS">
+      <UniqueIdentifier>{b325faeb-6722-4caa-a35f-4f4c21577c5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utilities">
+      <UniqueIdentifier>{22bbc9a1-e8f8-417f-af20-fcaa1e21a8c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{970b8e2a-dbf7-4b0d-bd4c-ca8853cb3e1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Foundation">
+      <UniqueIdentifier>{45669b21-20a7-4d67-b1bf-d944de237b62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Foundation">
+      <UniqueIdentifier>{5fd25db6-35a9-4315-a993-cbf2af765d00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\BirdSNES.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Compression\MiniZ\miniz.c">
+      <Filter>Source Files\Compression\MiniZ</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Files\LSNFileBase.cpp">
+      <Filter>Source Files\Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Files\LSNFileMap.cpp">
+      <Filter>Source Files\Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Files\LSNStdFile.cpp">
+      <Filter>Source Files\Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Files\LSNZipFile.cpp">
+      <Filter>Source Files\Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Utilities\LSNCrc.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Utilities\LSNUtilities.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Foundation\LSNFeatureSet.cpp">
+      <Filter>Source Files\Foundation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +91,54 @@
     </ClInclude>
     <ClInclude Include="Src\targetver.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Compression\MiniZ\miniz.h">
+      <Filter>Header Files\Compression\MiniZ</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Files\LSNFileBase.h">
+      <Filter>Header Files\Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Files\LSNFileMap.h">
+      <Filter>Header Files\Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Files\LSNStdFile.h">
+      <Filter>Header Files\Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Files\LSNZipFile.h">
+      <Filter>Header Files\Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Errors\LSNErrors.h">
+      <Filter>Header Files\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\OS\LSNApple.h">
+      <Filter>Header Files\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\OS\LSNOs.h">
+      <Filter>Header Files\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\OS\LSNWindows.h">
+      <Filter>Header Files\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Utilities\LSNCrc.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Utilities\LSNTimer.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Utilities\LSNUtilities.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Foundation\LSNAlignmentAllocator.h">
+      <Filter>Header Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Foundation\LSNBits.h">
+      <Filter>Header Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Foundation\LSNFeatureSet.h">
+      <Filter>Header Files\Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Foundation\LSNMacros.h">
+      <Filter>Header Files\Foundation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -42,5 +153,10 @@
     <ResourceCompile Include="Src\BirdSNES.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Errors\LSNErrorEnum.inl">
+      <Filter>Header Files\Errors</Filter>
+    </None>
   </ItemGroup>
 </Project>

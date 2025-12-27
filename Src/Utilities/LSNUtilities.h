@@ -9,13 +9,16 @@
 
 #pragma once
 
-#include "../Errors/NN9Errors.h"
-#include "../Foundation/NN9FeatureSet.h"
-#include "../OS/NN9Os.h"
+#include "../Errors/LSNErrors.h"
+#include "../Foundation/LSNFeatureSet.h"
+#include "../OS/LSNOs.h"
 
 #include <cassert>
 #include <cmath>
+#ifdef LSN_USE_CURL
 #include <curl/curl.h>
+#endif	// #ifdef LSN_USE_CURL
+#include <fenv.h>
 #include <filesystem>
 #include <numbers>
 #include <set>
@@ -24,22 +27,22 @@
 
 
 
-#ifndef NN9_PI
-#define NN9_PI												3.141592653589793115997963468544185161590576171875	// 3.14159265358979323846264338327950288419716939937510 rounded to the nearest representable double.
-#endif	// #ifndef NN9_PI
+#ifndef LSN_PI
+#define LSN_PI												3.141592653589793115997963468544185161590576171875	// 3.14159265358979323846264338327950288419716939937510 rounded to the nearest representable double.
+#endif	// #ifndef LSN_PI
 
-#ifndef NN9_ROUND_UP
+#ifndef LSN_ROUND_UP
 /** Round up to the next nearest Xth, where X is a power of 2. */
-#define NN9_ROUND_UP( VALUE, X )							((VALUE) + (((X) - (VALUE) & ((X) - 1)) & ((X) - 1)))
-#endif	// #ifndef NN9_ROUND_UP
+#define LSN_ROUND_UP( VALUE, X )							((VALUE) + (((X) - (VALUE) & ((X) - 1)) & ((X) - 1)))
+#endif	// #ifndef LSN_ROUND_UP
 
-#ifndef NN9_UTF_INVALID
-#define NN9_UTF_INVALID										~static_cast<uint32_t>(0)
+#ifndef LSN_UTF_INVALID
+#define LSN_UTF_INVALID										~static_cast<uint32_t>(0)
 #endif	// EE_UTF_INVALID
 
 
 
-namespace nn9 {
+namespace lsn {
 
 	/**
 	 * Class Utilities
@@ -49,6 +52,22 @@ namespace nn9 {
 	 */
 	class Utilities {
 	public :
+		// == Types.
+		/** Temporarily setting the floating-point rounding mode. */
+		struct LSN_FEROUNDMODE {
+			LSN_FEROUNDMODE( int _iNewMode ) :
+				iPrevMode( ::fegetround() ) {
+				::fesetround( _iNewMode );
+			}
+			~LSN_FEROUNDMODE() {
+				::fesetround( iPrevMode );
+			}
+
+			int							iPrevMode;			/**< The previous rounding mode. */
+		};
+
+
+		// == Functions.
 		// ===============================
 		// UTF
 		// ===============================
@@ -68,7 +87,7 @@ namespace nn9 {
 			}
 			if ( _psSize ) { (*_psSize) = 1; }
 			uint32_t ui32Ret = (*_pcString);
-			if ( ui32Ret & 0xFFE00000 ) { return NN9_UTF_INVALID; }
+			if ( ui32Ret & 0xFFE00000 ) { return LSN_UTF_INVALID; }
 			return ui32Ret;
 		}
 
@@ -138,7 +157,7 @@ namespace nn9 {
 			for ( size_t I = 0; I < _sLen; ) {
 				size_t sThisSize = 0;
 				uint32_t ui32This = NextUtf8Char( &pc8In[I], _sLen - I, &sThisSize );
-				if ( ui32This == NN9_UTF_INVALID ) {
+				if ( ui32This == LSN_UTF_INVALID ) {
 					for ( size_t J = 0; J < sThisSize; ++J ) {
 						otTmp.push_back( static_cast<_tOutType::value_type>(pc8In[I+J]) );
 					}
@@ -205,7 +224,7 @@ namespace nn9 {
 			for ( size_t I = 0; I < _sLen; ) {
 				size_t sThisSize = 0;
 				uint32_t ui32Char = NextUtf16Char( &pc16In[I], _sLen - I, &sThisSize );
-				if ( ui32Char == NN9_UTF_INVALID ) {
+				if ( ui32Char == LSN_UTF_INVALID ) {
 					ui32Char = pc16In[I];
 					if ( _pbErrored ) { (*_pbErrored) = true; }
 				}
@@ -573,6 +592,7 @@ namespace nn9 {
 		static std::vector<_tnType> &						RadixSort( std::vector<_tnType> &_vVec );
 
 
+#ifdef LSN_USE_CURL
 		// ===============================
 		// Networking
 		// ===============================
@@ -583,7 +603,7 @@ namespace nn9 {
 		 * \param _pcPath The path to which to save the given file.
 		 * \return Returns an error code indicating the result of the operation.
 		 **/
-		static NN9_ERRORS									DownloadFile( const std::u16string &_pcUrl, const std::u16string &_pcPath );
+		static LSN_ERRORS									DownloadFile( const std::u16string &_pcUrl, const std::u16string &_pcPath );
 
 		/**
 		 * Callback for writing the file during curl downloading.
@@ -594,7 +614,7 @@ namespace nn9 {
 		 * \param _pvFile Pointer to a StdFile object used for the write process.
 		 * \return Returns the number of bytes actually writtem.
 		 **/
-		static size_t NN9_CDECL								WriteCurlData( void * _pvPtr, size_t _sSize, size_t _sMem, void * _pvFile );
+		static size_t LSN_CDECL								WriteCurlData( void * _pvPtr, size_t _sSize, size_t _sMem, void * _pvFile );
 
 		/**
 		 * Downloads the MNIST files to the given folder.
@@ -602,7 +622,8 @@ namespace nn9 {
 		 * \param _pcFolder The path to the folder to where to download the MNIST files.
 		 * \return Returns an error code indicating the result of the operation.
 		 **/
-		static NN9_ERRORS									DownloadMnist( const std::u16string &_pcFolder );
+		static LSN_ERRORS									DownloadMnist( const std::u16string &_pcFolder );
+#endif	// #ifdef LSN_USE_CURL
 
 
 		// ===============================
@@ -614,7 +635,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the converted value.
 		 */
-		static inline double NN9_FASTCALL					sRGBtoLinear( double _dVal ) {
+		static inline double LSN_FASTCALL					sRGBtoLinear( double _dVal ) {
 			if ( _dVal < -0.04045 ) { return -std::pow( (-_dVal + 0.055) / 1.055, 2.4 ); }
 			return _dVal <= 0.04045 ?
 				_dVal / 12.92 :
@@ -627,7 +648,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the converted value.
 		 */
-		static inline double NN9_FASTCALL					LinearTosRGB( double _dVal ) {
+		static inline double LSN_FASTCALL					LinearTosRGB( double _dVal ) {
 			if ( _dVal < -0.0031308 ) { return -1.055 * std::pow( -_dVal, 1.0 / 2.4 ) + 0.055; }
 			return _dVal <= 0.0031308 ?
 				_dVal * 12.92 :
@@ -640,7 +661,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the converted value.
 		 */
-		static inline double NN9_FASTCALL					sRGBtoLinear_Precise( double _dVal ) {
+		static inline double LSN_FASTCALL					sRGBtoLinear_Precise( double _dVal ) {
 			/*constexpr double dAlpha = 0.05501071894758659264201838823282741941511631011962890625;
 			constexpr double dBeta = 1.055010718947586578764230580418370664119720458984375;
 			constexpr double dTheta = 12.9200000000000017053025658242404460906982421875;
@@ -662,7 +683,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the converted value.
 		 */
-		static inline double NN9_FASTCALL					LinearTosRGB_Precise( double _dVal ) {
+		static inline double LSN_FASTCALL					LinearTosRGB_Precise( double _dVal ) {
 			/*constexpr double dAlpha = 0.05501071894758659264201838823282741941511631011962890625;
 			constexpr double dBeta = 1.055010718947586578764230580418370664119720458984375;
 			constexpr double dTheta = 12.9200000000000017053025658242404460906982421875;
@@ -684,7 +705,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the color value converted to linear space.
 		 **/
-		static inline double NN9_FASTCALL					SMPTE170MtoLinear( double _dVal ) {
+		static inline double LSN_FASTCALL					SMPTE170MtoLinear( double _dVal ) {
 			if ( _dVal < -0.081 ) { return -std::pow( (-_dVal + 0.099) / 1.099, 1.0 / 0.45 ); }
 			return _dVal <= 0.081 ?
 				_dVal / 4.5 :
@@ -697,7 +718,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the value converted to SMPTE 170M-2004 space.
 		 */
-		static inline double NN9_FASTCALL					LinearToSMPTE170M( double _dVal ) {
+		static inline double LSN_FASTCALL					LinearToSMPTE170M( double _dVal ) {
 			if ( _dVal < -0.018 ) { return -1.099 * std::pow( -_dVal, 0.45 ) + 0.099; }
 			return _dVal <= 0.018 ?
 				_dVal * 4.5 :
@@ -710,7 +731,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the color value converted to linear space.
 		 **/
-		static inline double NN9_FASTCALL					SMPTE170MtoLinear_Precise( double _dVal ) {
+		static inline double LSN_FASTCALL					SMPTE170MtoLinear_Precise( double _dVal ) {
 			if ( _dVal < -0.08124285829863515939752716121802222914993762969970703125 ) { return -std::pow( (-_dVal + 0.09929682680944297568093048766968422569334506988525390625) / 1.09929682680944296180314267985522747039794921875, 1.0 / 0.45 ); }
 			return _dVal <= 0.08124285829863515939752716121802222914993762969970703125 ?
 				_dVal / 4.5 :
@@ -723,7 +744,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the value converted to SMPTE 170M-2004 space.
 		 */
-		static inline double NN9_FASTCALL					LinearToSMPTE170M_Precise( double _dVal ) {
+		static inline double LSN_FASTCALL					LinearToSMPTE170M_Precise( double _dVal ) {
 			if ( _dVal < -0.0180539685108078128139563744980478077195584774017333984375 ) { return -1.09929682680944296180314267985522747039794921875 * std::pow( -_dVal, 0.45 ) + 0.09929682680944297568093048766968422569334506988525390625; }
 			return _dVal <= 0.0180539685108078128139563744980478077195584774017333984375 ?
 				_dVal * 4.5 :
@@ -736,7 +757,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the color value converted to linear space.
 		 **/
-		static inline double NN9_FASTCALL					SMPTE240MtoLinear( double _dVal ) {
+		static inline double LSN_FASTCALL					SMPTE240MtoLinear( double _dVal ) {
 			if ( _dVal <= -0.0913 ) { return -std::pow( (-_dVal + 0.1115) / 1.1115, 1.0 / 0.45 ); }
 			return _dVal < 0.0913 ?
 				_dVal / 4.0 :
@@ -749,7 +770,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the value converted to SMPTE 240M space.
 		 */
-		static inline double NN9_FASTCALL					LinearToSMPTE240M( double _dVal ) {
+		static inline double LSN_FASTCALL					LinearToSMPTE240M( double _dVal ) {
 			if ( _dVal <= -0.0228 ) { return -1.1115 * std::pow( -_dVal, 0.45 ) + 0.1115; }
 			return _dVal < 0.0228 ?
 				_dVal * 4.0 :
@@ -762,7 +783,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the color value converted to linear space.
 		 **/
-		static inline double NN9_FASTCALL					SMPTE240MtoLinear_Precise( double _dVal ) {
+		static inline double LSN_FASTCALL					SMPTE240MtoLinear_Precise( double _dVal ) {
 			if ( _dVal < -0.0912863421177801115380390228892792947590351104736328125 ) { return -std::pow( (-_dVal + 0.1115721959217312597711924126997473649680614471435546875) / 1.1115721959217312875267680283286608755588531494140625, 1.0 / 0.45 ); }
 			return _dVal <= 0.0912863421177801115380390228892792947590351104736328125 ?
 				_dVal / 4.0 :
@@ -775,7 +796,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the value converted to SMPTE 240M space.
 		 */
-		static inline double NN9_FASTCALL					LinearToSMPTE240M_Precise( double _dVal ) {
+		static inline double LSN_FASTCALL					LinearToSMPTE240M_Precise( double _dVal ) {
 			if ( _dVal < -0.022821585529445027884509755722319823689758777618408203125 ) { return -1.1115721959217312875267680283286608755588531494140625 * std::pow( -_dVal, 0.45 ) + 0.1115721959217312597711924126997473649680614471435546875; }
 			return _dVal <= 0.022821585529445027884509755722319823689758777618408203125 ?
 				_dVal * 4.0 :
@@ -788,7 +809,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the color value converted to linear space.
 		 **/
-		static inline double NN9_FASTCALL					PassThrough( double _dVal ) {
+		static inline double LSN_FASTCALL					PassThrough( double _dVal ) {
 			return _dVal;
 		}
 
@@ -798,7 +819,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the color value converted to linear space.
 		 **/
-		static inline double NN9_FASTCALL					Pow2_2toLinear( double _dVal ) {
+		static inline double LSN_FASTCALL					Pow2_2toLinear( double _dVal ) {
 			if ( _dVal < 0 ) { return -std::pow( -_dVal, 2.2 ); }
 			return std::pow( _dVal, 2.2 );
 		}
@@ -809,7 +830,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the value converted to 2.2 space.
 		 */
-		static inline double NN9_FASTCALL					LinearToPow2_2( double _dVal ) {
+		static inline double LSN_FASTCALL					LinearToPow2_2( double _dVal ) {
 			if ( _dVal < 0 ) { return -std::pow( -_dVal, 1.0 / 2.2 ); }
 			return std::pow( _dVal, 1.0 / 2.2 );
 		}
@@ -820,7 +841,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the color value converted to linear space.
 		 **/
-		static inline double NN9_FASTCALL					Pow2_8toLinear( double _dVal ) {
+		static inline double LSN_FASTCALL					Pow2_8toLinear( double _dVal ) {
 			if ( _dVal < 0 ) { return -std::pow( -_dVal, 2.8 ); }
 			return std::pow( _dVal, 2.8 );
 		}
@@ -831,7 +852,7 @@ namespace nn9 {
 		 * \param _dVal The value to convert.
 		 * \return Returns the value converted to 2.8 space.
 		 */
-		static inline double NN9_FASTCALL					LinearToPow2_8( double _dVal ) {
+		static inline double LSN_FASTCALL					LinearToPow2_8( double _dVal ) {
 			if ( _dVal < 0 ) { return -std::pow( -_dVal, 1.0 / 2.8 ); }
 			return std::pow( _dVal, 1.0 / 2.8 );
 		}
@@ -1033,12 +1054,12 @@ namespace nn9 {
 		 * \return Returns true if NEON is supported.
 		 **/
 		static inline bool									IsNeonSupported() {
-#ifndef NN9_CPUID
+#ifndef LSN_CPUID
 			if ( m_iNeon == 3 ) { m_iNeon = FeatureSet::NEON(); }
 			return m_iNeon != 0;
 #else
 			return false;
-#endif	// #ifndef NN9_CPUID
+#endif	// #ifndef LSN_CPUID
 		}
 
 		/**
@@ -1047,12 +1068,12 @@ namespace nn9 {
 		 * \return Returns true if non-AVX BF16 is supported.
 		 **/
 		static inline bool									IsBf16Supported() {
-#ifndef NN9_CPUID
+#ifndef LSN_CPUID
 			if ( m_iBf16 == 3 ) { m_iBf16 = FeatureSet::BF16(); }
 			return m_iBf16 != 0;
 #else
 			return false;
-#endif	// #ifndef NN9_CPUID
+#endif	// #ifndef LSN_CPUID
 		}
 
 		/**
@@ -1061,12 +1082,12 @@ namespace nn9 {
 		 * \return Returns true if non-AVX FP16 is supported.
 		 **/
 		static inline bool									IsFp16Supported() {
-#ifndef NN9_CPUID
+#ifndef LSN_CPUID
 			if ( m_iFp16 == 3 ) { m_iFp16 = FeatureSet::FP16(); }
 			return m_iFp16 != 0;
 #else
 			return false;
-#endif	// #ifndef NN9_CPUID
+#endif	// #ifndef LSN_CPUID
 		}
 
 		/**
@@ -1075,12 +1096,12 @@ namespace nn9 {
 		 * \return Returns true if SVE is supported.
 		 **/
 		static inline bool									IsSveSupported() {
-#ifndef NN9_CPUID
+#ifndef LSN_CPUID
 			if ( m_iSve == 3 ) { m_iSve = FeatureSet::SVE(); }
 			return m_iSve != 0;
 #else
 			return false;
-#endif	// #ifndef NN9_CPUID
+#endif	// #ifndef LSN_CPUID
 		}
 
 #ifdef __AVX512F__
@@ -1164,7 +1185,7 @@ namespace nn9 {
 		 * \return Returns the sum of all the floats in the given register.
 		 **/
 		static inline float									HorizontalSum( const __m256 &_mReg ) {
-			NN9_ALIGN( 32 )
+			LSN_ALIGN( 32 )
 			float fSumArray[8];
 			__m256 mTmp = _mm256_hadd_ps( _mReg, _mReg );
 			mTmp = _mm256_hadd_ps( mTmp, mTmp );
@@ -1212,25 +1233,25 @@ namespace nn9 {
 
 	protected :
 		// == Members.
-#ifndef NN9_CPUID
+#ifndef LSN_CPUID
 		static int											m_iNeon;					/**< Tracks support for NEON. */
 		static int											m_iBf16;					/**< Tracks support for BF16. */
 		static int											m_iFp16;					/**< Tracks support for FP16. */
 		static int											m_iSve;						/**< Tracks support for SVE. */
-#endif	// #ifndef NN9_CPUID
+#endif	// #ifndef LSN_CPUID
 	};
 
 
 #if defined( _WIN32 )
 	/** A wrapper for Windows HANDLE. **/
-	struct NN9_HANDLE {
-		NN9_HANDLE() : hHandle( NULL ) {}
-		NN9_HANDLE( HANDLE _hHandle ) : hHandle( _hHandle ) {}
-		~NN9_HANDLE() {
+	struct LSN_HANDLE {
+		LSN_HANDLE() : hHandle( NULL ) {}
+		LSN_HANDLE( HANDLE _hHandle ) : hHandle( _hHandle ) {}
+		~LSN_HANDLE() {
 			Reset();
 		}
 
-		NN9_HANDLE &										operator = ( HANDLE &_hHandle ) {
+		LSN_HANDLE &										operator = ( HANDLE &_hHandle ) {
 			Reset();
 			hHandle = _hHandle;
 			_hHandle = NULL;
@@ -1256,18 +1277,18 @@ namespace nn9 {
 	};
 
 	/** A wrapper for Windows HMODULE. **/
-	struct NN9_HMODULE {
-		NN9_HMODULE() : hHandle( NULL ) {}
-		NN9_HMODULE( LPCSTR _sPath ) :
-			hHandle( ::LoadLibraryW( nn9::Utilities::Utf8ToUtf16<CHAR, std::wstring>( _sPath ).c_str() ) ) {
+	struct LSN_HMODULE {
+		LSN_HMODULE() : hHandle( NULL ) {}
+		LSN_HMODULE( LPCSTR _sPath ) :
+			hHandle( ::LoadLibraryW( lsn::Utilities::Utf8ToUtf16<CHAR, std::wstring>( _sPath ).c_str() ) ) {
 		}
-		NN9_HMODULE( LPCWSTR _wsPath ) :
+		LSN_HMODULE( LPCWSTR _wsPath ) :
 			hHandle( ::LoadLibraryW( _wsPath ) ) {
 		}
-		NN9_HMODULE( const char16_t * _pu16Path ) :
+		LSN_HMODULE( const char16_t * _pu16Path ) :
 			hHandle( ::LoadLibraryW( reinterpret_cast<LPCWSTR>(_pu16Path) ) ) {
 		}
-		~NN9_HMODULE() {
+		~LSN_HMODULE() {
 			Reset();
 		}
 
@@ -1275,7 +1296,7 @@ namespace nn9 {
 		// == Functions.
 		BOOL												LoadLib( LPCSTR _sPath ) {
 			Reset();
-			hHandle = ::LoadLibraryW( nn9::Utilities::Utf8ToUtf16<CHAR, std::wstring>( _sPath ).c_str() );
+			hHandle = ::LoadLibraryW( lsn::Utilities::Utf8ToUtf16<CHAR, std::wstring>( _sPath ).c_str() );
 			return hHandle != NULL;
 		}
 
@@ -1306,12 +1327,13 @@ namespace nn9 {
 	};
 #endif	// #if defined( _WIN32 )
 
+#ifdef LSN_USE_CURL
 	/** A curl object. */
-	struct NN9_CURL {
-		NN9_CURL( ::CURL * _pSrc ) :
+	struct LSN_CURL {
+		LSN_CURL( ::CURL * _pSrc ) :
 			pcCurl( _pSrc ) {
 		}
-		~NN9_CURL() {
+		~LSN_CURL() {
 			Reset();
 		}
 		// == Functions.
@@ -1332,6 +1354,7 @@ namespace nn9 {
 
 		::CURL *											pcCurl = nullptr;
 	};
+#endif	// #ifdef LSN_USE_CURL
 
 
 	// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1353,7 +1376,7 @@ namespace nn9 {
 		return sRet;
 	}
 
-NN9_OPTIMIZE_ON
+LSN_OPTIMIZE_ON
 	/**
 	 * Performs a radix sort on the given integer vector.  Call within a try/catch block.
 	 * 
@@ -1411,6 +1434,6 @@ NN9_OPTIMIZE_ON
 		}
 		return _vVec;
 	}
-NN9_OPTIMIZE_OFF
+LSN_OPTIMIZE_OFF
 
-}	// namespace nn9
+}	// namespace lsn

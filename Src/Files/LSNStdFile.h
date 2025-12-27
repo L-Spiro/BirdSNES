@@ -9,11 +9,11 @@
 
 #pragma once
 
-#include "../OS/NN9Os.h"
-#include "../Utilities/NN9Crc.h"
-#include "NN9FileBase.h"
+#include "../OS/LSNOs.h"
+#include "../Utilities/LSNCrc.h"
+#include "LSNFileBase.h"
 
-namespace nn9 {
+namespace lsn {
 
 	/**
 	 * Class StdFile
@@ -34,7 +34,7 @@ namespace nn9 {
 		 * \param _pFile Path to the file to open.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									Open( const std::filesystem::path &_pFile );
+		virtual LSN_ERRORS									Open( const std::filesystem::path &_pFile );
 
 		/**
 		 * Creates a file.
@@ -42,7 +42,7 @@ namespace nn9 {
 		 * \param _pFile Path to the file to create.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									Create( const std::filesystem::path &_pFile );
+		virtual LSN_ERRORS									Create( const std::filesystem::path &_pFile );
 
 		/**
 		 * Opens a file for appending.  If it does not exist it is created.
@@ -50,7 +50,7 @@ namespace nn9 {
 		 * \param _pFile Path to the file to open for appending.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									Append( const std::filesystem::path &_pFile );
+		virtual LSN_ERRORS									Append( const std::filesystem::path &_pFile );
 
 		/**
 		 * Closes the opened file.
@@ -63,7 +63,7 @@ namespace nn9 {
 		 * \param _vResult The location where to store the file in memory.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									LoadToMemory( std::vector<uint8_t> &_vResult ) const;
+		virtual LSN_ERRORS									LoadToMemory( std::vector<uint8_t> &_vResult ) const;
 
 		/**
 		 * Writes the given data to the created file.  File must have been cerated with Create().
@@ -71,7 +71,7 @@ namespace nn9 {
 		 * \param _vData The data to write to the file.
 		 * \return Returns true if the data was successfully written to the file.
 		 */
-		virtual NN9_ERRORS									WriteToFile( const std::vector<uint8_t> &_vData );
+		virtual LSN_ERRORS									WriteToFile( const std::vector<uint8_t> &_vData );
 
 		/**
 		 * Writes the given data to the created file.  File must have been cerated with Create().
@@ -80,7 +80,7 @@ namespace nn9 {
 		 * \param _tsSize The size of the buffer to which _pui8Data points.
 		 * \return Returns true if the data was successfully written to the file.
 		 */
-		virtual NN9_ERRORS									WriteToFile( const uint8_t * _pui8Data, size_t _tsSize );
+		virtual LSN_ERRORS									WriteToFile( const uint8_t * _pui8Data, size_t _tsSize );
 
 		/**
 		 * Gets the size of the file.
@@ -114,7 +114,7 @@ namespace nn9 {
 		 * \return Returns an error code indicating the result of the operation.
 		 **/
 		template <typename _tStrType>
-		static inline NN9_ERRORS							LoadToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult );
+		static inline LSN_ERRORS							LoadToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult );
 
 		/**
 		 * Writes the given data to a given file.
@@ -125,7 +125,7 @@ namespace nn9 {
 		 * \return Returns true if the data was successfully written to the file.
 		 */
 		template <typename _tStrType>
-		static inline NN9_ERRORS							WriteToFile( const _tStrType * _pcFile, const uint8_t * _pui8Data, size_t _tsSize );
+		static inline LSN_ERRORS							WriteToFile( const _tStrType * _pcFile, const uint8_t * _pui8Data, size_t _tsSize );
 
 		/**
 		 * Writes the given data to a given file.
@@ -135,7 +135,7 @@ namespace nn9 {
 		 * \return Returns true if the data was successfully written to the file.
 		 */
 		template <typename _tStrType>
-		static inline NN9_ERRORS							WriteToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData );
+		static inline LSN_ERRORS							WriteToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData );
 
 		/**
 		 * Appends the given data to a given file.
@@ -146,7 +146,7 @@ namespace nn9 {
 		 * \return Returns true if the data was successfully written to the file.
 		 */
 		template <typename _tStrType, typename _tData>
-		static inline NN9_ERRORS							AppendToFile( const _tStrType * _pcFile, const _tData * _ptData, size_t _tsSize );
+		static inline LSN_ERRORS							AppendToFile( const _tStrType * _pcFile, const _tData * _ptData, size_t _tsSize );
 
 		/**
 		 * Appends the given data to a given file.
@@ -157,7 +157,7 @@ namespace nn9 {
 		 * \return Returns true if the data was successfully written to the file.
 		 */
 		template <typename _tStrType>
-		static inline NN9_ERRORS							AppendToFile( const _tStrType * _pcFile, const char8_t * _pc8Data, size_t _tsSize = 0 );
+		static inline LSN_ERRORS							AppendToFile( const _tStrType * _pcFile, const char8_t * _pc8Data, size_t _tsSize = 0 );
 
 		/**
 		 * Appends the given data to a given file.
@@ -168,7 +168,7 @@ namespace nn9 {
 		 * \return Returns true if the data was successfully written to the file.
 		 */
 		template <typename _tStrType>
-		static inline NN9_ERRORS							AppendToFile( const _tStrType * _pcFile, const char * _pcData, size_t _tsSize = 0 );
+		static inline LSN_ERRORS							AppendToFile( const _tStrType * _pcFile, const char * _pcData, size_t _tsSize = 0 );
 
 		/**
 		 * Appends the given data to a given file.
@@ -179,7 +179,7 @@ namespace nn9 {
 		 * \return Returns true if the data was successfully written to the file.
 		 */
 		template <typename _tStrType>
-		static inline NN9_ERRORS							AppendToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData );
+		static inline LSN_ERRORS							AppendToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData );
 
 		/**
 		 * Gets the CRC of a given file.
@@ -217,10 +217,10 @@ namespace nn9 {
 	 * \return Returns an error code indicating the result of the operation.
 	 **/
 	template <typename _tStrType>
-	inline NN9_ERRORS StdFile::LoadToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult ) {
+	inline LSN_ERRORS StdFile::LoadToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult ) {
 		StdFile sfFile;
 		auto aCode = sfFile.Open( _pcFile );
-		if ( aCode != NN9_E_SUCCESS ) { return aCode; }
+		if ( aCode != LSN_E_SUCCESS ) { return aCode; }
 		return sfFile.LoadToMemory( _vResult );
 	}
 
@@ -233,10 +233,10 @@ namespace nn9 {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline NN9_ERRORS StdFile::WriteToFile( const _tStrType * _pcFile, const uint8_t * _pui8Data, size_t _tsSize ) {
+	inline LSN_ERRORS StdFile::WriteToFile( const _tStrType * _pcFile, const uint8_t * _pui8Data, size_t _tsSize ) {
 		StdFile sfFile;
 		auto aCode = sfFile.Create( _pcFile );
-		if ( aCode != NN9_E_SUCCESS ) { return aCode; }
+		if ( aCode != LSN_E_SUCCESS ) { return aCode; }
 		return sfFile.WriteToFile( _pui8Data, _tsSize );
 	}
 
@@ -248,7 +248,7 @@ namespace nn9 {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline NN9_ERRORS StdFile::WriteToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData ) {
+	inline LSN_ERRORS StdFile::WriteToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData ) {
 		return WriteToFile( _pcFile, _vData.data(), _vData.size() );
 	}
 
@@ -261,10 +261,10 @@ namespace nn9 {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType, typename _tData>
-	inline NN9_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const _tData * _ptData, size_t _tsSize ) {
+	inline LSN_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const _tData * _ptData, size_t _tsSize ) {
 		StdFile sfFile;
 		auto aCode = sfFile.Append( _pcFile );
-		if ( aCode != NN9_E_SUCCESS ) { return aCode; }
+		if ( aCode != LSN_E_SUCCESS ) { return aCode; }
 		return sfFile.WriteToFile( _ptData, _tsSize * sizeof( _tData ) );
 	}
 
@@ -277,7 +277,7 @@ namespace nn9 {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline NN9_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const char8_t * _pc8Data, size_t _tsSize ) {
+	inline LSN_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const char8_t * _pc8Data, size_t _tsSize ) {
 		if ( !_tsSize ) { _tsSize = std::strlen( reinterpret_cast<const char *>(_pc8Data) ); }
 		return AppendToFile( _pcFile, reinterpret_cast<const uint8_t *>(_pc8Data), _tsSize );
 	}
@@ -291,7 +291,7 @@ namespace nn9 {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline NN9_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const char * _pcData, size_t _tsSize ) {
+	inline LSN_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const char * _pcData, size_t _tsSize ) {
 		if ( !_tsSize ) { _tsSize = std::strlen( _pcData ); }
 		return AppendToFile( _pcFile, reinterpret_cast<const uint8_t *>(_pcData), _tsSize );
 	}
@@ -304,7 +304,7 @@ namespace nn9 {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline NN9_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData ) {
+	inline LSN_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData ) {
 		return AppendToFile( _pcFile, _vData.data(), _vData.size() );
 	}
 
@@ -318,8 +318,8 @@ namespace nn9 {
 	inline uint32_t StdFile::Crc( const _tStrType * _pcFile ) {
 		std::vector<uint8_t> vData;
 		auto eErr = LoadToMemory( _pcFile, vData );
-		if ( eErr != NN9_E_SUCCESS ) { return 0; }
+		if ( eErr != LSN_E_SUCCESS ) { return 0; }
 		return Crc::GetCrc( vData.data(), vData.size() );
 	}
 
-}	// namespace nn9
+}	// namespace lsn

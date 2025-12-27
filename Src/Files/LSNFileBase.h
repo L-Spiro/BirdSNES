@@ -36,7 +36,7 @@ namespace lsn {
 		 * \param _pFile Path to the file to open.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									Open( const std::filesystem::path &_pFile ) { return NN9_E_NOT_IMPLEMENTED; }
+		virtual LSN_ERRORS									Open( const std::filesystem::path &/*_pFile*/ ) { return LSN_E_NOT_IMPLEMENTED; }
 
 		/**
 		 * Creates a file.
@@ -44,7 +44,7 @@ namespace lsn {
 		 * \param _pFile Path to the file to create.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									Create( const std::filesystem::path &_pFile ) { return NN9_E_NOT_IMPLEMENTED; }
+		virtual LSN_ERRORS									Create( const std::filesystem::path &/*_pFile*/ ) { return LSN_E_NOT_IMPLEMENTED; }
 
 		/**
 		 * Opens a file for appending.  If it does not exist it is created.
@@ -52,7 +52,7 @@ namespace lsn {
 		 * \param _pFile Path to the file to open for appending.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									Append( const std::filesystem::path &_pFile ) { return NN9_E_NOT_IMPLEMENTED; }
+		virtual LSN_ERRORS									Append( const std::filesystem::path &/*_pFile*/ ) { return LSN_E_NOT_IMPLEMENTED; }
 
 		/**
 		 * Closes the opened file.
@@ -72,7 +72,7 @@ namespace lsn {
 		 * \param _vResult The location where to store the file in memory.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									LoadToMemory( std::vector<uint8_t> &_vResult ) const;
+		virtual LSN_ERRORS									LoadToMemory( std::vector<uint8_t> &_vResult ) const;
 
 		/**
 		 * Gathers the file names in the archive into an array.
@@ -80,7 +80,7 @@ namespace lsn {
 		 * \param _vResult The location where to store the file names.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									GatherArchiveFiles( std::vector<std::u16string> &_vResult ) const;
+		virtual LSN_ERRORS									GatherArchiveFiles( std::vector<std::u16string> &_vResult ) const;
 
 		/**
 		 * Extracts the given file from the archive.
@@ -89,7 +89,7 @@ namespace lsn {
 		 * \param _vResult The location where to store the file in memory.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									ExtractToMemory( const std::u16string &_s16File, std::vector<uint8_t> &_vResult ) const;
+		virtual LSN_ERRORS									ExtractToMemory( const std::u16string &_s16File, std::vector<uint8_t> &_vResult ) const;
 
 		/**
 		 * Decompresses the whole archive into a single result.
@@ -97,7 +97,7 @@ namespace lsn {
 		 * \param _vResult The location where to store the file in memory.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									ExtractToMemory( std::vector<uint8_t> &_vResult ) const;
+		virtual LSN_ERRORS									ExtractToMemory( std::vector<uint8_t> &_vResult ) const;
 
 		/**
 		 * Gets the size of the file.

@@ -7,9 +7,9 @@
  */
 
 
-#include "NN9StdFile.h"
+#include "LSNStdFile.h"
 
-namespace nn9 {
+namespace lsn {
 
 	StdFile::StdFile() :
 		m_pfFile( nullptr ),
@@ -27,7 +27,7 @@ namespace nn9 {
 	 * \param _pFile Path to the file to open.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS StdFile::Open( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS StdFile::Open( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = nullptr;
@@ -41,8 +41,8 @@ namespace nn9 {
 			m_pfFile = pfFile;
 			PostLoad();
 		}
-		catch ( ... ) { return NN9_E_OUT_OF_MEMORY; }	// _pFile.generic_wstring() failed due to memory.
-		return NN9_E_SUCCESS;
+		catch ( ... ) { return LSN_E_OUT_OF_MEMORY; }	// _pFile.generic_wstring() failed due to memory.
+		return LSN_E_SUCCESS;
 	}
 
 	/**
@@ -51,7 +51,7 @@ namespace nn9 {
 	 * \param _pFile Path to the file to create.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS StdFile::Create( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS StdFile::Create( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = nullptr;
@@ -63,8 +63,8 @@ namespace nn9 {
 			m_pfFile = pfFile;
 			PostLoad();
 		}
-		catch ( ... ) { return NN9_E_OUT_OF_MEMORY; }	// _pFile.generic_wstring() failed due to memory.
-		return NN9_E_SUCCESS;
+		catch ( ... ) { return LSN_E_OUT_OF_MEMORY; }	// _pFile.generic_wstring() failed due to memory.
+		return LSN_E_SUCCESS;
 	}
 
 	/**
@@ -73,7 +73,7 @@ namespace nn9 {
 	 * \param _pFile Path to the file to open for appending.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS StdFile::Append( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS StdFile::Append( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = nullptr;
@@ -85,8 +85,8 @@ namespace nn9 {
 			m_pfFile = pfFile;
 			PostLoad();
 		}
-		catch ( ... ) { return NN9_E_OUT_OF_MEMORY; }	// _pFile.generic_wstring() failed due to memory.
-		return NN9_E_SUCCESS;
+		catch ( ... ) { return LSN_E_OUT_OF_MEMORY; }	// _pFile.generic_wstring() failed due to memory.
+		return LSN_E_SUCCESS;
 	}
 #else
 	/**
@@ -95,7 +95,7 @@ namespace nn9 {
 	 * \param _pFile Path to the file to open.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS StdFile::Open( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS StdFile::Open( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = std::fopen( _pFile.generic_string().c_str(), "rb" );
@@ -108,8 +108,8 @@ namespace nn9 {
 			m_pfFile = pfFile;
 			PostLoad();
 		}
-		catch ( ... ) { return NN9_E_OUT_OF_MEMORY; }	// _pFile.generic_string() failed due to memory.
-		return NN9_E_SUCCESS;
+		catch ( ... ) { return LSN_E_OUT_OF_MEMORY; }	// _pFile.generic_string() failed due to memory.
+		return LSN_E_SUCCESS;
 	}
 
 	/**
@@ -118,7 +118,7 @@ namespace nn9 {
 	 * \param _pFile Path to the file to create.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS StdFile::Create( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS StdFile::Create( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = std::fopen( _pFile.generic_string().c_str(), "wb" );
@@ -129,8 +129,8 @@ namespace nn9 {
 			m_pfFile = pfFile;
 			PostLoad();
 		}
-		catch ( ... ) { return NN9_E_OUT_OF_MEMORY; }	// _pFile.generic_string() failed due to memory.
-		return NN9_E_SUCCESS;
+		catch ( ... ) { return LSN_E_OUT_OF_MEMORY; }	// _pFile.generic_string() failed due to memory.
+		return LSN_E_SUCCESS;
 	}
 
 	/**
@@ -139,7 +139,7 @@ namespace nn9 {
 	 * \param _pFile Path to the file to open for appending.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS StdFile::Append( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS StdFile::Append( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = std::fopen( _pFile.generic_string().c_str(), "ab" );
@@ -150,8 +150,8 @@ namespace nn9 {
 			m_pfFile = pfFile;
 			PostLoad();
 		}
-		catch ( ... ) { return NN9_E_OUT_OF_MEMORY; }	// _pFile.generic_string() failed due to memory.
-		return NN9_E_SUCCESS;
+		catch ( ... ) { return LSN_E_OUT_OF_MEMORY; }	// _pFile.generic_string() failed due to memory.
+		return LSN_E_SUCCESS;
 	}
 #endif	// #ifdef _WIN32
 
@@ -172,7 +172,7 @@ namespace nn9 {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS StdFile::LoadToMemory( std::vector<uint8_t> &_vResult ) const {
+	LSN_ERRORS StdFile::LoadToMemory( std::vector<uint8_t> &_vResult ) const {
 		if ( m_pfFile != nullptr ) {
 #ifdef _WIN32
 			__int64 i64Pos = ::_ftelli64( m_pfFile );
@@ -184,15 +184,15 @@ namespace nn9 {
 			}
 			catch ( ... ) {
 				::_fseeki64( m_pfFile, i64Pos, SEEK_SET );
-				return NN9_E_OUT_OF_MEMORY;
+				return LSN_E_OUT_OF_MEMORY;
 			}
 			if ( __int64( _vResult.size() ) != i64Len ) {
 				::_fseeki64( m_pfFile, i64Pos, SEEK_SET );
-				return NN9_E_FILE_ATTRIBUTE_TOO_LARGE;
+				return LSN_E_FILE_ATTRIBUTE_TOO_LARGE;
 			}
 			if ( std::fread( _vResult.data(), _vResult.size(), 1, m_pfFile ) != 1 ) {
 				::_fseeki64( m_pfFile, i64Pos, SEEK_SET );
-				return NN9_E_OPERATION_NOT_PERMITTED;
+				return LSN_E_OPERATION_NOT_PERMITTED;
 			}
 			::_fseeki64( m_pfFile, i64Pos, SEEK_SET );
 #else
@@ -205,21 +205,21 @@ namespace nn9 {
 			}
 			catch ( ... ) {
 				std::fseek( m_pfFile, lPos, SEEK_SET );
-				return NN9_E_OPERATION_NOT_PERMITTED;
+				return LSN_E_OPERATION_NOT_PERMITTED;
 			}
 			if ( _vResult.size() != lLen ) {
 				std::fseek( m_pfFile, lPos, SEEK_SET );
-				return NN9_E_OPERATION_NOT_PERMITTED;
+				return LSN_E_OPERATION_NOT_PERMITTED;
 			}
 			if ( std::fread( _vResult.data(), _vResult.size(), 1, m_pfFile ) != 1 ) {
 				std::fseek( m_pfFile, lPos, SEEK_SET );
-				return NN9_E_OPERATION_NOT_PERMITTED;
+				return LSN_E_OPERATION_NOT_PERMITTED;
 			}
 			std::fseek( m_pfFile, lPos, SEEK_SET );
 #endif	// #ifdef _WIN32
-			return NN9_E_SUCCESS;
+			return LSN_E_SUCCESS;
 		}
-		return NN9_E_FILE_NOT_OPENED;
+		return LSN_E_FILE_NOT_OPENED;
 	}
 
 	/**
@@ -228,7 +228,7 @@ namespace nn9 {
 	 * \param _vData The data to write to the file.
 	 * \return Returns true if the data was successfully written to the file.
 	 */
-	NN9_ERRORS StdFile::WriteToFile( const std::vector<uint8_t> &_vData ) {
+	LSN_ERRORS StdFile::WriteToFile( const std::vector<uint8_t> &_vData ) {
 		return WriteToFile( _vData.data(), _vData.size() );
 	}
 
@@ -239,11 +239,11 @@ namespace nn9 {
 	 * \param _tsSize The size of the buffer to which _pui8Data points.
 	 * \return Returns true if the data was successfully written to the file.
 	 */
-	NN9_ERRORS StdFile::WriteToFile( const uint8_t * _pui8Data, size_t _tsSize ) {
+	LSN_ERRORS StdFile::WriteToFile( const uint8_t * _pui8Data, size_t _tsSize ) {
 		if ( m_pfFile != nullptr ) {
-			return (std::fwrite( _pui8Data, _tsSize, 1, m_pfFile ) == 1) ? NN9_E_SUCCESS : NN9_E_OPERATION_NOT_PERMITTED;
+			return (std::fwrite( _pui8Data, _tsSize, 1, m_pfFile ) == 1) ? LSN_E_SUCCESS : LSN_E_OPERATION_NOT_PERMITTED;
 		}
-		return NN9_E_SUCCESS;
+		return LSN_E_SUCCESS;
 	}
 
 	/**
@@ -284,4 +284,4 @@ namespace nn9 {
 	 */
 	void StdFile::PostLoad() {}
 
-}	// namespace nn9
+}	// namespace lsn

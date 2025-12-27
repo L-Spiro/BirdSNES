@@ -14,9 +14,9 @@
 #include <string>
 #include <vector>
 
-#ifdef NN9_USE_WINDOWS
+#ifdef LSN_USE_WINDOWS
 #include <Helpers/LSWHelpers.h>
-#endif	// #ifdef NN9_USE_WINDOWS
+#endif	// #ifdef LSN_USE_WINDOWS
 
 namespace lsn {
 
@@ -47,7 +47,7 @@ namespace lsn {
 		 * \param _pFile Path to the file to open.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									Open( const std::filesystem::path &_pFile );
+		virtual LSN_ERRORS									Open( const std::filesystem::path &_pFile );
 
 		/**
 		 * Creates a file.
@@ -55,7 +55,7 @@ namespace lsn {
 		 * \param _pFile Path to the file to create.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual NN9_ERRORS									Create( const std::filesystem::path &_pFile );
+		virtual LSN_ERRORS									Create( const std::filesystem::path &_pFile );
 
 		/**
 		 * Closes the opened file.
@@ -91,7 +91,7 @@ namespace lsn {
 		 * 
 		 * \return Returns true if the file mapping was successfully created.
 		 **/
-		NN9_ERRORS											CreateFileMap();
+		LSN_ERRORS											CreateFileMap();
 
 	};
 

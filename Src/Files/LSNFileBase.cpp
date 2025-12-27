@@ -8,8 +8,8 @@
 
 
 #include "LSNFileBase.h"
-#include "../OS/NN9Os.h"
-#include "../Utilities/NN9Utilities.h"
+#include "../OS/LSNOs.h"
+#include "../Utilities/LSNUtilities.h"
 
 #ifndef _WIN32
 #include <filesystem>
@@ -38,7 +38,7 @@ namespace lsn {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS FileBase::LoadToMemory( std::vector<uint8_t> &/*_vResult*/ ) const { return NN9_E_NOT_IMPLEMENTED; }
+	LSN_ERRORS FileBase::LoadToMemory( std::vector<uint8_t> &/*_vResult*/ ) const { return LSN_E_NOT_IMPLEMENTED; }
 
 	/**
 	 * Gathers the file names in the archive into an array.
@@ -46,7 +46,7 @@ namespace lsn {
 	 * \param _vResult The location where to store the file names.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS FileBase::GatherArchiveFiles( std::vector<std::u16string> &/*_vResult*/ ) const { return NN9_E_NOT_IMPLEMENTED; }
+	LSN_ERRORS FileBase::GatherArchiveFiles( std::vector<std::u16string> &/*_vResult*/ ) const { return LSN_E_NOT_IMPLEMENTED; }
 
 	/**
 	 * Extracts the given file from the archive.
@@ -55,7 +55,7 @@ namespace lsn {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS FileBase::ExtractToMemory( const std::u16string &/*_s16File*/, std::vector<uint8_t> &/*_vResult*/ ) const { return NN9_E_NOT_IMPLEMENTED; }
+	LSN_ERRORS FileBase::ExtractToMemory( const std::u16string &/*_s16File*/, std::vector<uint8_t> &/*_vResult*/ ) const { return LSN_E_NOT_IMPLEMENTED; }
 
 	/**
 	 * Decompresses the whole archive into a single result.
@@ -63,7 +63,7 @@ namespace lsn {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	NN9_ERRORS FileBase::ExtractToMemory( std::vector<uint8_t> &/*_vResult*/ ) const { return NN9_E_NOT_IMPLEMENTED; }
+	LSN_ERRORS FileBase::ExtractToMemory( std::vector<uint8_t> &/*_vResult*/ ) const { return LSN_E_NOT_IMPLEMENTED; }
 
 	/**
 	 * Finds files/folders in a given directory.

@@ -12,7 +12,7 @@
 #include <cinttypes>
 
 
-namespace nn9 {
+namespace lsn {
 	/**
 	 * Class Crc
 	 * \brief A standard 32-bit cyclic redundancy check calculator.
@@ -82,4 +82,4 @@ namespace nn9 {
 		 */
 		static void 					GetCrc( uint32_t * _pui32Table, uint8_t _ui8Val, uint32_t &_ui32Crc );
 	};
-}	// namespace nn9
+}	// namespace lsn

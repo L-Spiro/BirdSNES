@@ -28,11 +28,35 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\BirdSNES.cpp" />
+    <ClCompile Include="Src\Compression\MiniZ\miniz.c" />
+    <ClCompile Include="Src\Files\LSNFileBase.cpp" />
+    <ClCompile Include="Src\Files\LSNFileMap.cpp" />
+    <ClCompile Include="Src\Files\LSNStdFile.cpp" />
+    <ClCompile Include="Src\Files\LSNZipFile.cpp" />
+    <ClCompile Include="Src\Foundation\LSNFeatureSet.cpp" />
+    <ClCompile Include="Src\Utilities\LSNCrc.cpp" />
+    <ClCompile Include="Src\Utilities\LSNUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\BirdSNES.h" />
+    <ClInclude Include="Src\Compression\MiniZ\miniz.h" />
+    <ClInclude Include="Src\Errors\LSNErrors.h" />
+    <ClInclude Include="Src\Files\LSNFileBase.h" />
+    <ClInclude Include="Src\Files\LSNFileMap.h" />
+    <ClInclude Include="Src\Files\LSNStdFile.h" />
+    <ClInclude Include="Src\Files\LSNZipFile.h" />
+    <ClInclude Include="Src\Foundation\LSNAlignmentAllocator.h" />
+    <ClInclude Include="Src\Foundation\LSNBits.h" />
+    <ClInclude Include="Src\Foundation\LSNFeatureSet.h" />
+    <ClInclude Include="Src\Foundation\LSNMacros.h" />
+    <ClInclude Include="Src\OS\LSNApple.h" />
+    <ClInclude Include="Src\OS\LSNOs.h" />
+    <ClInclude Include="Src\OS\LSNWindows.h" />
     <ClInclude Include="Src\Resource.h" />
     <ClInclude Include="Src\targetver.h" />
+    <ClInclude Include="Src\Utilities\LSNCrc.h" />
+    <ClInclude Include="Src\Utilities\LSNTimer.h" />
+    <ClInclude Include="Src\Utilities\LSNUtilities.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Src\BirdSNES.ico" />
@@ -40,6 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Src\BirdSNES.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Errors\LSNErrorEnum.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

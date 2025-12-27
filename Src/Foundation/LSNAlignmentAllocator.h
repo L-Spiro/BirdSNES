@@ -13,7 +13,7 @@
 #include <malloc.h>
 
 
-namespace nn9 {
+namespace lsn {
 
 	/**
 	 * Class AlignmentAllocator
@@ -128,4 +128,4 @@ namespace nn9 {
 	};
 
 
-}	// namespace nn9
+}	// namespace lsn

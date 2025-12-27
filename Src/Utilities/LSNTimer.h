@@ -11,7 +11,7 @@
 #include <chrono>
 
 
-namespace nn9 {
+namespace lsn {
 
 	/**
 	 * Class Timer
@@ -108,4 +108,4 @@ namespace nn9 {
 		}
 	};
 
-}	// namespace nn9
+}	// namespace lsn
