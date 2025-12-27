@@ -1,9 +1,5 @@
-// TMP.
-#include <Windows.h>
-
 #include "LSONJsonContainer.h"
 #include "LSONJsonLexer.h"
-
 
 #include <format>
 
@@ -470,6 +466,7 @@ namespace lson {
 							}
 							break;
 						}
+						default : {}
 					}
 					vStack.pop_back();
 				}

@@ -458,7 +458,7 @@ namespace ee {
 	 * \param _sMaxLen Maximum number of wide characters writable to \c _pwcDst.
 	 * \param _pwcFormat Format string.
 	 * \param _iArgs Number of arguments in \c _vaArgPtr.
-	 * \param _vaArgPtr Variadic argument list. Each argument must be a \c const \c EE_RESULT.
+	 * \param ... Variadic argument list. Each argument must be a \c const \c EE_RESULT.
 	 * \return Returns the number of characters written (or that would have been written), matching the underlying formatter's behavior.
 	 */
 	int __cdecl CExpEvalContainer::PrintF( wchar_t * _pwcDst, size_t _sMaxLen,
@@ -4717,7 +4717,7 @@ namespace ee {
 	 * information through \c _ecError.
 	 *
 	 * \param _sNode Node index to resolve.
-	 * \param _rRes Receives the resolved value.
+	 * \param _rFinalResult Receives the resolved value.
 	 * \param _ecError Receives a specific error code when evaluation fails.
 	 * \return Returns true if evaluation succeeded; false otherwise.
 	 */
