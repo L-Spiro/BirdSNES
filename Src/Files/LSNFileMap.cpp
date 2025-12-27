@@ -112,7 +112,7 @@ namespace lsn {
 		}
 		m_bIsEmpty = TRUE;
 		m_ui64Size = 0;
-		m_ui64MapStart = MAXUINT64;
+		m_ui64MapStart = std::numeric_limits<uint64_t>::max();
 		m_ui32MapSize = 0;
 	}
 
@@ -157,12 +157,12 @@ namespace lsn {
 			0,
 			NULL );
 
-		if ( m_hMap == FileMap_Null ) {
+		if ( NULL == m_hMap ) {
 			auto aCode = Errors::GetLastError_To_Native();
 			Close();
 			return aCode;
 		}
-		m_ui64MapStart = MAXUINT64;
+		m_ui64MapStart = std::numeric_limits<uint64_t>::max();
 		m_ui32MapSize = 0;
 		return LSN_E_SUCCESS;
 	}
