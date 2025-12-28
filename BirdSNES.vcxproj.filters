@@ -52,6 +52,18 @@
     <Filter Include="Source Files\Foundation">
       <UniqueIdentifier>{5fd25db6-35a9-4315-a993-cbf2af765d00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Bus">
+      <UniqueIdentifier>{2b4806ba-3abe-45c0-8997-0014f6eebc36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Bus">
+      <UniqueIdentifier>{e70bba53-ddb4-4ed0-bfa6-6a13c9dfcd40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Strings">
+      <UniqueIdentifier>{3d2bc8de-45f7-4576-8d9b-73d8b28a5a73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Strings">
+      <UniqueIdentifier>{e0a0c71f-7ec2-4377-993f-2d6e3c30f66b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\BirdSNES.cpp">
@@ -140,6 +152,15 @@
     <ClInclude Include="Src\Foundation\LSNMacros.h">
       <Filter>Header Files\Foundation</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Bus\LSNBusA.h">
+      <Filter>Header Files\Bus</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LSNBirdSNES.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Strings\LSNStrings.h">
+      <Filter>Header Files\Strings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Src\BirdSNES.ico">
@@ -157,6 +178,9 @@
   <ItemGroup>
     <None Include="Src\Errors\LSNErrorEnum.inl">
       <Filter>Header Files\Errors</Filter>
+    </None>
+    <None Include="Src\Strings\LSNStringsEnum.inl">
+      <Filter>Header Files\Strings</Filter>
     </None>
   </ItemGroup>
 </Project>

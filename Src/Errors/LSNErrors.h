@@ -11,6 +11,7 @@
 #include "../Compression/MiniZ/miniz.h"
 #include "../Foundation/LSNMacros.h"
 #include "../OS/LSNOs.h"
+#include "../Strings/LSNStrings.h"
 
 #include <chrono>
 #include <cstdint>
@@ -28,7 +29,7 @@ namespace lsn {
 	// == Types.
 	/** Error codes. */
 	enum LSN_ERRORS : uint16_t {
-#define LSN_E_ENUM( ENUM, TXT )										ENUM,
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			ENUM,
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 	};
@@ -562,11 +563,21 @@ namespace lsn {
 	 **/
 	inline const char8_t * Errors::ToStrPU8( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
-#define LSN_E_ENUM( ENUM, TXT )			case ENUM : { return u8##TXT; }
+#if defined( LSN_JAPANESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u8##JPN; }
+#elif defined( LSN_FRENCH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u8##FR; }
+#elif defined( LSN_SPANISH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u8##SP; }
+#elif defined( LSN_CHINESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u8##CH; }
+#else
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u8##TXT; }
+#endif	// #if defined( LSN_JAPANESE )
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
-		return u8"Invalid error code.";
+		return StrU8( LSN_STR_INVALID_ERROR_CODE );
 	}
 
 	/**
@@ -577,11 +588,21 @@ namespace lsn {
 	 **/
 	inline std::u8string Errors::ToStrU8( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
-#define LSN_E_ENUM( ENUM, TXT )			case ENUM : { return std::u8string( u8 ## TXT ); }
+#if defined( LSN_JAPANESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## JPN ); }
+#elif defined( LSN_FRENCH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## FR ); }
+#elif defined( LSN_SPANISH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## SP ); }
+#elif defined( LSN_CHINESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## CH ); }
+#else
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## TXT ); }
+#endif	// #if defined( LSN_JAPANESE )
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
-		return std::u8string( u8"Invalid error code." );
+		return std::u8string( StrU8( LSN_STR_INVALID_ERROR_CODE ) );
 	}
 
 	/**
@@ -592,11 +613,21 @@ namespace lsn {
 	 **/
 	inline const char16_t * Errors::ToStrPU16( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
-#define LSN_E_ENUM( ENUM, TXT )			case ENUM : { return u ## TXT; }
+#if defined( LSN_JAPANESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u ## JPN; }
+#elif defined( LSN_FRENCH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u ## FR; }
+#elif defined( LSN_SPANISH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u ## SP; }
+#elif defined( LSN_CHINESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u ## CH; }
+#else
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u ## TXT; }
+#endif	// #if defined( LSN_JAPANESE )
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
-		return u"Invalid error code.";
+		return StrU( LSN_STR_INVALID_ERROR_CODE );
 	}
 
 	/**
@@ -607,11 +638,21 @@ namespace lsn {
 	 **/
 	inline std::u16string Errors::ToStrU16( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
-#define LSN_E_ENUM( ENUM, TXT )			case ENUM : { return std::u16string( u ## TXT ); }
+#if defined( LSN_JAPANESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## JPN ); }
+#elif defined( LSN_FRENCH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## FR ); }
+#elif defined( LSN_SPANISH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## SP ); }
+#elif defined( LSN_CHINESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## CH ); }
+#else
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## TXT ); }
+#endif	// #if defined( LSN_JAPANESE )
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
-		return std::u16string( u"Invalid error code." );
+		return std::u16string( StrU( LSN_STR_INVALID_ERROR_CODE ) );
 	}
 
 	/**
@@ -622,7 +663,7 @@ namespace lsn {
 	 **/
 	inline const char8_t * Errors::NamePU8( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
-#define LSN_E_ENUM( ENUM, TXT )			case ENUM : { return &u8 ## # ENUM[6]; }
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return &u8 ## # ENUM[6]; }
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
@@ -638,7 +679,7 @@ namespace lsn {
 	 **/
 	inline const char16_t * Errors::NamePU16( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
-#define LSN_E_ENUM( ENUM, TXT )			case ENUM : { return &u ## # ENUM[6]; }
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return &u ## # ENUM[6]; }
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
