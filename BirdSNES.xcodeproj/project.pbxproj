@@ -68,6 +68,9 @@
 		12CFC8C22F001F5000792565 /* LSNErrorEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */; };
 		12CFC8C32F001F5000792565 /* LSNErrorEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */; };
 		12CFC8C42F001F5000792565 /* LSNErrorEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */; };
+		12CFC8CE2F0153BB00792565 /* LSNStringsEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */; };
+		12CFC8CF2F0153BB00792565 /* LSNStringsEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */; };
+		12CFC8D02F0153BB00792565 /* LSNStringsEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -158,6 +161,12 @@
 		12CFC8442EFF991100792565 /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
 		12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNErrorEnum.inl; sourceTree = "<group>"; };
 		12CFC8C02F001F5000792565 /* LSNErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNErrors.h; sourceTree = "<group>"; };
+		12CFC8C52F0153BB00792565 /* LSNApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNApple.h; sourceTree = "<group>"; };
+		12CFC8C62F0153BB00792565 /* LSNOs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNOs.h; sourceTree = "<group>"; };
+		12CFC8C72F0153BB00792565 /* LSNWindows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNWindows.h; sourceTree = "<group>"; };
+		12CFC8C92F0153BB00792565 /* LSNStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNStrings.h; sourceTree = "<group>"; };
+		12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNStringsEnum.inl; sourceTree = "<group>"; };
+		12CFC8CC2F0153BB00792565 /* LSNBusA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNBusA.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,10 +213,13 @@
 		126C27342EFCBA580036A687 /* BirdSNES Shared */ = {
 			isa = PBXGroup;
 			children = (
+				12CFC8CD2F0153BB00792565 /* Bus */,
 				12CFC8462EFF991100792565 /* Compression */,
 				12CFC8C12F001F5000792565 /* Errors */,
 				12CFC8142EFF991100792565 /* Files */,
 				12CFC8092EFF991100792565 /* Foundation */,
+				12CFC8C82F0153BB00792565 /* OS */,
+				12CFC8CB2F0153BB00792565 /* Strings */,
 				12CFC81A2EFF991100792565 /* Utilities */,
 				126C27352EFCBA580036A687 /* Renderer.h */,
 				126C27362EFCBA580036A687 /* Renderer.m */,
@@ -366,6 +378,36 @@
 			path = Src/Errors;
 			sourceTree = SOURCE_ROOT;
 		};
+		12CFC8C82F0153BB00792565 /* OS */ = {
+			isa = PBXGroup;
+			children = (
+				12CFC8C52F0153BB00792565 /* LSNApple.h */,
+				12CFC8C62F0153BB00792565 /* LSNOs.h */,
+				12CFC8C72F0153BB00792565 /* LSNWindows.h */,
+			);
+			name = OS;
+			path = Src/OS;
+			sourceTree = SOURCE_ROOT;
+		};
+		12CFC8CB2F0153BB00792565 /* Strings */ = {
+			isa = PBXGroup;
+			children = (
+				12CFC8C92F0153BB00792565 /* LSNStrings.h */,
+				12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */,
+			);
+			name = Strings;
+			path = Src/Strings;
+			sourceTree = SOURCE_ROOT;
+		};
+		12CFC8CD2F0153BB00792565 /* Bus */ = {
+			isa = PBXGroup;
+			children = (
+				12CFC8CC2F0153BB00792565 /* LSNBusA.h */,
+			);
+			name = Bus;
+			path = Src/Bus;
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -501,6 +543,7 @@
 				12CFC8B32EFF991100792565 /* ChangeLog.md in Resources */,
 				12CFC8C22F001F5000792565 /* LSNErrorEnum.inl in Resources */,
 				12CFC8BC2EFF991100792565 /* readme.md in Resources */,
+				12CFC8CE2F0153BB00792565 /* LSNStringsEnum.inl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,6 +558,7 @@
 				12CFC8B42EFF991100792565 /* ChangeLog.md in Resources */,
 				12CFC8C32F001F5000792565 /* LSNErrorEnum.inl in Resources */,
 				12CFC8BD2EFF991100792565 /* readme.md in Resources */,
+				12CFC8CF2F0153BB00792565 /* LSNStringsEnum.inl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -522,6 +566,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12CFC8D02F0153BB00792565 /* LSNStringsEnum.inl in Resources */,
 				12CFC8BE2EFF991100792565 /* readme.md in Resources */,
 				12CFC8C42F001F5000792565 /* LSNErrorEnum.inl in Resources */,
 				12CFC8B82EFF991100792565 /* LICENSE in Resources */,
