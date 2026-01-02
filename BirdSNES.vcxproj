@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClCompile Include="Src\BirdSNES.cpp" />
     <ClCompile Include="Src\Compression\MiniZ\miniz.c" />
+    <ClCompile Include="Src\CPU\LSNRicoh5A22.cpp" />
     <ClCompile Include="Src\Files\LSNFileBase.cpp" />
     <ClCompile Include="Src\Files\LSNFileMap.cpp" />
     <ClCompile Include="Src\Files\LSNStdFile.cpp" />
@@ -41,6 +42,8 @@
     <ClInclude Include="Src\BirdSNES.h" />
     <ClInclude Include="Src\Bus\LSNBusA.h" />
     <ClInclude Include="Src\Compression\MiniZ\miniz.h" />
+    <ClInclude Include="Src\CPU\LSNRicoh5A22.h" />
+    <ClInclude Include="Src\CPU\LSNRicoh5A22Base.h" />
     <ClInclude Include="Src\Errors\LSNErrors.h" />
     <ClInclude Include="Src\Files\LSNFileBase.h" />
     <ClInclude Include="Src\Files\LSNFileMap.h" />

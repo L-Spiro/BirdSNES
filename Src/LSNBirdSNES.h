@@ -66,13 +66,13 @@ namespace lsn {
 		LSN_CS_PAL_MASTER_DIVISOR			= 1ULL,								/**< The master clock speed divisor. 21.281370 MHz / 1 = 21281370. */
 
 		LSN_CS_NTSC_CPU_DIVISOR_FAST		= 6ULL,								/**< 236.25 MHz / 11 / 6 = 3579545.4545454545454545454545455. */
-		LSN_CS_PAL_CPU_DIVISOR_FAST			= 6ULL,								/**< 53.203425 MHz / 1 / 6 = 3546895. */
+		LSN_CS_PAL_CPU_DIVISOR_FAST			= 6ULL,								/**< 21281370 / 1 / 6 = 3546895. */
 
-		LSN_CS_NTSC_CPU_DIVISOR_DMA			= 8ULL,								/**< 236.25 MHz / 11 / 8 = 2684659.0909090909090909090909091. */
-		LSN_CS_PAL_CPU_DIVISOR_DMA			= 8ULL,								/**< 53.203425 MHz / 1 / 8 = 2660171.25. */
+		LSN_CS_NTSC_CPU_DIVISOR_SLOW		= 8ULL,								/**< 236.25 MHz / 11 / 8 = 2684659.0909090909090909090909091. */
+		LSN_CS_PAL_CPU_DIVISOR_SLOW			= 8ULL,								/**< 21281370 / 1 / 8 = 2660171.25. */
 
-		LSN_CS_NTSC_CPU_DIVISOR_SLOW		= 12ULL,							/**< 236.25 MHz / 11 / 12 = 1789772.7272727272727272727272727. */
-		LSN_CS_PAL_CPU_DIVISOR_SLOW			= 12ULL,							/**< 53.203425 MHz / 1 / 12 = 1773447.5. */
+		LSN_CS_NTSC_CPU_DIVISOR_XSLOW		= 12ULL,							/**< 236.25 MHz / 11 / 12 = 1789772.7272727272727272727272727. */
+		LSN_CS_PAL_CPU_DIVISOR_XSLOW		= 12ULL,							/**< 21281370 / 1 / 12 = 1773447.5. */
 
 		LSN_CS_NTSC_PPU_DIVISOR				= 4ULL,								/**< 236.25 MHz / 11 / 4 = 5369318.1818181818181818181818182. */
 		LSN_CS_PAL_PPU_DIVISOR				= 4ULL,								/**< 21281370 / 1 / 4 = 5320342.5. */
@@ -108,6 +108,12 @@ namespace lsn {
 		 *							23.976023976023976023976023976024.
 		 *							47.952047952047952047952047952048.
 		 */
+	};
+
+	/** Memory-access source. */
+	enum LSN_ACCESS_SOURCE {
+		LSN_AS_CPU,																/**< Memory is being accssed by the CPU. */
+		LSN_AS_DMA,																/**< Memory is being accssed by DMA. */
 	};
 
 }	// namespace lsn

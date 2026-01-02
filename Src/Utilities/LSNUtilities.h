@@ -636,7 +636,7 @@ namespace lsn {
 		 * \return Returns the converted value.
 		 */
 		static inline double LSN_FASTCALL					sRGBtoLinear( double _dVal ) {
-			if ( _dVal < -0.04045 ) { return -std::pow( (-_dVal + 0.055) / 1.055, 2.4 ); }
+			if LSN_UNLIKELY( _dVal < -0.04045 ) { return -std::pow( (-_dVal + 0.055) / 1.055, 2.4 ); }
 			return _dVal <= 0.04045 ?
 				_dVal / 12.92 :
 				std::pow( (_dVal + 0.055) / 1.055, 2.4 );
@@ -649,7 +649,7 @@ namespace lsn {
 		 * \return Returns the converted value.
 		 */
 		static inline double LSN_FASTCALL					LinearTosRGB( double _dVal ) {
-			if ( _dVal < -0.0031308 ) { return -1.055 * std::pow( -_dVal, 1.0 / 2.4 ) + 0.055; }
+			if LSN_UNLIKELY( _dVal < -0.0031308 ) { return -1.055 * std::pow( -_dVal, 1.0 / 2.4 ) + 0.055; }
 			return _dVal <= 0.0031308 ?
 				_dVal * 12.92 :
 				1.055 * std::pow( _dVal, 1.0 / 2.4 ) - 0.055;
@@ -671,7 +671,7 @@ namespace lsn {
 			constexpr double dBeta = 1.0549999999999999378275106209912337362766265869140625;
 			constexpr double dTheta = 12.92321018078785499483274179510772228240966796875;
 			constexpr double dCut = 0.039285714285714291860163172032116563059389591217041015625;
-			if ( _dVal < -dCut ) { return -std::pow( (-_dVal + dAlpha) / dBeta, 2.4 ); }
+			if LSN_UNLIKELY( _dVal < -dCut ) { return -std::pow( (-_dVal + dAlpha) / dBeta, 2.4 ); }
 			return _dVal <= dCut ?
 				_dVal / dTheta :
 				std::pow( (_dVal + dAlpha) / dBeta, 2.4 );
@@ -693,7 +693,7 @@ namespace lsn {
 			constexpr double dBeta = 1.0549999999999999378275106209912337362766265869140625;
 			constexpr double dTheta = 12.92321018078785499483274179510772228240966796875;
 			constexpr double dCut = 0.003039934639778431833823102437008856213651597499847412109375;
-			if ( _dVal < -dCut ) { return -dBeta * std::pow( -_dVal, 1.0 / 2.4 ) + dAlpha; }
+			if LSN_UNLIKELY( _dVal < -dCut ) { return -dBeta * std::pow( -_dVal, 1.0 / 2.4 ) + dAlpha; }
 			return _dVal <= dCut ?
 				_dVal * dTheta :
 				dBeta * std::pow( _dVal, 1.0 / 2.4 ) - dAlpha;
@@ -706,7 +706,7 @@ namespace lsn {
 		 * \return Returns the color value converted to linear space.
 		 **/
 		static inline double LSN_FASTCALL					SMPTE170MtoLinear( double _dVal ) {
-			if ( _dVal < -0.081 ) { return -std::pow( (-_dVal + 0.099) / 1.099, 1.0 / 0.45 ); }
+			if LSN_UNLIKELY( _dVal < -0.081 ) { return -std::pow( (-_dVal + 0.099) / 1.099, 1.0 / 0.45 ); }
 			return _dVal <= 0.081 ?
 				_dVal / 4.5 :
 				std::pow( (_dVal + 0.099) / 1.099, 1.0 / 0.45 );
@@ -719,7 +719,7 @@ namespace lsn {
 		 * \return Returns the value converted to SMPTE 170M-2004 space.
 		 */
 		static inline double LSN_FASTCALL					LinearToSMPTE170M( double _dVal ) {
-			if ( _dVal < -0.018 ) { return -1.099 * std::pow( -_dVal, 0.45 ) + 0.099; }
+			if LSN_UNLIKELY( _dVal < -0.018 ) { return -1.099 * std::pow( -_dVal, 0.45 ) + 0.099; }
 			return _dVal <= 0.018 ?
 				_dVal * 4.5 :
 				1.099 * std::pow( _dVal, 0.45 ) - 0.099;
@@ -732,7 +732,7 @@ namespace lsn {
 		 * \return Returns the color value converted to linear space.
 		 **/
 		static inline double LSN_FASTCALL					SMPTE170MtoLinear_Precise( double _dVal ) {
-			if ( _dVal < -0.08124285829863515939752716121802222914993762969970703125 ) { return -std::pow( (-_dVal + 0.09929682680944297568093048766968422569334506988525390625) / 1.09929682680944296180314267985522747039794921875, 1.0 / 0.45 ); }
+			if LSN_UNLIKELY( _dVal < -0.08124285829863515939752716121802222914993762969970703125 ) { return -std::pow( (-_dVal + 0.09929682680944297568093048766968422569334506988525390625) / 1.09929682680944296180314267985522747039794921875, 1.0 / 0.45 ); }
 			return _dVal <= 0.08124285829863515939752716121802222914993762969970703125 ?
 				_dVal / 4.5 :
 				std::pow( (_dVal + 0.09929682680944297568093048766968422569334506988525390625) / 1.09929682680944296180314267985522747039794921875, 1.0 / 0.45 );
@@ -745,7 +745,7 @@ namespace lsn {
 		 * \return Returns the value converted to SMPTE 170M-2004 space.
 		 */
 		static inline double LSN_FASTCALL					LinearToSMPTE170M_Precise( double _dVal ) {
-			if ( _dVal < -0.0180539685108078128139563744980478077195584774017333984375 ) { return -1.09929682680944296180314267985522747039794921875 * std::pow( -_dVal, 0.45 ) + 0.09929682680944297568093048766968422569334506988525390625; }
+			if LSN_UNLIKELY( _dVal < -0.0180539685108078128139563744980478077195584774017333984375 ) { return -1.09929682680944296180314267985522747039794921875 * std::pow( -_dVal, 0.45 ) + 0.09929682680944297568093048766968422569334506988525390625; }
 			return _dVal <= 0.0180539685108078128139563744980478077195584774017333984375 ?
 				_dVal * 4.5 :
 				1.09929682680944296180314267985522747039794921875 * std::pow( _dVal, 0.45 ) - 0.09929682680944297568093048766968422569334506988525390625;
@@ -758,7 +758,7 @@ namespace lsn {
 		 * \return Returns the color value converted to linear space.
 		 **/
 		static inline double LSN_FASTCALL					SMPTE240MtoLinear( double _dVal ) {
-			if ( _dVal <= -0.0913 ) { return -std::pow( (-_dVal + 0.1115) / 1.1115, 1.0 / 0.45 ); }
+			if LSN_UNLIKELY( _dVal <= -0.0913 ) { return -std::pow( (-_dVal + 0.1115) / 1.1115, 1.0 / 0.45 ); }
 			return _dVal < 0.0913 ?
 				_dVal / 4.0 :
 				std::pow( (_dVal + 0.1115) / 1.1115, 1.0 / 0.45 );
@@ -771,7 +771,7 @@ namespace lsn {
 		 * \return Returns the value converted to SMPTE 240M space.
 		 */
 		static inline double LSN_FASTCALL					LinearToSMPTE240M( double _dVal ) {
-			if ( _dVal <= -0.0228 ) { return -1.1115 * std::pow( -_dVal, 0.45 ) + 0.1115; }
+			if LSN_UNLIKELY( _dVal <= -0.0228 ) { return -1.1115 * std::pow( -_dVal, 0.45 ) + 0.1115; }
 			return _dVal < 0.0228 ?
 				_dVal * 4.0 :
 				1.1115 * std::pow( _dVal, 0.45 ) - 0.1115;
@@ -784,7 +784,7 @@ namespace lsn {
 		 * \return Returns the color value converted to linear space.
 		 **/
 		static inline double LSN_FASTCALL					SMPTE240MtoLinear_Precise( double _dVal ) {
-			if ( _dVal < -0.0912863421177801115380390228892792947590351104736328125 ) { return -std::pow( (-_dVal + 0.1115721959217312597711924126997473649680614471435546875) / 1.1115721959217312875267680283286608755588531494140625, 1.0 / 0.45 ); }
+			if LSN_UNLIKELY( _dVal < -0.0912863421177801115380390228892792947590351104736328125 ) { return -std::pow( (-_dVal + 0.1115721959217312597711924126997473649680614471435546875) / 1.1115721959217312875267680283286608755588531494140625, 1.0 / 0.45 ); }
 			return _dVal <= 0.0912863421177801115380390228892792947590351104736328125 ?
 				_dVal / 4.0 :
 				std::pow( (_dVal + 0.1115721959217312597711924126997473649680614471435546875) / 1.1115721959217312875267680283286608755588531494140625, 1.0 / 0.45 );
@@ -797,14 +797,62 @@ namespace lsn {
 		 * \return Returns the value converted to SMPTE 240M space.
 		 */
 		static inline double LSN_FASTCALL					LinearToSMPTE240M_Precise( double _dVal ) {
-			if ( _dVal < -0.022821585529445027884509755722319823689758777618408203125 ) { return -1.1115721959217312875267680283286608755588531494140625 * std::pow( -_dVal, 0.45 ) + 0.1115721959217312597711924126997473649680614471435546875; }
+			if LSN_UNLIKELY( _dVal < -0.022821585529445027884509755722319823689758777618408203125 ) { return -1.1115721959217312875267680283286608755588531494140625 * std::pow( -_dVal, 0.45 ) + 0.1115721959217312597711924126997473649680614471435546875; }
 			return _dVal <= 0.022821585529445027884509755722319823689758777618408203125 ?
 				_dVal * 4.0 :
 				1.1115721959217312875267680283286608755588531494140625 * std::pow( _dVal, 0.45 ) - 0.1115721959217312597711924126997473649680614471435546875;
 		}
 
 		/**
-		 * Converts from linear to linear.
+		 * Converts from macOS “Generic RGB Profile” to linear.
+		 * The Generic RGB profile that ships with macOS uses a simple power-law TRC with gamma 1.8 (no toe).
+		 *
+		 * \param _dVal The value to convert.
+		 * \return Returns the color value converted to linear space.
+		 **/
+		static inline double LSN_FASTCALL					GenericRGBToLinear( double _dVal ) {
+			if LSN_UNLIKELY( _dVal < 0.0 ) { return -std::pow( -_dVal, 1.8 ); }
+			return std::pow( _dVal, 1.8 );
+		}
+
+		/**
+		 * Converts from linear to macOS “Generic RGB Profile”.
+		 * The Generic RGB profile that ships with macOS uses a simple power-law TRC with gamma 1.8 (no toe).
+		 *
+		 * \param _dVal The value to convert.
+		 * \return Returns the value converted to Generic RGB space.
+		 */
+		static inline double LSN_FASTCALL					LinearToGenericRGB( double _dVal ) {
+			constexpr double dInvGamma = 1.0 / 1.8;
+
+			if LSN_UNLIKELY( _dVal < 0.0 ) { return -std::pow( -_dVal, dInvGamma ); }
+			return std::pow( _dVal, dInvGamma );
+		}
+
+		/**
+		 * Converts from Adobe RGB (1998) to linear.
+		 * 
+		 * \param _dVal The value to convert.
+		 * \return Returns the color value converted to linear space.
+		 **/
+		static inline double LSN_FASTCALL					AdobeRGBtoLinear( double _dVal ) {
+			if LSN_UNLIKELY( _dVal < 0 ) { return -std::pow( -_dVal, 2.19921875 ); }
+			return std::pow( _dVal, 2.19921875 );
+		}
+
+		/**
+		 * Converts from linear to Adobe RGB (1998).
+		 *
+		 * \param _dVal The value to convert.
+		 * \return Returns the value converted to Adobe RGB space.
+		 */
+		static inline double LSN_FASTCALL					LinearToAdobeRGB( double _dVal ) {
+			if LSN_UNLIKELY( _dVal < 0 ) { return -std::pow( -_dVal, 1.0 / 2.19921875 ); }
+			return std::pow( _dVal, 1.0 / 2.19921875 );
+		}
+
+		/**
+		 * Converts from linear to linear (ACEScg (AP1)).
 		 * 
 		 * \param _dVal The value to convert.
 		 * \return Returns the color value converted to linear space.
@@ -814,13 +862,47 @@ namespace lsn {
 		}
 
 		/**
+		 * Converts from ROMM RGB to linear.
+		 * 
+		 * \param _dVal The value to convert.
+		 * \return Returns the color value converted to linear space.
+		 **/
+		static inline double LSN_FASTCALL					RommRgbToLinear( double _dVal ) {
+			if LSN_UNLIKELY( _dVal <= 0 ) { return 0.0; }
+			if ( _dVal <= 0.03125 ) {
+				return _dVal / 16.0;
+			}
+			if ( _dVal < 1.0 ) {
+				return std::pow( _dVal, 1.8 );
+			}
+			return 1.0;
+		}
+
+		/**
+		 * Converts from linear to ROMM RGB.
+		 *
+		 * \param _dVal The value to convert.
+		 * \return Returns the value converted to ROMM RGB space.
+		 */
+		static inline double LSN_FASTCALL					LinearToRommRgb( double _dVal ) {
+			if LSN_UNLIKELY( _dVal <= 0 ) { return 0.0; }
+			if ( _dVal <= 0.001953125 ) {	// pow(16.0, 1.8/(1-1.8));
+				return _dVal * 16.0;
+			}
+			if ( _dVal < 1.0 ) {
+				return std::pow( _dVal, 1.0 / 1.8 );
+			}
+			return 1.0;
+		}
+
+		/**
 		 * Converts from 2.2 to linear.
 		 * 
 		 * \param _dVal The value to convert.
 		 * \return Returns the color value converted to linear space.
 		 **/
 		static inline double LSN_FASTCALL					Pow2_2toLinear( double _dVal ) {
-			if ( _dVal < 0 ) { return -std::pow( -_dVal, 2.2 ); }
+			if LSN_UNLIKELY( _dVal < 0 ) { return -std::pow( -_dVal, 2.2 ); }
 			return std::pow( _dVal, 2.2 );
 		}
 
@@ -831,8 +913,30 @@ namespace lsn {
 		 * \return Returns the value converted to 2.2 space.
 		 */
 		static inline double LSN_FASTCALL					LinearToPow2_2( double _dVal ) {
-			if ( _dVal < 0 ) { return -std::pow( -_dVal, 1.0 / 2.2 ); }
+			if LSN_UNLIKELY( _dVal < 0 ) { return -std::pow( -_dVal, 1.0 / 2.2 ); }
 			return std::pow( _dVal, 1.0 / 2.2 );
+		}
+
+		/**
+		 * Converts from DCI-P3 to linear.
+		 * 
+		 * \param _dVal The value to convert.
+		 * \return Returns the color value converted to linear space.
+		 **/
+		static inline double LSN_FASTCALL					DCIP3toLinear( double _dVal ) {
+			if LSN_UNLIKELY( _dVal < 0 ) { return -std::pow( -_dVal, 2.6 ); }
+			return std::pow( _dVal, 2.6 );
+		}
+
+		/**
+		 * Converts from linear to DCI-P3.
+		 *
+		 * \param _dVal The value to convert.
+		 * \return Returns the value converted to DCI-P3 space.
+		 */
+		static inline double LSN_FASTCALL					LinearToDCIP3( double _dVal ) {
+			if LSN_UNLIKELY( _dVal < 0 ) { return -std::pow( -_dVal, 1.0 / 2.6 ); }
+			return std::pow( _dVal, 1.0 / 2.6 );
 		}
 
 		/**
@@ -842,7 +946,7 @@ namespace lsn {
 		 * \return Returns the color value converted to linear space.
 		 **/
 		static inline double LSN_FASTCALL					Pow2_8toLinear( double _dVal ) {
-			if ( _dVal < 0 ) { return -std::pow( -_dVal, 2.8 ); }
+			if LSN_UNLIKELY( _dVal < 0 ) { return -std::pow( -_dVal, 2.8 ); }
 			return std::pow( _dVal, 2.8 );
 		}
 
@@ -853,7 +957,7 @@ namespace lsn {
 		 * \return Returns the value converted to 2.8 space.
 		 */
 		static inline double LSN_FASTCALL					LinearToPow2_8( double _dVal ) {
-			if ( _dVal < 0 ) { return -std::pow( -_dVal, 1.0 / 2.8 ); }
+			if LSN_UNLIKELY( _dVal < 0 ) { return -std::pow( -_dVal, 1.0 / 2.8 ); }
 			return std::pow( _dVal, 1.0 / 2.8 );
 		}
 
@@ -867,12 +971,14 @@ namespace lsn {
 		 * \param _dChromaY The output chromaticity Y.
 		 **/
 		static inline void									XYZtoChromaticity( double _dX, double _dY, double _dZ, double &_dChromaX, double &_dChromaY ) {
-			double dX = _dX / _dY;
-			constexpr double dY = 1.0;
-			double dZ = _dZ / _dY;
-
-			_dChromaX = dX / (dX + dY + dZ);
-			_dChromaY = dY / (dX + dY + dZ);
+			const double dSum = _dX + _dY + _dZ;
+			if LSN_UNLIKELY( dSum == 0.0 ) {
+				_dChromaX = 0.0;
+				_dChromaY = 0.0;
+				return;
+			}
+			_dChromaX = _dX / dSum;
+			_dChromaY = _dY / dSum;
 		}
 
 		/**
@@ -881,12 +987,18 @@ namespace lsn {
 		 * \param _dChromaX The input chromaticity X.
 		 * \param _dChromaY The input chromaticity Y.
 		 * \param _dY0 The input XYZ Y value.
-		 * \param _dX0 The output XYZ Z value.
+		 * \param _dX0 The output XYZ X value.
 		 * \param _dZ0 The output XYZ Z value.
 		 **/
 		static void											ChromaticityToXYZ( double _dChromaX, double _dChromaY, double _dY0, double &_dX0, double &_dZ0 ) {
-			_dX0 = _dChromaX * (_dY0 / _dChromaY);
-			_dZ0 = (1.0 - _dChromaX - _dChromaY) * (_dY0 / _dChromaY);
+			if LSN_UNLIKELY( _dChromaY == 0.0 ) {
+				_dX0 = 0.0;
+				_dZ0 = 0.0;
+				return;
+			}
+			const double dScale = _dY0 / _dChromaY;
+			_dX0 = _dChromaX * dScale;
+			_dZ0 = (1.0 - _dChromaX - _dChromaY) * dScale;
 		}
 
 

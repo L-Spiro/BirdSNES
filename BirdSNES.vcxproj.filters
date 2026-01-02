@@ -64,6 +64,12 @@
     <Filter Include="Source Files\Strings">
       <UniqueIdentifier>{e0a0c71f-7ec2-4377-993f-2d6e3c30f66b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\CPU">
+      <UniqueIdentifier>{3e1fa618-397c-45db-8c53-9b98f92b61be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CPU">
+      <UniqueIdentifier>{c3d37599-71be-4400-995c-25134fb37b97}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\BirdSNES.cpp">
@@ -92,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="Src\Foundation\LSNFeatureSet.cpp">
       <Filter>Source Files\Foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\CPU\LSNRicoh5A22.cpp">
+      <Filter>Source Files\CPU</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +169,12 @@
     </ClInclude>
     <ClInclude Include="Src\Strings\LSNStrings.h">
       <Filter>Header Files\Strings</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\CPU\LSNRicoh5A22.h">
+      <Filter>Header Files\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\CPU\LSNRicoh5A22Base.h">
+      <Filter>Header Files\CPU</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
