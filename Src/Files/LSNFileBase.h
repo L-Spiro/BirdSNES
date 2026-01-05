@@ -36,7 +36,7 @@ namespace lsn {
 		 * \param _pFile Path to the file to open.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual LSN_ERRORS									Open( const std::filesystem::path &/*_pFile*/ ) { return LSN_E_NOT_IMPLEMENTED; }
+		virtual LSN_ERRORS									Open( const std::filesystem::path &_pFile ) { static_cast<void>(_pFile); return LSN_E_NOT_IMPLEMENTED; }
 
 		/**
 		 * Creates a file.
@@ -44,7 +44,7 @@ namespace lsn {
 		 * \param _pFile Path to the file to create.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual LSN_ERRORS									Create( const std::filesystem::path &/*_pFile*/ ) { return LSN_E_NOT_IMPLEMENTED; }
+		virtual LSN_ERRORS									Create( const std::filesystem::path &_pFile ) { static_cast<void>(_pFile); return LSN_E_NOT_IMPLEMENTED; }
 
 		/**
 		 * Opens a file for appending.  If it does not exist it is created.
@@ -52,7 +52,7 @@ namespace lsn {
 		 * \param _pFile Path to the file to open for appending.
 		 * \return Returns an error code indicating the result of the operation.
 		 */
-		virtual LSN_ERRORS									Append( const std::filesystem::path &/*_pFile*/ ) { return LSN_E_NOT_IMPLEMENTED; }
+		virtual LSN_ERRORS									Append( const std::filesystem::path &_pFile ) { static_cast<void>(_pFile); return LSN_E_NOT_IMPLEMENTED; }
 
 		/**
 		 * Closes the opened file.
@@ -112,7 +112,7 @@ namespace lsn {
 		 * \param _i64Offset Amount by which to move the file pointer.
 		 * \return Returns the new line position.
 		 **/
-		virtual uint64_t									MovePointerBy( int64_t /*_i64Offset*/ ) const { return 0; }
+		virtual uint64_t									MovePointerBy( int64_t _i64Offset ) const { static_cast<void>(_i64Offset); return 0; }
 
 		/**
 		 * Moves the file pointer to the given file position.
@@ -121,7 +121,7 @@ namespace lsn {
 		 * \param _bFromEnd Whether _ui64Pos is from the end of the file or not. 
 		 * \return Returns the new file position.
 		 **/
-		virtual uint64_t									MovePointerTo( uint64_t /*_ui64Pos*/, bool /*_bFromEnd*/ = false ) const { return 0; }
+		virtual uint64_t									MovePointerTo( uint64_t _ui64Pos, bool _bFromEnd = false ) const { static_cast<void>(_ui64Pos); static_cast<void>(_bFromEnd); return 0; }
 
 		/**
 		 * Finds files/folders in a given directory.

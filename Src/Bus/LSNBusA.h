@@ -95,7 +95,7 @@ namespace lsn {
 				_ui8Speed = _ui8SpeedOverride;
 			}
 #ifdef LSN_CPU_VERIFY
-			m_vReadWriteLog.push_back( { .ui32Address = _ui16Address | (uint32_t( _ui8Bank ) << 16), .ui8Value = ui8Ret, .bRead = true } );
+			m_vReadWriteLog.push_back( { .ui32Address = m_rfpAccessFuncParms.ui32FullAddress, .ui8Value = ui8Ret, .bRead = true } );
 #endif	// #ifdef LSN_CPU_VERIFY
 			return ui8Ret;
 		}
@@ -132,7 +132,7 @@ namespace lsn {
 				_ui8Speed = _ui8SpeedOverride;
 			}
 #ifdef LSN_CPU_VERIFY
-			m_vReadWriteLog.push_back( { .ui32Address = _ui16Address | (uint32_t( _ui8Bank ) << 16), .ui8Value = _ui8Val, .bRead = false } );
+			m_vReadWriteLog.push_back( { .ui32Address = m_rfpAccessFuncParms.ui32FullAddress, .ui8Value = _ui8Val, .bRead = false } );
 #endif	// #ifdef LSN_CPU_VERIFY
 		}
 
@@ -241,7 +241,7 @@ namespace lsn {
 		 * \param _ui16Address The address within the given bank whose speed is to be set.
 		 * \param _ui8Bank The bank of the address whose speed is to be set.
 		 * \param _ui8Speed0 The speed to set for MEMSEL=0.
-		 * \param _ui8Speed The speed to set for MEMSEL=1.  0 means to use the same value as _ui8Speed0.
+		 * \param _ui8Speed1 The speed to set for MEMSEL=1.  0 means to use the same value as _ui8Speed0.
 		 **/
 		inline void									SetRamSpeed( uint16_t _ui16Address, uint8_t _ui8Bank, uint8_t _ui8Speed0, uint8_t _ui8Speed1 = 0 ) {
 			uint16_t ui16SpdAddr = (_ui16Address >> 8) | (uint16_t( _ui8Bank ) << 8);
@@ -334,8 +334,8 @@ namespace lsn {
 		 * \param _pvReadParm The readers’ first parameter.
 		 * \param _pfWriteFunc The function for writing the assigned address range.
 		 * \param _pvWriteParm The writers’ first parameter.
-		 * \param _pfReadFunc The debug function for reading the assigned address range.
-		 * \param _pfReadFunc The debug function for writing the assigned address range.
+		 * \param _pfDebugReadFunc The debug function for reading the assigned address range.
+		 * \param _pfDebugWriteFunc The debug function for writing the assigned address range.
 		 **/
 		void										SetAccessor( uint16_t _ui16Chunk, PfReadFunc _pfReadFunc, void * _pvReadParm,
 			PfWriteFunc _pfWriteFunc, void * _pvWriteParm,
@@ -366,7 +366,8 @@ namespace lsn {
 		 * \param _ui8Ret Holds the return value.
 		 * \param _ui8OpenMask Holds a mask for the return value.
 		 **/
-		static void LSN_FASTCALL					StdRead( const LSN_ACCESSFUNCPARMS &_rfpParms, uint8_t &_ui8Ret, uint8_t &/*_ui8OpenMask*/ ) {
+		static void LSN_FASTCALL					StdRead( const LSN_ACCESSFUNCPARMS &_rfpParms, uint8_t &_ui8Ret, uint8_t &_ui8OpenMask ) {
+			static_cast<void>(_ui8OpenMask);
 			_ui8Ret = _rfpParms.pui8Data[_rfpParms.ui32FullAddress];
 		}
 

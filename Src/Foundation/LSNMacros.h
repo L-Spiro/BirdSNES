@@ -18,6 +18,8 @@
 
 	// Microsoft Visual Studio Compiler
 	#define LSN_ALIGN( N ) 										__declspec( align( N ) )
+	#define LSN_ALIGN_STRUCT( N )								LSN_ALIGN( N )
+	#define LSN_ALIGN_STRUCT_END( N )
 	#define LSN_FALLTHROUGH										[[fallthrough]];
 	#define LSN_LIKELY( x )										( x ) [[likely]]
 	#define LSN_UNLIKELY( x )									( x ) [[unlikely]]
@@ -36,7 +38,9 @@
 	#define LSN_PREFETCH_LINE_WRITE( ADDR )						__builtin_prefetch( reinterpret_cast<const void *>(ADDR), 1, 3 )
 
 	// GNU Compiler Collection (GCC) or Clang
-	#define LSN_ALIGN( N ) 										__attribute__( (aligned( N )) )
+	#define LSN_ALIGN( N )										__attribute__( (aligned( N )) )
+	#define LSN_ALIGN_STRUCT( N )
+	#define LSN_ALIGN_STRUCT_END( N ) 							LSN_ALIGN( N )
 	#define LSN_FALLTHROUGH
 	#define LSN_LIKELY( x )										( __builtin_expect( !!(x), 1 ) )
 	#define LSN_UNLIKELY( x )									( __builtin_expect( !!(x), 0 ) )

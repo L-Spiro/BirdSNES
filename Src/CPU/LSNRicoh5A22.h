@@ -181,7 +181,7 @@ namespace lsn {
 	protected :
 		// == Types.
 		/** The full state structure for instructions. */
-		LSN_ALIGN( 64 )
+		LSN_ALIGN_STRUCT( 64 )
 		struct LSN_FULL_STATE {
 			LSN_REGISTERS												rRegs;																				/**< Registers. */
 
@@ -211,7 +211,7 @@ namespace lsn {
 			bool														bTakeJump;																			/**< Determines if a branch is taken. */
 		
 			bool														bEmulationMode = true;																/**< Emulation Mode flag. */
-		};
+		} LSN_ALIGN_STRUCT_END( 64 );
 
 
 		// == Members.
@@ -289,7 +289,9 @@ namespace lsn {
 	/**
 	 * Prepares to enter a new instruction.
 	 *
-	 * \param _ui16Op The instruction to begin executing.
+	 * \tparam _bIncPc If true, PC is updatd.
+	 * \tparam _bAdjS If true, S is updatd.
+	 * \tparam _bCheckStartOfFunction If true, the LSN_INSTR_START_PHI1( true ) macro call is embedded.
 	 */
 	template <bool _bIncPc, bool _bAdjS, bool _bCheckStartOfFunction>
 	inline void Ricoh5A22::BeginInst() {
@@ -306,7 +308,6 @@ namespace lsn {
 		}
 		// Enter normal instruction context.
 		m_fsState.ui8FuncIndex = 0;
-		// TODO: Move this to Tick_NextInstructionStd().
 		m_pfTickFunc = m_pfTickFuncCopy = &Ricoh5A22::Tick_InstructionCycleStd;
 		m_fsState.bBoundaryCrossed = false;
 		//m_ui8RdyOffCnt = 0;
