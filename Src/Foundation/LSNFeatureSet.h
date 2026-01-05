@@ -58,12 +58,12 @@ void __cpuidex( int * _piCpuInfo, int _iInfo, int _iSubFunc ) {
 namespace lsn {
 #ifdef LSN_CPUID
 	/**
-	 * Class FeatureSet
+	 * Class CFeatureSet
 	 * \brief Detects the processor feature set.
 	 *
 	 * Description: Detects the processor feature set.
 	 */
-	class FeatureSet {
+	class CFeatureSet {
 		class									InstructionSet_Internal;
 
 	public :
@@ -281,12 +281,12 @@ namespace lsn {
 	};
 #else
 	/**
-	 * Class FeatureSet
+	 * Class CFeatureSet
 	 * \brief Detects the processor feature set.
 	 *
 	 * Description: Detects the processor feature set.
 	 */
-	class FeatureSet {
+	class CFeatureSet {
 	public :
 		// General
 		static std::string						Vendor() {

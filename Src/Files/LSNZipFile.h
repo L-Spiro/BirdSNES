@@ -15,15 +15,15 @@
 namespace lsn {
 
 	/**
-	 * Class ZipFile
+	 * Class CZipFile
 	 * \brief A class for working with ZIP files.
 	 *
 	 * Description: A class for working with ZIP files.
 	 */
-	class ZipFile : public StdFile {
+	class CZipFile : public CStdFile {
 	public :
-		ZipFile();
-		virtual ~ZipFile();
+		CZipFile();
+		virtual ~CZipFile();
 
 
 		// == Functions.

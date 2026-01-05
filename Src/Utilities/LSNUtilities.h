@@ -45,12 +45,12 @@
 namespace lsn {
 
 	/**
-	 * Class Utilities
+	 * Class CUtilities
 	 * \brief Useful utility functions.
 	 *
 	 * Description: Useful utility functions.
 	 */
-	class Utilities {
+	class CUtilities {
 	public :
 		// == Types.
 		/** Temporarily setting the floating-point rounding mode. */
@@ -420,29 +420,29 @@ namespace lsn {
 		/**
 		 * Parse a string into an array of strings given a UTF-32 delimiter.
 		 * 
-		 * \param _sInput The string to tokenize.
+		 * \param _tInput The string to tokenize.
 		 * \param _ui32Token The UTF character delimiter.
 		 * \param _bIncludeEmptyTokens If true, multiple delimiters in a row or at the start and end of the string will result in empty results being returned in the array of results.
 		 * \param pbErrored Optional boolean pointer to indicate any failures during the process.
 		 * \return Returns an array of tokenized strings.
 		 **/
 		template <typename _tType = std::u8string>
-		static std::vector<_tType>							TokenizeUtf( const _tType &_sInput, uint32_t _ui32Token, bool _bIncludeEmptyTokens = true, bool * pbErrored = nullptr ) {
+		static std::vector<_tType>							TokenizeUtf( const _tType &_tInput, uint32_t _ui32Token, bool _bIncludeEmptyTokens = true, bool * pbErrored = nullptr ) {
 			std::vector<_tType> vRet;
 			try {
 				_tType tCurLine;
 				size_t sSize = 1;
-				for ( size_t I = 0; I < _sInput.size(); I += sSize ) {
+				for ( size_t I = 0; I < _tInput.size(); I += sSize ) {
 					uint32_t ui32Char;
 					if constexpr ( sizeof( _tType::value_type ) == sizeof( char8_t ) ) {
-						ui32Char = NextUtf8Char( reinterpret_cast<const char8_t *>(&_sInput[I]), _sInput.size() - I, &sSize );
+						ui32Char = NextUtf8Char( reinterpret_cast<const char8_t *>(&_tInput[I]), _tInput.size() - I, &sSize );
 					}
 					else if constexpr ( sizeof( _tType::value_type ) == sizeof( char16_t ) ) {
-						ui32Char = NextUtf16Char( reinterpret_cast<const char16_t *>(&_sInput[I]), _sInput.size() - I, &sSize );
+						ui32Char = NextUtf16Char( reinterpret_cast<const char16_t *>(&_tInput[I]), _tInput.size() - I, &sSize );
 					}
 					else {
 						sSize = 1;
-						ui32Char = _sInput[I];
+						ui32Char = _tInput[I];
 					}
 
 					if ( ui32Char == _ui32Token ) {
@@ -452,7 +452,7 @@ namespace lsn {
 						tCurLine.clear();
 					}
 					else {
-						tCurLine.append( &_sInput[I], sSize );
+						tCurLine.append( &_tInput[I], sSize );
 					}
 				}
 				if ( tCurLine.size() || _bIncludeEmptyTokens ) {
@@ -611,7 +611,7 @@ namespace lsn {
 		 * \param _pvPtr Pointer to the data to write.
 		 * \param _sSize The size of each data item.
 		 * \param _sMem The total number of data items to write.
-		 * \param _pvFile Pointer to a StdFile object used for the write process.
+		 * \param _pvFile Pointer to a CStdFile object used for the write process.
 		 * \return Returns the number of bytes actually writtem.
 		 **/
 		static size_t LSN_CDECL								WriteCurlData( void * _pvPtr, size_t _sSize, size_t _sMem, void * _pvFile );
@@ -627,7 +627,7 @@ namespace lsn {
 
 
 		// ===============================
-		// Color Space Curves
+		// Color-Space Curves
 		// ===============================
 		/**
 		 * Converts a single double value from sRGB space to linear space.  Performs a conversion according to the standard.
@@ -1088,7 +1088,7 @@ namespace lsn {
 		 * Takes a bit mask and returns a shift and divisor.
 		 * 
 		 * \param _ui64Mask The bit mask.
-		 * \param _dMaxVal Holds teh returned maximum value for the given mask.
+		 * \param _dMaxVal Holds the returned maximum value for the given mask.
 		 * \return Returns the mask shift.
 		 **/
 		static size_t										BitMaskToShift( uint64_t _ui64Mask, double &_dMaxVal ) {
@@ -1112,7 +1112,7 @@ namespace lsn {
 		 * \return Returns true if AVX is supported.
 		 **/
 		static inline bool									IsAvxSupported() {
-			return FeatureSet::AVX();
+			return CFeatureSet::AVX();
 		}
 
 		/**
@@ -1121,7 +1121,7 @@ namespace lsn {
 		 * \return Returns true if AVX is supported.
 		 **/
 		static inline bool									IsAvx2Supported() {
-			return FeatureSet::AVX2();
+			return CFeatureSet::AVX2();
 		}
 
 		/**
@@ -1130,7 +1130,7 @@ namespace lsn {
 		 * \return Returns true if AVX-512F is supported.
 		 **/
 		static inline bool									IsAvx512FSupported() {
-			return FeatureSet::AVX512F();
+			return CFeatureSet::AVX512F();
 		}
 
 		/**
@@ -1139,7 +1139,7 @@ namespace lsn {
 		 * \return Returns true if AVX-512BW is supported.
 		 **/
 		static inline bool									IsAvx512BWSupported() {
-			return FeatureSet::AVX512BW();
+			return CFeatureSet::AVX512BW();
 		}
 
 		/**
@@ -1148,7 +1148,7 @@ namespace lsn {
 		 * \return Returns true if AVX-512BF16 is supported.
 		 **/
 		static inline bool									IsAvx512BF16Supported() {
-			return FeatureSet::AVX512BF16();
+			return CFeatureSet::AVX512BF16();
 		}
 
 		/**
@@ -1157,7 +1157,7 @@ namespace lsn {
 		 * \return Returns true if AVX-VNNI is supported.
 		 **/
 		static inline bool									IsAvxVNNISupported() {
-			return FeatureSet::AVX_VNNI();
+			return CFeatureSet::AVX_VNNI();
 		}
 
 		/**
@@ -1167,7 +1167,7 @@ namespace lsn {
 		 **/
 		static inline bool									IsNeonSupported() {
 #ifndef LSN_CPUID
-			if ( m_iNeon == 3 ) { m_iNeon = FeatureSet::NEON(); }
+			if ( m_iNeon == 3 ) { m_iNeon = CFeatureSet::NEON(); }
 			return m_iNeon != 0;
 #else
 			return false;
@@ -1181,7 +1181,7 @@ namespace lsn {
 		 **/
 		static inline bool									IsBf16Supported() {
 #ifndef LSN_CPUID
-			if ( m_iBf16 == 3 ) { m_iBf16 = FeatureSet::BF16(); }
+			if ( m_iBf16 == 3 ) { m_iBf16 = CFeatureSet::BF16(); }
 			return m_iBf16 != 0;
 #else
 			return false;
@@ -1195,7 +1195,7 @@ namespace lsn {
 		 **/
 		static inline bool									IsFp16Supported() {
 #ifndef LSN_CPUID
-			if ( m_iFp16 == 3 ) { m_iFp16 = FeatureSet::FP16(); }
+			if ( m_iFp16 == 3 ) { m_iFp16 = CFeatureSet::FP16(); }
 			return m_iFp16 != 0;
 #else
 			return false;
@@ -1209,7 +1209,7 @@ namespace lsn {
 		 **/
 		static inline bool									IsSveSupported() {
 #ifndef LSN_CPUID
-			if ( m_iSve == 3 ) { m_iSve = FeatureSet::SVE(); }
+			if ( m_iSve == 3 ) { m_iSve = CFeatureSet::SVE(); }
 			return m_iSve != 0;
 #else
 			return false;
@@ -1392,7 +1392,7 @@ namespace lsn {
 	struct LSN_HMODULE {
 		LSN_HMODULE() : hHandle( NULL ) {}
 		LSN_HMODULE( LPCSTR _sPath ) :
-			hHandle( ::LoadLibraryW( lsn::Utilities::Utf8ToUtf16<CHAR, std::wstring>( _sPath ).c_str() ) ) {
+			hHandle( ::LoadLibraryW( lsn::CUtilities::Utf8ToUtf16<CHAR, std::wstring>( _sPath ).c_str() ) ) {
 		}
 		LSN_HMODULE( LPCWSTR _wsPath ) :
 			hHandle( ::LoadLibraryW( _wsPath ) ) {
@@ -1408,7 +1408,7 @@ namespace lsn {
 		// == Functions.
 		BOOL												LoadLib( LPCSTR _sPath ) {
 			Reset();
-			hHandle = ::LoadLibraryW( lsn::Utilities::Utf8ToUtf16<CHAR, std::wstring>( _sPath ).c_str() );
+			hHandle = ::LoadLibraryW( lsn::CUtilities::Utf8ToUtf16<CHAR, std::wstring>( _sPath ).c_str() );
 			return hHandle != NULL;
 		}
 
@@ -1480,7 +1480,7 @@ namespace lsn {
 	 * \return Returns the converted set.
 	 **/
 	template <typename _tnType>
-	std::set<_tnType> Utilities::ToSet( const std::vector<_tnType> &_vVec ) {
+	std::set<_tnType> CUtilities::ToSet( const std::vector<_tnType> &_vVec ) {
 		std::set<_tnType> sRet;
 		for ( auto I = _vVec.size(); I--; ) {
 			sRet.insert( _vVec[I] );
@@ -1496,7 +1496,7 @@ LSN_OPTIMIZE_ON
 	 * \return Returns _vVec.
 	 **/
 	template <typename _tnType>
-	std::vector<_tnType> & Utilities::RadixSort( std::vector<_tnType> &_vVec ) {
+	std::vector<_tnType> & CUtilities::RadixSort( std::vector<_tnType> &_vVec ) {
 		const size_t sN = _vVec.size();
 		if ( sN <= 1 ) { return _vVec; }
 

@@ -16,14 +16,14 @@
 namespace lsn {
 
 	/**
-	 * Class Ricoh5A22Base
+	 * Class CRicoh5A22Base
 	 * \brief The base class for the Ricoh 5A22.
 	 *
 	 * Description: The base class for the Ricoh 5A22.
 	 */
-	class Ricoh5A22Base {
+	class CRicoh5A22Base {
 	public :
-		Ricoh5A22Base() {}
+		CRicoh5A22Base() {}
 
 
 		// == Enumerations.

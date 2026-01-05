@@ -16,13 +16,13 @@
 namespace lsn {
 
 	/**
-	 * Class AlignmentAllocator
+	 * Class CAlignmentAllocator
 	 * \brief An aligned allocator for std::vector.
 	 *
 	 * Description: An aligned allocator for std::vector.
 	 */
 	template <typename T, size_t N = 64>
-	class AlignmentAllocator {
+	class CAlignmentAllocator {
 	public :
 		typedef T                                                   value_type;
 		typedef size_t                                              size_type;
@@ -35,12 +35,12 @@ namespace lsn {
 		typedef const T &                                           const_reference;
 
 	public :
-		inline                                                      AlignmentAllocator() throw () {}
+		inline                                                      CAlignmentAllocator() throw () {}
 
 		template <typename T2>
-		inline                                                      AlignmentAllocator( const AlignmentAllocator<T2, N> & ) throw () {}
+		inline                                                      CAlignmentAllocator( const CAlignmentAllocator<T2, N> & ) throw () {}
 
-		inline                                                      ~AlignmentAllocator() throw () {}
+		inline                                                      ~CAlignmentAllocator() throw () {}
 
 
 		// == Operators.
@@ -52,7 +52,7 @@ namespace lsn {
 		 * \param _aaOther The object against which to compare.
 		 * \return Returns false.
 		 **/
-		bool                                                        operator != ( const AlignmentAllocator<T, N> &_aaOther ) const  { return !((*this) == _aaOther); }
+		bool                                                        operator != ( const CAlignmentAllocator<T, N> &_aaOther ) const  { return !((*this) == _aaOther); }
 
 		/**
 		 * Returns true if and only if storage allocated from *this
@@ -62,7 +62,7 @@ namespace lsn {
 		 * \param _aaOther The object against which to compare.
 		 * \return Returns true.
 		 **/
-		bool                                                        operator == ( const AlignmentAllocator<T, N> &_aaOther ) const { return true; }
+		bool                                                        operator == ( const CAlignmentAllocator<T, N> &_aaOther ) const { return true; }
 
 
 		// == Functions.
@@ -121,7 +121,7 @@ namespace lsn {
 
 		template <typename T2>
 		struct rebind {
-			typedef AlignmentAllocator<T2, N>                      other;
+			typedef CAlignmentAllocator<T2, N>                      other;
 		};
 
         

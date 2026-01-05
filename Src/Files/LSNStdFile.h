@@ -16,15 +16,15 @@
 namespace lsn {
 
 	/**
-	 * Class StdFile
+	 * Class CStdFile
 	 * \brief A class for opening files using the standard C library (FILE).
 	 *
 	 * Description: A class for opening files using the standard C library (FILE).
 	 */
-	class StdFile : public FileBase {
+	class CStdFile : public CFileBase {
 	public :
-		StdFile();
-		virtual ~StdFile();
+		CStdFile();
+		virtual ~CStdFile();
 
 
 		// == Functions.
@@ -188,7 +188,7 @@ namespace lsn {
 		 * \return Returns true if the data was successfully written to the file.
 		 **/
 		template <typename _tStrType>
-		static inline uint32_t								Crc( const _tStrType * _pcFile );
+		static inline uint32_t								CCrc( const _tStrType * _pcFile );
 
 
 	protected :
@@ -217,8 +217,8 @@ namespace lsn {
 	 * \return Returns an error code indicating the result of the operation.
 	 **/
 	template <typename _tStrType>
-	inline LSN_ERRORS StdFile::LoadToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult ) {
-		StdFile sfFile;
+	inline LSN_ERRORS CStdFile::LoadToMemory( const _tStrType * _pcFile, std::vector<uint8_t> &_vResult ) {
+		CStdFile sfFile;
 		auto aCode = sfFile.Open( _pcFile );
 		if ( aCode != LSN_E_SUCCESS ) { return aCode; }
 		return sfFile.LoadToMemory( _vResult );
@@ -233,8 +233,8 @@ namespace lsn {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline LSN_ERRORS StdFile::WriteToFile( const _tStrType * _pcFile, const uint8_t * _pui8Data, size_t _tsSize ) {
-		StdFile sfFile;
+	inline LSN_ERRORS CStdFile::WriteToFile( const _tStrType * _pcFile, const uint8_t * _pui8Data, size_t _tsSize ) {
+		CStdFile sfFile;
 		auto aCode = sfFile.Create( _pcFile );
 		if ( aCode != LSN_E_SUCCESS ) { return aCode; }
 		return sfFile.WriteToFile( _pui8Data, _tsSize );
@@ -248,7 +248,7 @@ namespace lsn {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline LSN_ERRORS StdFile::WriteToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData ) {
+	inline LSN_ERRORS CStdFile::WriteToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData ) {
 		return WriteToFile( _pcFile, _vData.data(), _vData.size() );
 	}
 
@@ -261,8 +261,8 @@ namespace lsn {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType, typename _tData>
-	inline LSN_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const _tData * _ptData, size_t _tsSize ) {
-		StdFile sfFile;
+	inline LSN_ERRORS CStdFile::AppendToFile( const _tStrType * _pcFile, const _tData * _ptData, size_t _tsSize ) {
+		CStdFile sfFile;
 		auto aCode = sfFile.Append( _pcFile );
 		if ( aCode != LSN_E_SUCCESS ) { return aCode; }
 		return sfFile.WriteToFile( _ptData, _tsSize * sizeof( _tData ) );
@@ -277,7 +277,7 @@ namespace lsn {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline LSN_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const char8_t * _pc8Data, size_t _tsSize ) {
+	inline LSN_ERRORS CStdFile::AppendToFile( const _tStrType * _pcFile, const char8_t * _pc8Data, size_t _tsSize ) {
 		if ( !_tsSize ) { _tsSize = std::strlen( reinterpret_cast<const char *>(_pc8Data) ); }
 		return AppendToFile( _pcFile, reinterpret_cast<const uint8_t *>(_pc8Data), _tsSize );
 	}
@@ -291,7 +291,7 @@ namespace lsn {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline LSN_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const char * _pcData, size_t _tsSize ) {
+	inline LSN_ERRORS CStdFile::AppendToFile( const _tStrType * _pcFile, const char * _pcData, size_t _tsSize ) {
 		if ( !_tsSize ) { _tsSize = std::strlen( _pcData ); }
 		return AppendToFile( _pcFile, reinterpret_cast<const uint8_t *>(_pcData), _tsSize );
 	}
@@ -304,7 +304,7 @@ namespace lsn {
 	 * \return Returns true if the data was successfully written to the file.
 	 */
 	template <typename _tStrType>
-	inline LSN_ERRORS StdFile::AppendToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData ) {
+	inline LSN_ERRORS CStdFile::AppendToFile( const _tStrType * _pcFile, const std::vector<uint8_t> &_vData ) {
 		return AppendToFile( _pcFile, _vData.data(), _vData.size() );
 	}
 
@@ -315,11 +315,11 @@ namespace lsn {
 	 * \return Returns true if the data was successfully written to the file.
 	 **/
 	template <typename _tStrType>
-	inline uint32_t StdFile::Crc( const _tStrType * _pcFile ) {
+	inline uint32_t CStdFile::CCrc( const _tStrType * _pcFile ) {
 		std::vector<uint8_t> vData;
 		auto eErr = LoadToMemory( _pcFile, vData );
 		if ( eErr != LSN_E_SUCCESS ) { return 0; }
-		return Crc::GetCrc( vData.data(), vData.size() );
+		return CCrc::GetCrc( vData.data(), vData.size() );
 	}
 
 }	// namespace lsn

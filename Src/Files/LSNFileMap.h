@@ -18,15 +18,15 @@
 namespace lsn {
 
 	/**
-	 * Class FileMap
+	 * Class CFileMap
 	 * \brief A file-mapping.
 	 *
 	 * Description: A file-mapping.
 	 */
-	class FileMap : public FileBase {
+	class CFileMap : public CFileBase {
 	public :
-		FileMap();
-		virtual ~FileMap();
+		CFileMap();
+		virtual ~CFileMap();
 
 
 		// == Types.

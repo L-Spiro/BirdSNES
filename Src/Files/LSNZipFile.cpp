@@ -12,10 +12,10 @@
 
 namespace lsn {
 
-	ZipFile::ZipFile() {
+	CZipFile::CZipFile() {
 		std::memset( &m_zaArchive, 0, sizeof( m_zaArchive ) );
 	}
-	ZipFile::~ZipFile() {
+	CZipFile::~CZipFile() {
 		Close();
 	}
 
@@ -24,12 +24,12 @@ namespace lsn {
 	/**
 	 * Closes the opened file.
 	 */
-	void ZipFile::Close() {
+	void CZipFile::Close() {
 		if ( m_pfFile != nullptr ) {
 			::mz_zip_reader_end( &m_zaArchive );
 			std::memset( &m_zaArchive, 0, sizeof( m_zaArchive ) );
 		}
-		StdFile::Close();
+		CStdFile::Close();
 	}
 
 	/**
@@ -37,7 +37,7 @@ namespace lsn {
 	 *
 	 * \return Returns true if the file is an archive, false otherwise.
 	 */
-	bool ZipFile::IsArchive() const { return m_zaArchive.m_zip_mode != MZ_ZIP_MODE_INVALID; }
+	bool CZipFile::IsArchive() const { return m_zaArchive.m_zip_mode != MZ_ZIP_MODE_INVALID; }
 
 	/**
 	 * Gathers the file names in the archive into an array.  Call within try/catch block.
@@ -45,16 +45,16 @@ namespace lsn {
 	 * \param _vResult The location where to store the file names.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS ZipFile::GatherArchiveFiles( std::vector<std::u16string> &_vResult ) const {
+	LSN_ERRORS CZipFile::GatherArchiveFiles( std::vector<std::u16string> &_vResult ) const {
 		if ( m_pfFile != nullptr ) {
-			if ( !IsArchive() ) { return Errors::ZipError_To_Native( ::mz_zip_get_last_error( const_cast<mz_zip_archive *>(&m_zaArchive) ) ); }
+			if ( !IsArchive() ) { return CErrors::ZipError_To_Native( ::mz_zip_get_last_error( const_cast<mz_zip_archive *>(&m_zaArchive) ) ); }
 			mz_uint uiTotal = ::mz_zip_reader_get_num_files( const_cast<mz_zip_archive *>(&m_zaArchive) );
 			for ( mz_uint I = 0; I  < uiTotal; ++I ) {
 				::mz_zip_archive_file_stat zafsStat;
 				if ( !::mz_zip_reader_file_stat( const_cast<mz_zip_archive *>(&m_zaArchive), I, &zafsStat ) ) {
-					return Errors::ZipError_To_Native( ::mz_zip_get_last_error( const_cast<mz_zip_archive *>(&m_zaArchive) ) );
+					return CErrors::ZipError_To_Native( ::mz_zip_get_last_error( const_cast<mz_zip_archive *>(&m_zaArchive) ) );
 				}
-				_vResult.push_back( Utilities::Utf8ToUtf16<char, std::u16string>( zafsStat.m_filename ) );
+				_vResult.push_back( CUtilities::Utf8ToUtf16<char, std::u16string>( zafsStat.m_filename ) );
 			}
 			return LSN_E_SUCCESS;
 		}
@@ -68,11 +68,11 @@ namespace lsn {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS ZipFile::ExtractToMemory( const std::u16string &_s16File, std::vector<uint8_t> &_vResult ) const {
+	LSN_ERRORS CZipFile::ExtractToMemory( const std::u16string &_s16File, std::vector<uint8_t> &_vResult ) const {
 		if ( m_pfFile != nullptr ) {
-			if ( !IsArchive() ) { return Errors::ZipError_To_Native( ::mz_zip_get_last_error( const_cast<mz_zip_archive *>(&m_zaArchive) ) ); }
+			if ( !IsArchive() ) { return CErrors::ZipError_To_Native( ::mz_zip_get_last_error( const_cast<mz_zip_archive *>(&m_zaArchive) ) ); }
 			bool bError;
-			std::u8string sUtf8 = Utilities::Utf16ToUtf8( _s16File, &bError );
+			std::u8string sUtf8 = CUtilities::Utf16ToUtf8( _s16File, &bError );
 			if ( bError ) { return LSN_E_INVALID_UNICODE; }
 			size_t stSize;
 			void * pvData = ::mz_zip_reader_extract_file_to_heap( const_cast<mz_zip_archive *>(&m_zaArchive), reinterpret_cast<const char *>(sUtf8.c_str()), &stSize, 0 );
@@ -94,7 +94,7 @@ namespace lsn {
 	/**
 	 * Performs post-loading operations after a successful loading of the file.  m_pfFile will be valid when this is called.  Override to perform additional loading operations on m_pfFile.
 	 */
-	void ZipFile::PostLoad() {
+	void CZipFile::PostLoad() {
 		::mz_zip_reader_init_cfile( &m_zaArchive, m_pfFile, m_ui64Size, 0 );
 	}
 

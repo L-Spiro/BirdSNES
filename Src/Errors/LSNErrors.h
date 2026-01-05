@@ -36,12 +36,12 @@ namespace lsn {
 
 
 	/**
-	 * Class Errors
+	 * Class CErrors
 	 * \brief Provides functionality for working with errors and error codes.
 	 *
 	 * Description: Provides functionality for working with errors and error codes.
 	 */
-	class Errors {
+	class CErrors {
 	public :
 		// == Functions.
 		/**
@@ -86,6 +86,14 @@ namespace lsn {
 		static inline void											DisplayLastError( DWORD _dwErr = DWORD( -1 ) );
 
 #endif	// #ifdef _WIN32
+	
+		/**
+		 * Gets the string description of an error code.
+		 * 
+		 * \param _eCode The error code whose description is to be gotten.
+		 * \return Returns the text description for the given error.
+		 **/
+		static inline const char *									ToStr( LSN_ERRORS _eCode );
 
 		/**
 		 * Gets the string description of an error code.
@@ -101,7 +109,23 @@ namespace lsn {
 		 * \param _eCode The error code whose description is to be gotten.
 		 * \return Returns the text description for the given error.
 		 **/
+		static inline std::string									ToStrStr( LSN_ERRORS _eCode );
+
+		/**
+		 * Gets the string description of an error code.
+		 * 
+		 * \param _eCode The error code whose description is to be gotten.
+		 * \return Returns the text description for the given error.
+		 **/
 		static inline std::u8string									ToStrU8( LSN_ERRORS _eCode );
+
+		/**
+		 * Gets the string description of an error code.
+		 * 
+		 * \param _eCode The error code whose description is to be gotten.
+		 * \return Returns the text description for the given error.
+		 **/
+		static inline const wchar_t *								ToStrPWStr( LSN_ERRORS _eCode );
 
 		/**
 		 * Gets the string description of an error code.
@@ -117,6 +141,14 @@ namespace lsn {
 		 * \param _eCode The error code whose description is to be gotten.
 		 * \return Returns the text description for the given error.
 		 **/
+		static inline std::wstring									ToStrWStr( LSN_ERRORS _eCode );
+
+		/**
+		 * Gets the string description of an error code.
+		 * 
+		 * \param _eCode The error code whose description is to be gotten.
+		 * \return Returns the text description for the given error.
+		 **/
 		static inline std::u16string								ToStrU16( LSN_ERRORS _eCode );
 
 		/**
@@ -125,7 +157,23 @@ namespace lsn {
 		 * \param _eCode The error code whose name is to be gotten.
 		 * \return Returns the text name for the given error.
 		 **/
+		static inline const char *									Name( LSN_ERRORS _eCode );
+
+		/**
+		 * Gets the name of an error code.
+		 * 
+		 * \param _eCode The error code whose name is to be gotten.
+		 * \return Returns the text name for the given error.
+		 **/
 		static inline const char8_t *								NamePU8( LSN_ERRORS _eCode );
+
+		/**
+		 * Gets the name of an error code.
+		 * 
+		 * \param _eCode The error code whose name is to be gotten.
+		 * \return Returns the text name for the given error.
+		 **/
+		static inline const wchar_t *								NamePWS( LSN_ERRORS _eCode );
 
 		/**
 		 * Gets the name of an error code.
@@ -148,7 +196,7 @@ namespace lsn {
 	 * \param _eCode The code to convert.
 	 * \return Returns the converted error code.
 	 **/
-	inline LSN_ERRORS Errors::ErrNo_T_To_Native( errno_t _eCode ) {
+	inline LSN_ERRORS CErrors::ErrNo_T_To_Native( errno_t _eCode ) {
 		switch ( _eCode ) {
 			case 0 : { return LSN_E_SUCCESS; }
 			case EINVAL : { return LSN_E_INVALID_PARAMETER; }
@@ -238,7 +286,7 @@ namespace lsn {
 	 * \param _zeCode The code to convert.
 	 * \return Returns the converted error code.
 	 **/
-	inline LSN_ERRORS Errors::ZipError_To_Native( mz_zip_error _zeCode ) {
+	inline LSN_ERRORS CErrors::ZipError_To_Native( mz_zip_error _zeCode ) {
 		switch ( _zeCode ) {
 			case MZ_ZIP_NO_ERROR : { return LSN_E_SUCCESS; }
 			case MZ_ZIP_UNDEFINED_ERROR : { return LSN_E_OTHER; }
@@ -283,7 +331,7 @@ namespace lsn {
 	 * \param _cCode The code to convert.
 	 * \return Returns the converted error code.
 	 **/
-	inline LSN_ERRORS Errors::LibCurl_To_Native( CURLcode _cCode ) {
+	inline LSN_ERRORS CErrors::LibCurl_To_Native( CURLcode _cCode ) {
 #define LSN_CHECK( ERROR )				case ERROR : { return LSN_E_ ## ERROR; }
 		switch ( _cCode ) {
 			case CURLE_OK : { return LSN_E_SUCCESS; }
@@ -404,18 +452,18 @@ namespace lsn {
 	 * 
 	 * \return Returns the converted error code.
 	 **/
-	inline LSN_ERRORS Errors::GetLastError_To_Native() {
+	inline LSN_ERRORS CErrors::GetLastError_To_Native() {
 		HRESULT dwError = ::GetLastError();
 		DisplayLastError( dwError );
 		switch ( dwError ) {
 			// Success
 			case ERROR_SUCCESS : { return LSN_E_SUCCESS; }
 
-			// Memory Errors.
+			// Memory CErrors.
 			case ERROR_NOT_ENOUGH_MEMORY : {}	LSN_FALLTHROUGH
 			case ERROR_OUTOFMEMORY : { return LSN_E_OUT_OF_MEMORY; }
 
-			// File (read) Errors
+			// File (read) CErrors
 			case ERROR_FILE_NOT_FOUND : { return LSN_E_FILE_NOT_FOUND; }
 			case ERROR_ACCESS_DENIED : { return LSN_E_INVALID_PERMISSIONS; }
 			case ERROR_TOO_MANY_OPEN_FILES : { return LSN_E_TOO_MANY_FILES_OPENED; }
@@ -494,7 +542,7 @@ namespace lsn {
 	 * 
 	 * \param _dwErr The error code to translate.  If -1, ::GetLastError() is called.
 	 **/
-	inline void Errors::DisplayLastError( DWORD _dwErr ) {
+	inline void CErrors::DisplayLastError( DWORD _dwErr ) {
 		DWORD dwError = _dwErr == DWORD( -1 ) ? _dwErr : ::GetLastError();
 
 		LPVOID lpMsgBuf = nullptr;
@@ -561,7 +609,32 @@ namespace lsn {
 	 * \param _eCode The error code whose description is to be gotten.
 	 * \return Returns the text description for the given error.
 	 **/
-	inline const char8_t * Errors::ToStrPU8( LSN_ERRORS _eCode ) {
+	inline const char * CErrors::ToStr( LSN_ERRORS _eCode ) {
+		switch ( _eCode ) {
+#if defined( LSN_JAPANESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return JPN; }
+#elif defined( LSN_FRENCH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return FR; }
+#elif defined( LSN_SPANISH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return SP; }
+#elif defined( LSN_CHINESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return CH; }
+#else
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return TXT; }
+#endif	// #if defined( LSN_JAPANESE )
+#include "LSNErrorEnum.inl"
+#undef LSN_E_ENUM
+		}
+		return Str( LSN_STR_INVALID_ERROR_CODE );
+	}
+
+	/**
+	 * Gets the string description of an error code.
+	 * 
+	 * \param _eCode The error code whose description is to be gotten.
+	 * \return Returns the text description for the given error.
+	 **/
+	inline const char8_t * CErrors::ToStrPU8( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
 #if defined( LSN_JAPANESE )
 #define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u8##JPN; }
@@ -586,23 +659,8 @@ namespace lsn {
 	 * \param _eCode The error code whose description is to be gotten.
 	 * \return Returns the text description for the given error.
 	 **/
-	inline std::u8string Errors::ToStrU8( LSN_ERRORS _eCode ) {
-		switch ( _eCode ) {
-#if defined( LSN_JAPANESE )
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## JPN ); }
-#elif defined( LSN_FRENCH )
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## FR ); }
-#elif defined( LSN_SPANISH )
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## SP ); }
-#elif defined( LSN_CHINESE )
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## CH ); }
-#else
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u8string( u8 ## TXT ); }
-#endif	// #if defined( LSN_JAPANESE )
-#include "LSNErrorEnum.inl"
-#undef LSN_E_ENUM
-		}
-		return std::u8string( StrU8( LSN_STR_INVALID_ERROR_CODE ) );
+	inline std::string CErrors::ToStrStr( LSN_ERRORS _eCode ) {
+		return ToStr( _eCode );
 	}
 
 	/**
@@ -611,7 +669,42 @@ namespace lsn {
 	 * \param _eCode The error code whose description is to be gotten.
 	 * \return Returns the text description for the given error.
 	 **/
-	inline const char16_t * Errors::ToStrPU16( LSN_ERRORS _eCode ) {
+	inline std::u8string CErrors::ToStrU8( LSN_ERRORS _eCode ) {
+		return ToStrPU8( _eCode );
+	}
+
+	/**
+	 * Gets the string description of an error code.
+	 * 
+	 * \param _eCode The error code whose description is to be gotten.
+	 * \return Returns the text description for the given error.
+	 **/
+	inline const wchar_t * CErrors::ToStrPWStr( LSN_ERRORS _eCode ) {
+		switch ( _eCode ) {
+#if defined( LSN_JAPANESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return L ## JPN; }
+#elif defined( LSN_FRENCH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return L ## FR; }
+#elif defined( LSN_SPANISH )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return L ## SP; }
+#elif defined( LSN_CHINESE )
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return L ## CH; }
+#else
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return L ## TXT; }
+#endif	// #if defined( LSN_JAPANESE )
+#include "LSNErrorEnum.inl"
+#undef LSN_E_ENUM
+		}
+		return StrL( LSN_STR_INVALID_ERROR_CODE );
+	}
+
+	/**
+	 * Gets the string description of an error code.
+	 * 
+	 * \param _eCode The error code whose description is to be gotten.
+	 * \return Returns the text description for the given error.
+	 **/
+	inline const char16_t * CErrors::ToStrPU16( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
 #if defined( LSN_JAPANESE )
 #define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return u ## JPN; }
@@ -636,23 +729,18 @@ namespace lsn {
 	 * \param _eCode The error code whose description is to be gotten.
 	 * \return Returns the text description for the given error.
 	 **/
-	inline std::u16string Errors::ToStrU16( LSN_ERRORS _eCode ) {
-		switch ( _eCode ) {
-#if defined( LSN_JAPANESE )
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## JPN ); }
-#elif defined( LSN_FRENCH )
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## FR ); }
-#elif defined( LSN_SPANISH )
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## SP ); }
-#elif defined( LSN_CHINESE )
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## CH ); }
-#else
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return std::u16string( u ## TXT ); }
-#endif	// #if defined( LSN_JAPANESE )
-#include "LSNErrorEnum.inl"
-#undef LSN_E_ENUM
-		}
-		return std::u16string( StrU( LSN_STR_INVALID_ERROR_CODE ) );
+	inline std::wstring CErrors::ToStrWStr( LSN_ERRORS _eCode ) {
+		return ToStrPWStr( _eCode );
+	}
+
+	/**
+	 * Gets the string description of an error code.
+	 * 
+	 * \param _eCode The error code whose description is to be gotten.
+	 * \return Returns the text description for the given error.
+	 **/
+	inline std::u16string CErrors::ToStrU16( LSN_ERRORS _eCode ) {
+		return ToStrPU16( _eCode );
 	}
 
 	/**
@@ -661,7 +749,23 @@ namespace lsn {
 	 * \param _eCode The error code whose name is to be gotten.
 	 * \return Returns the text name for the given error.
 	 **/
-	inline const char8_t * Errors::NamePU8( LSN_ERRORS _eCode ) {
+	inline const char * CErrors::Name( LSN_ERRORS _eCode ) {
+		switch ( _eCode ) {
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return & ## # ENUM[6]; }
+#include "LSNErrorEnum.inl"
+#undef LSN_E_ENUM
+		}
+
+		return "";
+	}
+
+	/**
+	 * Gets the name of an error code.
+	 * 
+	 * \param _eCode The error code whose name is to be gotten.
+	 * \return Returns the text name for the given error.
+	 **/
+	inline const char8_t * CErrors::NamePU8( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
 #define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return &u8 ## # ENUM[6]; }
 #include "LSNErrorEnum.inl"
@@ -677,7 +781,23 @@ namespace lsn {
 	 * \param _eCode The error code whose name is to be gotten.
 	 * \return Returns the text name for the given error.
 	 **/
-	inline const char16_t * Errors::NamePU16( LSN_ERRORS _eCode ) {
+	inline const wchar_t * CErrors::NamePWS( LSN_ERRORS _eCode ) {
+		switch ( _eCode ) {
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return &L ## # ENUM[6]; }
+#include "LSNErrorEnum.inl"
+#undef LSN_E_ENUM
+		}
+
+		return L"";
+	}
+
+	/**
+	 * Gets the name of an error code.
+	 * 
+	 * \param _eCode The error code whose name is to be gotten.
+	 * \return Returns the text name for the given error.
+	 **/
+	inline const char16_t * CErrors::NamePU16( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
 #define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return &u ## # ENUM[6]; }
 #include "LSNErrorEnum.inl"

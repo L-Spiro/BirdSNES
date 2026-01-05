@@ -27,7 +27,7 @@
 
 #define LSN_NEXT_FUNCTION_BY( AMT )										m_fsState.ui8FuncIndex += AMT
 #define LSN_NEXT_FUNCTION												LSN_NEXT_FUNCTION_BY( 1 )
-#define LSN_FINISH_INST( CHECK_INTERRUPTS )								/*if constexpr ( CHECK_INTERRUPTS ) { LSN_CHECK_INTERRUPTS; }*/ m_pfTickFunc = m_pfTickFuncCopy = &Ricoh5A22::Tick_NextInstructionStd
+#define LSN_FINISH_INST( CHECK_INTERRUPTS )								/*if constexpr ( CHECK_INTERRUPTS ) { LSN_CHECK_INTERRUPTS; }*/ m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_NextInstructionStd
 
 #define LSN_PUSH( VAL, SPEED )											LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? (0x100 | m_fsState.rRegs.ui8S[0]) : m_fsState.rRegs.ui16S, (VAL), (SPEED) ); m_fsState.ui16SModify = -1
 #define LSN_POP( RESULT, SPEED )										LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + 1 )) : (m_rRegs.ui16S + 1), (RESULT), (SPEED) ); m_fsState.ui16SModify = 1
@@ -47,20 +47,20 @@
 namespace lsn {
 
 #pragma warning( push )
-#pragma warning( disable : 4324 )	// warning C4324: 'lsn::Ricoh5A22::LSN_FULL_STATE': structure was padded due to alignment specifier
+#pragma warning( disable : 4324 )	// warning C4324: 'lsn::CRicoh5A22::LSN_FULL_STATE': structure was padded due to alignment specifier
 
 	/**
-	 * Class Ricoh5A22
+	 * Class CRicoh5A22
 	 * \brief A Ricoh 5A22 processor.
 	 *
 	 * Description: A Ricoh 5A22 processor.
 	 */
-	class Ricoh5A22 : public Ricoh5A22Base {
-		typedef Ricoh5A22Base											Parent;
+	class CRicoh5A22 : public CRicoh5A22Base {
+		typedef CRicoh5A22Base											Parent;
 	public :
 		// == Various constructors.
-		Ricoh5A22( BusA &_bBusA );
-		~Ricoh5A22();
+		CRicoh5A22( CBusA &_bBusA );
+		~CRicoh5A22();
 
 
 		// == Enumerations.
@@ -128,8 +128,8 @@ namespace lsn {
 			uint8_t														ui8Pb = 0;																		/**< PB    Program Counter Bank ;expands 16bit PC     to 24bit PB:PC. */
 		};
 
-		typedef void (Ricoh5A22:: *										PfCycle)();																		/**< A function pointer for the functions that handle each cycle. */
-		typedef void (Ricoh5A22:: *										PfTicks)();																		/**< A function pointer for the tick handlers. */
+		typedef void (CRicoh5A22:: *										PfCycle)();																		/**< A function pointer for the functions that handle each cycle. */
+		typedef void (CRicoh5A22:: *										PfTicks)();																		/**< A function pointer for the tick handlers. */
 
 		/** An instruction. The micro-functions (pfHandler) that make up each cycle of each instruction are programmed to know what to do and can correctly pass the cycles without
 		 *	using ui8TotalCycles or amAddrMode. This means pcName, ui8TotalCycles, and amAddrMode are only used for debugging, verification, printing things, etc.
@@ -217,7 +217,7 @@ namespace lsn {
 		// == Members.
 		PfTicks															m_pfTickFunc = nullptr;																/**< The current tick function (called by Tick()). */
 		PfTicks															m_pfTickFuncCopy = nullptr;															/**< A copy of the current tick, used to restore the intended original tick when control flow is changed by DMA transfers. */
-		BusA &															m_baBusA;																			/**< Bus A. */
+		CBusA &															m_baBusA;																			/**< Bus A. */
 		
 		LSN_FULL_STATE													m_fsState;																			/**< Everything a standard instruction-cycle function can modify.  Backed up at the start of the first DMA read cycle and restored at the end after the read address for that cycle has been calculated. */
 		LSN_FULL_STATE													m_fsStateBackup;																	/**< The backup of the state for the cycle that first gets interrupted by DMA and is then executed at the end of DMA. */
@@ -286,6 +286,20 @@ namespace lsn {
 	};
 
 
+	// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	// DEFINITIONS
+	// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	// == Fuctions.
+	/** Fetches the next opcode and begins the next instruction. */
+	inline void CRicoh5A22::Tick_NextInstructionStd() {
+		BeginInst();
+	}
+
+	/** Performs a cycle inside an instruction. */
+	inline void CRicoh5A22::Tick_InstructionCycleStd() {
+		(this->*m_iInstructionSet[m_fsState.ui16OpCode].pfHandler[m_fsState.bEmulationMode][m_fsState.ui8FuncIndex])();
+	}
+
 	/**
 	 * Prepares to enter a new instruction.
 	 *
@@ -294,7 +308,7 @@ namespace lsn {
 	 * \tparam _bCheckStartOfFunction If true, the LSN_INSTR_START_PHI1( true ) macro call is embedded.
 	 */
 	template <bool _bIncPc, bool _bAdjS, bool _bCheckStartOfFunction>
-	inline void Ricoh5A22::BeginInst() {
+	inline void CRicoh5A22::BeginInst() {
 		if constexpr( _bCheckStartOfFunction ) {
 			LSN_INSTR_START_PHI1( true );
 		}
@@ -308,7 +322,7 @@ namespace lsn {
 		}
 		// Enter normal instruction context.
 		m_fsState.ui8FuncIndex = 0;
-		m_pfTickFunc = m_pfTickFuncCopy = &Ricoh5A22::Tick_InstructionCycleStd;
+		m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_InstructionCycleStd;
 		m_fsState.bBoundaryCrossed = false;
 		//m_ui8RdyOffCnt = 0;
 		LSN_INSTR_END_PHI1;

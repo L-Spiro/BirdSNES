@@ -16,10 +16,10 @@ namespace lsn {
 
 	// == Members.
 #ifndef LSN_CPUID
-	int Utilities::m_iNeon = 3;						/**< Tracks support for NEON. */
-	int Utilities::m_iBf16 = 3;						/**< Tracks support for BF16. */
-	int Utilities::m_iFp16 = 3;						/**< Tracks support for FP16. */
-	int Utilities::m_iSve = 3;						/**< Tracks support for SVE. */
+	int CUtilities::m_iNeon = 3;						/**< Tracks support for NEON. */
+	int CUtilities::m_iBf16 = 3;						/**< Tracks support for BF16. */
+	int CUtilities::m_iFp16 = 3;						/**< Tracks support for FP16. */
+	int CUtilities::m_iSve = 3;						/**< Tracks support for SVE. */
 #endif	// #ifndef LSN_CPUID
 
 	// == Functions.
@@ -31,7 +31,7 @@ namespace lsn {
 	 * \param _psSize Optional pointer to a size_t that will contain the number of characters eaten from _pwcString during the parsing.
 	 * \return Returns the next character as a UTF-32 code.
 	 **/
-	char32_t Utilities::NextUtf16Char( const char16_t * _pwcString, size_t _sLen, size_t * _psSize ) {
+	char32_t CUtilities::NextUtf16Char( const char16_t * _pwcString, size_t _sLen, size_t * _psSize ) {
 		if ( _sLen == 0 ) { return 0; }
 
 		// Get the low bits (which may be all there are).
@@ -89,7 +89,7 @@ namespace lsn {
 	 * \param _psSize Optional pointer to a size_t that will contain the number of characters eaten from _pcString during the parsing.
 	 * \return Returns the next character as a UTF-32 code.
 	 **/
-	char32_t Utilities::NextUtf8Char( const char8_t * _pcString, size_t _sLen, size_t * _psSize ) {
+	char32_t CUtilities::NextUtf8Char( const char8_t * _pcString, size_t _sLen, size_t * _psSize ) {
 		if ( _sLen == 0 ) { if ( _psSize ) { (*_psSize) = 0; } return 0; }
 
 		// Get the low bits (which may be all there are).
@@ -165,7 +165,7 @@ namespace lsn {
 	 * \param _sLen The number of characters to which _pcString points.
 	 * \return Returns the size of the UTF-8 character to which _pcString points.
 	 **/
-	size_t Utilities::Utf8CharSize( const char8_t * _pcString, size_t _sLen ) {
+	size_t CUtilities::Utf8CharSize( const char8_t * _pcString, size_t _sLen ) {
 		if ( _sLen == 0 ) { return 0; }
 
 		// Get the low bits (which may be all there are).
@@ -202,7 +202,7 @@ namespace lsn {
 	 * \param _ui32Len Holds the returned number of 16-bit characters held in the return value.
 	 * \return Returns up to 2 UTF-16 characters.
 	 **/
-	uint32_t Utilities::Utf32ToUtf16( char32_t _c32Utf32, uint32_t &_ui32Len ) {
+	uint32_t CUtilities::Utf32ToUtf16( char32_t _c32Utf32, uint32_t &_ui32Len ) {
 		if ( _c32Utf32 > 0x10FFFF ) {
 			_ui32Len = 1;
 			return LSN_UTF_INVALID;
@@ -229,7 +229,7 @@ namespace lsn {
 	 * \param _ui32Len Holds the returned number of 16-bit characters held in the return value.
 	 * \return Returns up to 4 UTF-8 characters.
 	 **/
-	uint32_t Utilities::Utf32ToUtf8( char32_t _c32Utf32, uint32_t &_ui32Len ) {
+	uint32_t CUtilities::Utf32ToUtf8( char32_t _c32Utf32, uint32_t &_ui32Len ) {
 		// Handle the single-character case separately since it is a special case.
 		if ( _c32Utf32 < 0x80U ) {
 			_ui32Len = 1;
@@ -279,7 +279,7 @@ namespace lsn {
 	 * \param _stPos The current position inside the buffer, updated on return.
 	 * \return Returns the line read from the file.
 	 **/
-	std::string Utilities::ReadLine( const std::vector<uint8_t> &_vBuffer, size_t &_stPos ) {
+	std::string CUtilities::ReadLine( const std::vector<uint8_t> &_vBuffer, size_t &_stPos ) {
 		std::string sTmp;
 		while ( _stPos < _vBuffer.size() ) {
 			uint8_t ui8This = _vBuffer[_stPos++];
@@ -299,7 +299,7 @@ namespace lsn {
 	 * \param _bAllowEmptyStrings If true, the return value could contain empty strings when the delimiter is found more than once in a row.
 	 * \return Returns a vector containing all of the tokens.
 	 **/
-	std::vector<std::string> Utilities::Tokenize( const std::string &_sString, std::string::value_type _vtDelimiter, bool _bAllowEmptyStrings ) {
+	std::vector<std::string> CUtilities::Tokenize( const std::string &_sString, std::string::value_type _vtDelimiter, bool _bAllowEmptyStrings ) {
 		std::vector<std::string> vRet;
 		std::string sTmp;
 		for ( size_t I = 0; I < _sString.size(); ++I ) {
@@ -327,7 +327,7 @@ namespace lsn {
 	 * \param _pAsciiFileName The output file name.
 	 * \return Returns true if allocation of all strings succeeded.  Failure indicates a memory failure.
 	 **/
-	bool Utilities::CreateAsciiPath( const std::u16string &_sPath, std::filesystem::path &_pAsciiPath, std::filesystem::path &_pAsciiFileName ) {
+	bool CUtilities::CreateAsciiPath( const std::u16string &_sPath, std::filesystem::path &_pAsciiPath, std::filesystem::path &_pAsciiFileName ) {
 		try {
 			_pAsciiFileName = Append( L"Tmp.", std::filesystem::path( _sPath ).extension().u16string() );
 			_pAsciiPath = std::filesystem::temp_directory_path();
@@ -360,7 +360,7 @@ namespace lsn {
 	 * \param _pcPath The path to which to save the given file.
 	 * \return Returns an error code indicating the result of the operation.
 	 **/
-	LSN_ERRORS Utilities::DownloadFile( const std::u16string &_pcUrl, const std::u16string &_pcPath ) {
+	LSN_ERRORS CUtilities::DownloadFile( const std::u16string &_pcUrl, const std::u16string &_pcPath ) {
 		LSN_ERRORS eCode;
 		{
 			// Must verify that the download folder exists.
@@ -421,7 +421,7 @@ namespace lsn {
 		}
 
 
-		auto aCrc = StdFile::Crc( _pcPath.c_str() );
+		auto aCrc = StdFile::CCrc( _pcPath.c_str() );
 		std::wcout << "Downloaded file \"" << reinterpret_cast<const wchar_t *>(_pcPath.c_str()) << "\": " << std::uppercase << std::hex << std::setfill( L'0' ) << std::setw( 8 ) << aCrc << std::endl;
 
 		return eCode;
@@ -436,7 +436,7 @@ namespace lsn {
 	 * \param _pvFile Pointer to a StdFile object used for the write process.
 	 * \return Returns the number of bytes actually writtem.
 	 **/
-	size_t LSN_CDECL Utilities::WriteCurlData( void * _pvPtr, size_t _sSize, size_t _sMem, void * _pvFile ) {
+	size_t LSN_CDECL CUtilities::WriteCurlData( void * _pvPtr, size_t _sSize, size_t _sMem, void * _pvFile ) {
 		StdFile * psfFile = reinterpret_cast<StdFile *>(_pvFile);
 		size_t sTotal = _sSize * _sMem;
 		if ( psfFile->WriteToFile( static_cast<uint8_t *>(_pvPtr), sTotal ) == LSN_E_SUCCESS ) {
@@ -451,7 +451,7 @@ namespace lsn {
 	 * \param _pcFolder The path to the folder to where to download the MNIST files.
 	 * \return Returns an error code indicating the result of the operation.
 	 **/
-	LSN_ERRORS Utilities::DownloadMnist( const std::u16string &_pcFolder ) {
+	LSN_ERRORS CUtilities::DownloadMnist( const std::u16string &_pcFolder ) {
 		static std::u16string sUrls[] = {
 			u"https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz",
 			u"https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz",
@@ -482,7 +482,7 @@ namespace lsn {
 				std::filesystem::path pThisPath = pPath;
 				pThisPath /= sFileNames[I];
 
-				auto aCrc = StdFile::Crc( pThisPath.u16string().c_str() );
+				auto aCrc = StdFile::CCrc( pThisPath.u16string().c_str() );
 				if ( aCrc != ui32Crc[I] ) {
 					auto aCode = DownloadFile( sUrls[I], pThisPath.u16string() );
 					if ( aCode != LSN_E_SUCCESS ) { return aCode; }
@@ -500,7 +500,7 @@ namespace lsn {
 	 * \param _ui32Value Value for which to derive the lowest power-of-2 value not under this value.
 	 * \return Returns the lowest power-of-2 value not below the given input value.
 	 */
-	uint32_t Utilities::GetLowestPo2( uint32_t _ui32Value ) {
+	uint32_t CUtilities::GetLowestPo2( uint32_t _ui32Value ) {
 		if ( !_ui32Value ) { return 0; }
 #ifdef LSN_X86
 		// On x86 processors there is an instruction that gets the highest-

@@ -19,9 +19,9 @@
 
 namespace lsn {
 
-	FileMap::FileMap() {
+	CFileMap::CFileMap() {
 	}
-	FileMap::~FileMap() {
+	CFileMap::~CFileMap() {
 		Close();
 	}
 
@@ -33,7 +33,7 @@ namespace lsn {
 	 * \param _pFile Path to the file to open.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS FileMap::Open( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CFileMap::Open( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			m_hFile = ::CreateFileW( _pFile.native().c_str(),
@@ -45,7 +45,7 @@ namespace lsn {
 				NULL );
 
 			if ( m_hFile == FileMap_Null ) {
-				auto aCode = Errors::GetLastError_To_Native();
+				auto aCode = CErrors::GetLastError_To_Native();
 				Close();
 				return aCode;
 			}
@@ -61,7 +61,7 @@ namespace lsn {
 	 * \param _pFile Path to the file to create.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS FileMap::Create( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CFileMap::Create( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			m_hFile = ::CreateFileW( _pFile.native().c_str(),
@@ -73,7 +73,7 @@ namespace lsn {
 				NULL );
 
 			if ( m_hFile == FileMap_Null ) {
-				auto aCode = Errors::GetLastError_To_Native();
+				auto aCode = CErrors::GetLastError_To_Native();
 				Close();
 				return aCode;
 			}
@@ -86,7 +86,7 @@ namespace lsn {
 		largeSize.QuadPart = 4 * 1024;
 		if ( !::SetFilePointerEx( m_hFile, largeSize, NULL, FILE_BEGIN ) ||
 			!::SetEndOfFile( m_hFile ) ) {
-			auto aCode = Errors::GetLastError_To_Native();
+			auto aCode = CErrors::GetLastError_To_Native();
 			Close();
 			return aCode;
 		}
@@ -97,7 +97,7 @@ namespace lsn {
 	/**
 	 * Closes the opened file.
 	 */
-	void FileMap::Close() {
+	void CFileMap::Close() {
 		if ( m_pbMapBuffer ) {
 			::UnmapViewOfFile( m_pbMapBuffer );
 			m_pbMapBuffer = nullptr;
@@ -121,7 +121,7 @@ namespace lsn {
 	 * 
 	 * \return Returns the size of the file.
 	 **/
-	uint64_t FileMap::Size() const {
+	uint64_t CFileMap::Size() const {
 		if ( !m_ui64Size ) {
 			LARGE_INTEGER liInt;
 			if ( ::GetFileSizeEx( m_hFile, &liInt ) ) { m_ui64Size = liInt.QuadPart; }
@@ -134,14 +134,14 @@ namespace lsn {
 	 * 
 	 * \return Returns true if the file mapping was successfully created.
 	 **/
-	LSN_ERRORS FileMap::CreateFileMap() {
+	LSN_ERRORS CFileMap::CreateFileMap() {
 		if ( m_hFile == FileMap_Null ) {
 			return LSN_E_INVALID_HANDLE;
 		}
 		
 		LARGE_INTEGER liInt;
 		if ( !::GetFileSizeEx( m_hFile, &liInt ) ) {
-			auto aCode = Errors::GetLastError_To_Native();
+			auto aCode = CErrors::GetLastError_To_Native();
 			Close();
 			return (aCode == LSN_E_OTHER) ? LSN_E_STAT_FAILED : aCode;
 		}
@@ -158,7 +158,7 @@ namespace lsn {
 			NULL );
 
 		if ( NULL == m_hMap ) {
-			auto aCode = Errors::GetLastError_To_Native();
+			auto aCode = CErrors::GetLastError_To_Native();
 			Close();
 			return aCode;
 		}
@@ -174,13 +174,13 @@ namespace lsn {
 	 * \param _pFile Path to the file to open.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS FileMap::Open( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CFileMap::Open( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			auto sPath = _pFile.native();
 			m_hFile = ::open( sPath.c_str(), O_RDONLY );
 			if ( m_hFile == FileMap_Null ) {
-				auto aCode = Errors::ErrNo_T_To_Native( errno );
+				auto aCode = CErrors::ErrNo_T_To_Native( errno );
 				Close();
 				return aCode;
 			}
@@ -197,13 +197,13 @@ namespace lsn {
 	 * \param _pFile Path to the file to create.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS FileMap::Create( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CFileMap::Create( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			auto sPath = _pFile.native();
 			m_hFile = ::open( sPath.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0644 );
 			if ( m_hFile == FileMap_Null ) {
-				auto aCode = Errors::ErrNo_T_To_Native( errno );
+				auto aCode = CErrors::ErrNo_T_To_Native( errno );
 				Close();
 				return aCode;
 			}
@@ -212,7 +212,7 @@ namespace lsn {
 		catch ( ... ) { return LSN_E_OUT_OF_MEMORY; }		// _pFile.native() can fail if out of memory.
 
 		if ( ::ftruncate( m_hFile, 4 * 1024 ) != 0 ) {
-			auto aCode = Errors::ErrNo_T_To_Native( errno );
+			auto aCode = CErrors::ErrNo_T_To_Native( errno );
 			Close();
 			return aCode;
 		}
@@ -223,7 +223,7 @@ namespace lsn {
 	/**
 	 * Closes the opened file.
 	 */
-	void FileMap::Close() {
+	void CFileMap::Close() {
 		if ( m_pbMapBuffer ) {
 			if ( m_ui32MapSize ) { ::munmap( m_pbMapBuffer, static_cast<size_t>(m_ui32MapSize) ); }
 			m_pbMapBuffer = nullptr;
@@ -247,7 +247,7 @@ namespace lsn {
 	 *
 	 * \return Returns the size of the file.
 	 **/
-	uint64_t FileMap::Size() const {
+	uint64_t CFileMap::Size() const {
 		if ( !m_ui64Size ) {
 			struct stat sStat;
 			if ( ::fstat( m_hFile, &sStat ) == 0 ) { m_ui64Size = static_cast<uint64_t>(sStat.st_size); }
@@ -260,7 +260,7 @@ namespace lsn {
 	 *
 	 * \return Returns true if the file mapping was successfully created.
 	 **/
-	LSN_ERRORS FileMap::CreateFileMap() {
+	LSN_ERRORS CFileMap::CreateFileMap() {
 		if ( m_hFile == FileMap_Null ) {
 			return LSN_E_INVALID_HANDLE;
 		}
@@ -269,7 +269,7 @@ namespace lsn {
 		if ( m_bIsEmpty ) { return LSN_E_FILE_TOO_SMALL; }
 		m_hMap = ::dup( m_hFile );
 		if ( m_hMap == FileMap_Null ) {
-			auto aCode = Errors::ErrNo_T_To_Native( errno );
+			auto aCode = CErrors::ErrNo_T_To_Native( errno );
 			Close();
 			return aCode;
 		}

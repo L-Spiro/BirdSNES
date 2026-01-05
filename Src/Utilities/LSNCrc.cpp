@@ -15,17 +15,17 @@ namespace lsn {
 	/**
 	 * Standard table of codes.
 	 */
-	uint32_t Crc::m_ui32StdTable[256] = { 0 };
+	uint32_t CCrc::m_ui32StdTable[256] = { 0 };
 
 	/**
 	 * Alternative table of codes.
 	 */
-	uint32_t Crc::m_ui32AltTable[256] = { 0 };
+	uint32_t CCrc::m_ui32AltTable[256] = { 0 };
 
 	/**
 	 * Has the table been initialized?
 	 */
-	bool Crc::m_bInit = false;
+	bool CCrc::m_bInit = false;
 
 	// == Functions.
 	/**
@@ -35,7 +35,7 @@ namespace lsn {
 	 * \param _uiptrLen Length of the data.
 	 * \return Returns the standard 32-bit CRC value for the given data
 	 */
-	uint32_t Crc::GetCrc( const uint8_t * _pui8Data, uintptr_t _uiptrLen ) {
+	uint32_t CCrc::GetCrc( const uint8_t * _pui8Data, uintptr_t _uiptrLen ) {
 		Init();
 
 		uint32_t ui32Crc = UINT32_MAX;
@@ -53,7 +53,7 @@ namespace lsn {
 	 * \param _uiptrLen Length of the data.
 	 * \return Returns the alternative 32-bit CRC value for the given data
 	 */
-	uint32_t Crc::GetAltCrc( const uint8_t * _pui8Data, uintptr_t _uiptrLen ) {
+	uint32_t CCrc::GetAltCrc( const uint8_t * _pui8Data, uintptr_t _uiptrLen ) {
 		Init();
 
 		uint32_t ui32Crc = UINT32_MAX;
@@ -68,7 +68,7 @@ namespace lsn {
 	/**
 	 * Initialize the table.
 	 */
-	void Crc::Init() {
+	void CCrc::Init() {
 		if ( !m_bInit ) {
 			Init( m_ui32StdTable, 0xEDB88320 );
 			Init( m_ui32AltTable, 0x04C11DB7 );
@@ -82,7 +82,7 @@ namespace lsn {
 	 * \param _pui32Table The table to initialize
 	 * \param _ui32Key The key to use for initialization.
 	 */
-	void Crc::Init( uint32_t * _pui32Table, uint32_t _ui32Key ) {
+	void CCrc::Init( uint32_t * _pui32Table, uint32_t _ui32Key ) {
 		for ( uint32_t I = 0; I < 256; ++I ) {
 			uint32_t ui32Crc = I;
 			for ( uint32_t J = 8; J--; ) {
@@ -104,7 +104,7 @@ namespace lsn {
 	 * \param _ui8Val The byte to add to the CRC calculation.
 	 * \param _ui32Crc The CRC to update.
 	 */
-	void Crc::GetCrc( uint32_t * _pui32Table, uint8_t _ui8Val, uint32_t &_ui32Crc ) {
+	void CCrc::GetCrc( uint32_t * _pui32Table, uint8_t _ui8Val, uint32_t &_ui32Crc ) {
 		_ui32Crc = (_ui32Crc >> 8) ^ _pui32Table[_ui8Val^(_ui32Crc&0xFF)];
 	}
 

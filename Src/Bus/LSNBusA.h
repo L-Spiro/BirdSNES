@@ -18,18 +18,18 @@
 namespace lsn {
 
 	/**
-	 * Class BusA
+	 * Class CBusA
 	 * \brief The Bus A implementation.
 	 *
 	 * Description: The Bus A implementation.
 	 */
-	class BusA {
+	class CBusA {
 	public :
-		BusA() {
+		CBusA() {
 			BuildSpeedTable();
 			ApplyBasicMapping();
 		}
-		~BusA() {
+		~CBusA() {
 		}
 
 
@@ -354,8 +354,8 @@ namespace lsn {
 		 **/
 		void										ApplyBasicMapping() {
 			for ( size_t I = 0; I < 0x1000000; I += 0x100 ) {
-				SetAccessor( uint16_t( I >> 8 ), &BusA::StdRead, nullptr, &BusA::StdWrite, nullptr,
-					&BusA::StdDebugRead, &BusA::StdDebugWrite );
+				SetAccessor( uint16_t( I >> 8 ), &CBusA::StdRead, nullptr, &CBusA::StdWrite, nullptr,
+					&CBusA::StdDebugRead, &CBusA::StdDebugWrite );
 			}
 		}
 

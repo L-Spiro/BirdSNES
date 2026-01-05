@@ -14,14 +14,14 @@
 namespace lsn {
 
 	/**
-	 * Class Timer
+	 * Class CTimer
 	 * \brief A high-precision timer class using C++11.
 	 *
 	 * Description: A high-precision timer class using C++11.
 	 */
-	class Timer {
+	class CTimer {
 	public :
-		Timer() :
+		CTimer() :
 			m_tpStartPoint(),
 			m_tpEndPoint(),
 			m_bRunning( false ) {}

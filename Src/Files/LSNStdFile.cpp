@@ -11,11 +11,11 @@
 
 namespace lsn {
 
-	StdFile::StdFile() :
+	CStdFile::CStdFile() :
 		m_pfFile( nullptr ),
 		m_ui64Size( 0 ) {
 	}
-	StdFile::~StdFile() {
+	CStdFile::~CStdFile() {
 		Close();
 	}
 
@@ -27,12 +27,12 @@ namespace lsn {
 	 * \param _pFile Path to the file to open.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS StdFile::Open( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CStdFile::Open( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = nullptr;
 			errno_t enOpenResult = ::_wfopen_s( &pfFile, _pFile.generic_wstring().c_str(), L"rb" );
-			if ( nullptr == pfFile || enOpenResult != 0 ) { return Errors::ErrNo_T_To_Native( enOpenResult ); }
+			if ( nullptr == pfFile || enOpenResult != 0 ) { return CErrors::ErrNo_T_To_Native( enOpenResult ); }
 
 			::_fseeki64( pfFile, 0, SEEK_END );
 			m_ui64Size = ::_ftelli64( pfFile );
@@ -51,12 +51,12 @@ namespace lsn {
 	 * \param _pFile Path to the file to create.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS StdFile::Create( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CStdFile::Create( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = nullptr;
 			errno_t enOpenResult = ::_wfopen_s( &pfFile, _pFile.generic_wstring().c_str(), L"wb" );
-			if ( nullptr == pfFile || enOpenResult != 0 ) { return Errors::ErrNo_T_To_Native( enOpenResult ); }
+			if ( nullptr == pfFile || enOpenResult != 0 ) { return CErrors::ErrNo_T_To_Native( enOpenResult ); }
 
 			m_ui64Size = 0;
 
@@ -73,12 +73,12 @@ namespace lsn {
 	 * \param _pFile Path to the file to open for appending.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS StdFile::Append( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CStdFile::Append( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = nullptr;
 			errno_t enOpenResult = ::_wfopen_s( &pfFile, _pFile.generic_wstring().c_str(), L"ab" );
-			if ( nullptr == pfFile || enOpenResult != 0 ) { return Errors::ErrNo_T_To_Native( enOpenResult ); }
+			if ( nullptr == pfFile || enOpenResult != 0 ) { return CErrors::ErrNo_T_To_Native( enOpenResult ); }
 
 			m_ui64Size = 0;
 
@@ -95,11 +95,11 @@ namespace lsn {
 	 * \param _pFile Path to the file to open.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS StdFile::Open( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CStdFile::Open( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = std::fopen( _pFile.generic_string().c_str(), "rb" );
-			if ( nullptr == pfFile ) { return Errors::ErrNo_T_To_Native( errno ); }
+			if ( nullptr == pfFile ) { return CErrors::ErrNo_T_To_Native( errno ); }
 
 			std::fseek( pfFile, 0, SEEK_END );
 			m_ui64Size = std::ftell( pfFile );
@@ -118,11 +118,11 @@ namespace lsn {
 	 * \param _pFile Path to the file to create.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS StdFile::Create( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CStdFile::Create( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = std::fopen( _pFile.generic_string().c_str(), "wb" );
-			if ( nullptr == pfFile ) { return Errors::ErrNo_T_To_Native( errno ); }
+			if ( nullptr == pfFile ) { return CErrors::ErrNo_T_To_Native( errno ); }
 
 			m_ui64Size = 0;
 
@@ -139,11 +139,11 @@ namespace lsn {
 	 * \param _pFile Path to the file to open for appending.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS StdFile::Append( const std::filesystem::path &_pFile ) {
+	LSN_ERRORS CStdFile::Append( const std::filesystem::path &_pFile ) {
 		Close();
 		try {
 			FILE * pfFile = std::fopen( _pFile.generic_string().c_str(), "ab" );
-			if ( nullptr == pfFile ) { return Errors::ErrNo_T_To_Native( errno ); }
+			if ( nullptr == pfFile ) { return CErrors::ErrNo_T_To_Native( errno ); }
 
 			m_ui64Size = 0;
 
@@ -158,7 +158,7 @@ namespace lsn {
 	/**
 	 * Closes the opened file.
 	 */
-	void StdFile::Close() {
+	void CStdFile::Close() {
 		if ( m_pfFile != nullptr ) {
 			::fclose( m_pfFile );
 			m_pfFile = nullptr;
@@ -172,7 +172,7 @@ namespace lsn {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS StdFile::LoadToMemory( std::vector<uint8_t> &_vResult ) const {
+	LSN_ERRORS CStdFile::LoadToMemory( std::vector<uint8_t> &_vResult ) const {
 		if ( m_pfFile != nullptr ) {
 #ifdef _WIN32
 			__int64 i64Pos = ::_ftelli64( m_pfFile );
@@ -228,7 +228,7 @@ namespace lsn {
 	 * \param _vData The data to write to the file.
 	 * \return Returns true if the data was successfully written to the file.
 	 */
-	LSN_ERRORS StdFile::WriteToFile( const std::vector<uint8_t> &_vData ) {
+	LSN_ERRORS CStdFile::WriteToFile( const std::vector<uint8_t> &_vData ) {
 		return WriteToFile( _vData.data(), _vData.size() );
 	}
 
@@ -239,7 +239,7 @@ namespace lsn {
 	 * \param _tsSize The size of the buffer to which _pui8Data points.
 	 * \return Returns true if the data was successfully written to the file.
 	 */
-	LSN_ERRORS StdFile::WriteToFile( const uint8_t * _pui8Data, size_t _tsSize ) {
+	LSN_ERRORS CStdFile::WriteToFile( const uint8_t * _pui8Data, size_t _tsSize ) {
 		if ( m_pfFile != nullptr ) {
 			return (std::fwrite( _pui8Data, _tsSize, 1, m_pfFile ) == 1) ? LSN_E_SUCCESS : LSN_E_OPERATION_NOT_PERMITTED;
 		}
@@ -252,7 +252,7 @@ namespace lsn {
 	 * \param _i64Offset Amount by which to move the file pointer.
 	 * \return Returns the new line position.
 	 **/
-	uint64_t StdFile::MovePointerBy( int64_t _i64Offset ) const {
+	uint64_t CStdFile::MovePointerBy( int64_t _i64Offset ) const {
 #ifdef _WIN32
 		::_fseeki64( m_pfFile, _i64Offset, SEEK_CUR );
 		return ::_ftelli64( m_pfFile );
@@ -269,7 +269,7 @@ namespace lsn {
 	 * \param _bFromEnd Whether _ui64Pos is from the end of the file or not. 
 	 * \return Returns the new file position.
 	 **/
-	uint64_t StdFile::MovePointerTo( uint64_t _ui64Pos, bool _bFromEnd ) const {
+	uint64_t CStdFile::MovePointerTo( uint64_t _ui64Pos, bool _bFromEnd ) const {
 #ifdef _WIN32
 		::_fseeki64( m_pfFile, static_cast<long long>(_ui64Pos), _bFromEnd ? SEEK_END : SEEK_SET );
 		return ::_ftelli64( m_pfFile );
@@ -282,6 +282,6 @@ namespace lsn {
 	/**
 	 * Performs post-loading operations after a successful loading of the file.  m_pfFile will be valid when this is called.  Override to perform additional loading operations on m_pfFile.
 	 */
-	void StdFile::PostLoad() {}
+	void CStdFile::PostLoad() {}
 
 }	// namespace lsn

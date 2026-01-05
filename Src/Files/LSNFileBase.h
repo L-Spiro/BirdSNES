@@ -19,14 +19,14 @@
 namespace lsn {
 
 	/**
-	 * Class FileBase
+	 * Class CFileBase
 	 * \brief The base class for working with files.
 	 *
 	 * Description: The base class for working with files.
 	 */
-	class FileBase {
+	class CFileBase {
 	public :
-		virtual ~FileBase();
+		virtual ~CFileBase();
 
 
 		// == Functions.

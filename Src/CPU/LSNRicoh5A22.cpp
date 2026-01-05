@@ -11,17 +11,20 @@
 
 namespace lsn {
 
-	Ricoh5A22::Ricoh5A22( BusA &_bBusA ) :
+	// == Members.
+#include "LSNCycleFuncs.inl"
+
+	CRicoh5A22::CRicoh5A22( CBusA &_bBusA ) :
 		m_baBusA( _bBusA ) {
 	}
-	Ricoh5A22::~Ricoh5A22() {
+	CRicoh5A22::~CRicoh5A22() {
 	}
 
 	// == Functions.
 	/**
 	 * Resets the bus to a known state.
 	 */
-	void Ricoh5A22::ResetToKnown() {
+	void CRicoh5A22::ResetToKnown() {
 		ResetAnalog();
 		std::memset( &m_fsState.rRegs, 0, sizeof( m_fsState.rRegs ) );
 		uint8_t ui8Speed;
@@ -35,8 +38,8 @@ namespace lsn {
 	/**
 	 * Performs an "analog" reset, allowing previous data to remain.
 	 */
-	void Ricoh5A22::ResetAnalog() {
-		//m_pfTickFunc = m_pfTickFuncCopy = &Ricoh5A22::Tick_NextInstructionStd;
+	void CRicoh5A22::ResetAnalog() {
+		//m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_NextInstructionStd;
 		m_fsState.bBoundaryCrossed = false;
 		m_fsState.ui16PcModify = 0;
 		m_fsState.ui16SModify = 0;

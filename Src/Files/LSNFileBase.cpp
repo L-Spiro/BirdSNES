@@ -17,20 +17,20 @@
 
 namespace lsn {
 
-	FileBase::~FileBase() {}
+	CFileBase::~CFileBase() {}
 
 	// == Functions.
 	/**
 	 * Closes the opened file.
 	 */
-	void FileBase::Close() {}
+	void CFileBase::Close() {}
 
 	/**
 	 * If true, the file is an archive containing more files.
 	 *
 	 * \return Returns true if the file is an archive, false otherwise.
 	 */
-	bool FileBase::IsArchive() const { return false; }
+	bool CFileBase::IsArchive() const { return false; }
 
 	/**
 	 * Loads the opened file to memory, storing the result in _vResult.
@@ -38,7 +38,7 @@ namespace lsn {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS FileBase::LoadToMemory( std::vector<uint8_t> &_vResult ) const { static_cast<void>(_vResult); return LSN_E_NOT_IMPLEMENTED; }
+	LSN_ERRORS CFileBase::LoadToMemory( std::vector<uint8_t> &_vResult ) const { static_cast<void>(_vResult); return LSN_E_NOT_IMPLEMENTED; }
 
 	/**
 	 * Gathers the file names in the archive into an array.
@@ -46,7 +46,7 @@ namespace lsn {
 	 * \param _vResult The location where to store the file names.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS FileBase::GatherArchiveFiles( std::vector<std::u16string> &_vResult ) const { static_cast<void>(_vResult); return LSN_E_NOT_IMPLEMENTED; }
+	LSN_ERRORS CFileBase::GatherArchiveFiles( std::vector<std::u16string> &_vResult ) const { static_cast<void>(_vResult); return LSN_E_NOT_IMPLEMENTED; }
 
 	/**
 	 * Extracts the given file from the archive.
@@ -55,7 +55,7 @@ namespace lsn {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS FileBase::ExtractToMemory( const std::u16string &_s16File, std::vector<uint8_t> &_vResult ) const { static_cast<void>(_vResult); static_cast<void>(_vResult); return LSN_E_NOT_IMPLEMENTED; }
+	LSN_ERRORS CFileBase::ExtractToMemory( const std::u16string &_s16File, std::vector<uint8_t> &_vResult ) const { static_cast<void>(_s16File); static_cast<void>(_vResult); return LSN_E_NOT_IMPLEMENTED; }
 
 	/**
 	 * Decompresses the whole archive into a single result.
@@ -63,7 +63,7 @@ namespace lsn {
 	 * \param _vResult The location where to store the file in memory.
 	 * \return Returns an error code indicating the result of the operation.
 	 */
-	LSN_ERRORS FileBase::ExtractToMemory( std::vector<uint8_t> &_vResult ) const { static_cast<void>(_vResult); return LSN_E_NOT_IMPLEMENTED; }
+	LSN_ERRORS CFileBase::ExtractToMemory( std::vector<uint8_t> &_vResult ) const { static_cast<void>(_vResult); return LSN_E_NOT_IMPLEMENTED; }
 
 	/**
 	 * Finds files/folders in a given directory.
@@ -74,7 +74,7 @@ namespace lsn {
 	 * \param _vResult The return array.  Found files and folders are appended to the array.
 	 * \return Returns _vResult.
 	 **/
-	std::vector<std::u16string> & FileBase::FindFiles( const char16_t * _pcFolderPath, const char16_t * _pcSearchString, bool _bIncludeFolders, std::vector<std::u16string> &_vResult ) {
+	std::vector<std::u16string> & CFileBase::FindFiles( const char16_t * _pcFolderPath, const char16_t * _pcSearchString, bool _bIncludeFolders, std::vector<std::u16string> &_vResult ) {
 #ifdef _WIN32
 		std::filesystem::path sPath = std::filesystem::path( _pcFolderPath ).make_preferred();
 

@@ -14,12 +14,12 @@
 
 namespace lsn {
 	/**
-	 * Class Crc
+	 * Class CCrc
 	 * \brief A standard 32-bit cyclic redundancy check calculator.
 	 *
 	 * Description: A standard 32-bit cyclic redundancy check calculator.
 	 */
-	class Crc {
+	class CCrc {
 	public :
 		// == Functions.
 		/**

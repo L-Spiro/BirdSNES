@@ -12,7 +12,7 @@ namespace lsn {
 
 	// == Members.
 #ifdef LSN_CPUID
-	const FeatureSet::InstructionSet_Internal FeatureSet::m_iiCpuRep;
+	const CFeatureSet::InstructionSet_Internal CFeatureSet::m_iiCpuRep;
 #endif	// #ifdef LSN_CPUID
 
 }	// namespace lsn
