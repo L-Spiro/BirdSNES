@@ -751,7 +751,7 @@ namespace lsn {
 	 **/
 	inline const char * CErrors::Name( LSN_ERRORS _eCode ) {
 		switch ( _eCode ) {
-#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return & ## # ENUM[6]; }
+#define LSN_E_ENUM( ENUM, TXT, JPN, FR, SP, CH )			case ENUM : { return & # ENUM[6]; }
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
