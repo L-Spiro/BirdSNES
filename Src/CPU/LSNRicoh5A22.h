@@ -11,6 +11,7 @@
 
 #include "../LSNBirdSNES.h"
 #include "../Bus/LSNBusA.h"
+#include "../Foundation/LSNBits.h"
 #include "LSNRicoh5A22Base.h"
 
 #ifdef LSN_CPU_VERIFY
@@ -19,18 +20,18 @@
 
 #define LSN_INSTR_START_PHI1( ISREAD )									/*m_fsState.bIsReadCycle = (ISREAD)*/
 #define LSN_INSTR_END_PHI1
-#define LSN_INSTR_START_PHI2_READ_BUSA( ADDR, BANK, RESULT, SPEED )		RESULT = m_baBusA.Read( uint16_t( ADDR ), uint8_t( BANK ), SPEED )
-#define LSN_INSTR_START_PHI2_WRITE_BUSA( ADDR, BANK, VAL, SPEED )		m_baBusA.Write( uint16_t( ADDR ), uint8_t( BANK ), uint8_t( VAL ), SPEED )
-#define LSN_INSTR_START_PHI2_READ0_BUSA( ADDR, RESULT, SPEED )			RESULT = m_baBusA.ReadBank0( uint16_t( ADDR ), SPEED )
-#define LSN_INSTR_START_PHI2_WRITE0_BUSA( ADDR, VAL, SPEED )			m_baBusA.WriteBank0( uint16_t( ADDR ), uint8_t( VAL ), SPEED )
+#define LSN_INSTR_START_PHI2_READ_BUSA( ADDR, BANK, RESULT, SPEED )		RESULT = m_baBusA.Read( uint16_t( ADDR ), uint8_t( BANK ), (SPEED) )
+#define LSN_INSTR_START_PHI2_WRITE_BUSA( ADDR, BANK, VAL, SPEED )		m_baBusA.Write( uint16_t( ADDR ), uint8_t( BANK ), uint8_t( VAL ), (SPEED) )
+#define LSN_INSTR_START_PHI2_READ0_BUSA( ADDR, RESULT, SPEED )			RESULT = m_baBusA.ReadBank0( uint16_t( ADDR ), (SPEED) )
+#define LSN_INSTR_START_PHI2_WRITE0_BUSA( ADDR, VAL, SPEED )			m_baBusA.WriteBank0( uint16_t( ADDR ), uint8_t( VAL ), (SPEED) )
 #define LSN_INSTR_END_PHI2
 
 #define LSN_NEXT_FUNCTION_BY( AMT )										m_fsState.ui8FuncIndex += AMT
 #define LSN_NEXT_FUNCTION												LSN_NEXT_FUNCTION_BY( 1 )
 #define LSN_FINISH_INST( CHECK_INTERRUPTS )								/*if constexpr ( CHECK_INTERRUPTS ) { LSN_CHECK_INTERRUPTS; }*/ m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_NextInstructionStd
 
-#define LSN_PUSH( VAL, SPEED )											LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? (0x100 | m_fsState.rRegs.ui8S[0]) : m_fsState.rRegs.ui16S, (VAL), (SPEED) ); m_fsState.ui16SModify = uint16_t( -1 )
-#define LSN_POP( RESULT, SPEED )										LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + 1 )) : (m_fsState.rRegs.ui16S + 1), (RESULT), (SPEED) ); m_fsState.ui16SModify = uint16_t( 1 )
+#define LSN_PUSH( VAL, SPEED )											LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), (VAL), (SPEED) ); m_fsState.ui16SModify = uint16_t( -1L + _i8SOff )
+#define LSN_POP( RESULT, SPEED )										LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), (RESULT), (SPEED) ); m_fsState.ui16SModify = uint16_t( 1 + _i8SOff )
 
 #define LSN_UPDATE_PC													if ( m_fsState.bAllowWritingToPc ) { m_fsState.rRegs.ui16Pc += m_fsState.ui16PcModify; } m_fsState.ui16PcModify = 0
 #define LSN_UPDATE_S													m_fsState.rRegs.ui16S += m_fsState.ui16SModify; m_fsState.ui16SModify = 0
@@ -159,6 +160,60 @@ namespace lsn {
 
 
 		// == Functions.
+		/**
+		 * Resets the CPU to a known state.
+		 * 
+		 * \tparam _jJson The JSON file.
+		 */
+		template <bool _bToKnown = true>
+		void												Reset() {
+			m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_NextInstructionStd;
+			m_fsState.bBoundaryCrossed = false;
+			m_fsState.ui16PcModify = 0;
+			m_fsState.ui16SModify = 0;
+			m_fsState.ui16OpCode = 0;
+			m_fsState.bEmulationMode = true;
+			m_fsStateBackup.bCopiedState = false;
+			
+#ifdef LSN_CPU_VERIFY
+			m_fsState.bAllowWritingToPc = true;
+			m_bIsReset = m_bBrkIsReset = false;
+#else
+			m_fsState.bAllowWritingToPc = false;
+			m_bIsReset = m_bBrkIsReset = true;
+#endif	// #ifdef LSN_CPU_VERIFY
+
+			m_fsState.pfCurInstruction = m_iInstructionSet[m_fsState.ui16OpCode].pfHandler[m_fsState.bEmulationMode];
+
+			//if ( m_pmbMapper ) { m_pmbMapper->Reset(); }
+
+			if constexpr ( _bToKnown ) {
+				std::memset( &m_fsState.rRegs, 0, sizeof( m_fsState.rRegs ) );
+				m_ui64CycleCount = 0ULL;
+				
+				m_fsState.ui16Operand = 0;
+
+				//m_ui16DmaCounter = 0;
+				//m_ui16DmaAddress = 0;
+
+				//m_ui8DmaPos = m_ui8DmaValue = 0;
+				m_bNmiStatusLine = false;
+				m_bLastNmiStatusLine = false;
+				m_bDetectedNmi = false;
+				m_bHandleNmi = false;
+				//m_ui8IrqStatusLine = 0;
+				//m_bIrqSeenLowPhi2 = false;
+				//m_bIrqStatusPhi1Flag = false;
+				m_bHandleIrq = false;
+				m_bRdyLow = false;
+				//m_ui8RdyOffCnt = 0;
+
+				/*std::memset( m_ui8Inputs, 0, sizeof( m_ui8Inputs ) );
+				std::memset( m_ui8InputsState, 0, sizeof( m_ui8InputsState ) );
+				std::memset( m_ui8InputsPoll, 0, sizeof( m_ui8InputsPoll ) );*/
+			}
+		}
+
 		/** Fetches the next opcode and begins the next instruction. */
 		inline void														Tick_NextInstructionStd();
 
@@ -220,6 +275,8 @@ namespace lsn {
 			bool														bTakeJump;																			/**< Determines if a branch is taken. */
 		
 			bool														bEmulationMode = true;																/**< Emulation Mode flag. */
+
+			bool														bCopiedState = false;																/**< If m_bRdyLow triggers a state copy, this is set in PHI1 after the copy and used in PHI2 to know that a copy was made and to abord PHI2 as soon as the read address has been finalized. */
 		} LSN_ALIGN_STRUCT_END( 64 );
 
 
@@ -297,9 +354,21 @@ namespace lsn {
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		// CYCLES
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+		/** Final touches to BRK (copies m_ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
+		void															Brk_BeginInst();
+
 		/**
-		 * Fetches the current opcode and increments PC.
+		 * Copies from the vector to PC.h.
+		 * 
+		 * \tparam _bEndInstr Marks the end of an instruction.  If true, LSN_FINISH_INST() is called.
 		 **/
+		template <bool _bEndInstr = false>
+		void															CopyVectorToPc_H_Phi2();
+			
+		/** Copies from the vector to PC.l. **/
+		void															CopyVectorToPc_L_Phi2();
+
+		/** Fetches the current opcode and increments PC. **/
 		void															Fetch_Opcode_IncPc_Phi2();
 
 		/**
@@ -371,6 +440,9 @@ namespace lsn {
 		template <bool _bAdjS>
 		void															SelectBrkVectors();
 
+		/** Sets I and X. */
+		void															SetBrkFlags();
+
 
 		/**
 		 * Prepares to enter a new instruction.
@@ -399,9 +471,52 @@ namespace lsn {
 		(this->*m_fsState.pfCurInstruction[m_fsState.ui8FuncIndex])();
 	}
 
+	/** Final touches to BRK (copies m_ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
+	void CRicoh5A22::Brk_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+		
+		m_bBrkIsReset = false;
+		m_fsState.rRegs.ui16Pc = m_fsState.ui16Address;
+
+		BeginInst<false, false, false>();
+	}
+
 	/**
-	 * Fetches the current opcode and increments PC.
+	 * Copies from the vector to PC.h.
+	 * 
+	 * \tparam _bEndInstr Marks the end of an instruction.  If true, LSN_FINISH_INST() is called.
 	 **/
+	template <bool _bEndInstr>
+	void CRicoh5A22::CopyVectorToPc_H_Phi2() {
+		uint8_t ui8Speed;
+		uint8_t ui8Op;
+		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector + 1, ui8Op, ui8Speed );
+		m_fsState.ui8Address[1] = ui8Op;
+
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+			
+	/** Copies from the vector to PC.l. **/
+	void CRicoh5A22::CopyVectorToPc_L_Phi2() {
+		uint8_t ui8Speed;
+		uint8_t ui8Op;
+		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector, ui8Op, ui8Speed );
+		m_fsState.ui8Address[0] = ui8Op;
+
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/** Fetches the current opcode and increments PC. **/
 	void CRicoh5A22::Fetch_Opcode_IncPc_Phi2() {
 		uint8_t ui8Speed;
 		uint8_t ui8Op;
@@ -546,7 +661,14 @@ namespace lsn {
 	template <int8_t _i8SOff>
 	void CRicoh5A22::Push_Pc_H_Phi2() {
 		uint8_t ui8Speed;
-		LSN_PUSH( m_fsState.rRegs.ui8Pc[1], ui8Speed );
+		if LSN_UNLIKELY( m_bBrkIsReset ) {
+			uint8_t ui8Tmp;
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, ui8Speed );
+			m_fsState.ui16SModify = uint16_t( -1L + _i8SOff );
+		}
+		else {
+			LSN_PUSH( m_fsState.rRegs.ui8Pc[1], ui8Speed );
+		}
 
 		LSN_NEXT_FUNCTION;
 
@@ -561,7 +683,18 @@ namespace lsn {
 	template <int8_t _i8SOff>
 	void CRicoh5A22::Push_Pc_L_Phi2() {
 		uint8_t ui8Speed;
-		LSN_PUSH( m_fsState.rRegs.ui8Pc[0], ui8Speed );
+		if LSN_UNLIKELY( m_bBrkIsReset ) {
+			uint8_t ui8Tmp;
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, ui8Speed );
+			m_fsState.ui16SModify = uint16_t( -1L + _i8SOff );
+		}
+		else {
+			LSN_PUSH( m_fsState.rRegs.ui8Pc[0], ui8Speed );
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
 
 		LSN_NEXT_FUNCTION;
 
@@ -575,6 +708,24 @@ namespace lsn {
 	 **/
 	template <int8_t _i8SOff>
 	void CRicoh5A22::Push_S_Phi2() {
+		uint8_t ui8Speed;
+		if LSN_UNLIKELY( m_bBrkIsReset ) {
+			uint8_t ui8Tmp;
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, ui8Speed );
+			m_fsState.ui16SModify = uint16_t( -1L + _i8SOff );
+		}
+		else {
+			if ( m_fsState.bPushB ) {
+				LSN_PUSH( m_fsState.rRegs.ui8Status | X(), ui8Speed );
+			}
+			else {
+				LSN_PUSH( m_fsState.rRegs.ui8Status, ui8Speed );
+			}
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
 	}
 
 	/**
@@ -651,6 +802,19 @@ namespace lsn {
 		m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_InstructionCycleStd;
 		m_fsState.bBoundaryCrossed = false;
 		//m_ui8RdyOffCnt = 0;
+		LSN_INSTR_END_PHI1;
+	}
+
+	/** Sets I and X. */
+	void CRicoh5A22::SetBrkFlags() {
+		LSN_INSTR_START_PHI1( true );
+
+		SetBit<I() | M(), true>( m_fsState.rRegs.ui8Status );
+		SetBit<X(), false>( m_fsState.rRegs.ui8Status );
+		m_fsState.bAllowWritingToPc = true;
+
+		LSN_NEXT_FUNCTION;
+
 		LSN_INSTR_END_PHI1;
 	}
 

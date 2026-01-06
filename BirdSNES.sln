@@ -27,6 +27,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LSWindows", "Libraries\LSWi
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CPU Vfy Debug|x64 = CPU Vfy Debug|x64
+		CPU Vfy Debug|x86 = CPU Vfy Debug|x86
+		CPU Vfy Release|x64 = CPU Vfy Release|x64
+		CPU Vfy Release|x86 = CPU Vfy Release|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Final|x64 = Final|x64
@@ -35,6 +39,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.CPU Vfy Debug|x64.ActiveCfg = CPU Vfy Debug|x64
+		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.CPU Vfy Debug|x64.Build.0 = CPU Vfy Debug|x64
+		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.CPU Vfy Debug|x86.ActiveCfg = CPU Vfy Debug|Win32
+		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.CPU Vfy Debug|x86.Build.0 = CPU Vfy Debug|Win32
+		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.CPU Vfy Release|x64.ActiveCfg = CPU Vfy Release|x64
+		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.CPU Vfy Release|x64.Build.0 = CPU Vfy Release|x64
+		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.CPU Vfy Release|x86.ActiveCfg = CPU Vfy Release|Win32
+		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.CPU Vfy Release|x86.Build.0 = CPU Vfy Release|Win32
 		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.Debug|x64.ActiveCfg = Debug|x64
 		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.Debug|x64.Build.0 = Debug|x64
 		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.Debug|x86.ActiveCfg = Debug|Win32
@@ -47,6 +59,14 @@ Global
 		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.Release|x64.Build.0 = Release|x64
 		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.Release|x86.ActiveCfg = Release|Win32
 		{7221C4E5-4A44-4ACD-9867-883AA6B9C486}.Release|x86.Build.0 = Release|Win32
+		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.CPU Vfy Debug|x64.ActiveCfg = Debug|x64
+		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.CPU Vfy Debug|x64.Build.0 = Debug|x64
+		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.CPU Vfy Debug|x86.ActiveCfg = Debug|Win32
+		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.CPU Vfy Debug|x86.Build.0 = Debug|Win32
+		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.CPU Vfy Release|x64.ActiveCfg = Release|x64
+		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.CPU Vfy Release|x64.Build.0 = Release|x64
+		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.CPU Vfy Release|x86.ActiveCfg = Release|Win32
+		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.CPU Vfy Release|x86.Build.0 = Release|Win32
 		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.Debug|x64.ActiveCfg = Debug|x64
 		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.Debug|x64.Build.0 = Debug|x64
 		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.Debug|x86.ActiveCfg = Debug|Win32
@@ -59,6 +79,14 @@ Global
 		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.Release|x64.Build.0 = Release|x64
 		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.Release|x86.ActiveCfg = Release|Win32
 		{642C4506-75EB-41EB-8F87-CF92DE64BA4E}.Release|x86.Build.0 = Release|Win32
+		{537A7B56-CC74-4295-8F5C-64C97902D05D}.CPU Vfy Debug|x64.ActiveCfg = Debug|x64
+		{537A7B56-CC74-4295-8F5C-64C97902D05D}.CPU Vfy Debug|x64.Build.0 = Debug|x64
+		{537A7B56-CC74-4295-8F5C-64C97902D05D}.CPU Vfy Debug|x86.ActiveCfg = Debug|Win32
+		{537A7B56-CC74-4295-8F5C-64C97902D05D}.CPU Vfy Debug|x86.Build.0 = Debug|Win32
+		{537A7B56-CC74-4295-8F5C-64C97902D05D}.CPU Vfy Release|x64.ActiveCfg = Release|x64
+		{537A7B56-CC74-4295-8F5C-64C97902D05D}.CPU Vfy Release|x64.Build.0 = Release|x64
+		{537A7B56-CC74-4295-8F5C-64C97902D05D}.CPU Vfy Release|x86.ActiveCfg = Release|Win32
+		{537A7B56-CC74-4295-8F5C-64C97902D05D}.CPU Vfy Release|x86.Build.0 = Release|Win32
 		{537A7B56-CC74-4295-8F5C-64C97902D05D}.Debug|x64.ActiveCfg = Debug|x64
 		{537A7B56-CC74-4295-8F5C-64C97902D05D}.Debug|x64.Build.0 = Debug|x64
 		{537A7B56-CC74-4295-8F5C-64C97902D05D}.Debug|x86.ActiveCfg = Debug|Win32
@@ -71,6 +99,14 @@ Global
 		{537A7B56-CC74-4295-8F5C-64C97902D05D}.Release|x64.Build.0 = Release|x64
 		{537A7B56-CC74-4295-8F5C-64C97902D05D}.Release|x86.ActiveCfg = Release|Win32
 		{537A7B56-CC74-4295-8F5C-64C97902D05D}.Release|x86.Build.0 = Release|Win32
+		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.CPU Vfy Debug|x64.ActiveCfg = Debug|x64
+		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.CPU Vfy Debug|x64.Build.0 = Debug|x64
+		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.CPU Vfy Debug|x86.ActiveCfg = Debug|Win32
+		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.CPU Vfy Debug|x86.Build.0 = Debug|Win32
+		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.CPU Vfy Release|x64.ActiveCfg = Release|x64
+		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.CPU Vfy Release|x64.Build.0 = Release|x64
+		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.CPU Vfy Release|x86.ActiveCfg = Release|Win32
+		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.CPU Vfy Release|x86.Build.0 = Release|Win32
 		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.Debug|x64.ActiveCfg = Debug|x64
 		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.Debug|x64.Build.0 = Debug|x64
 		{85310519-9B48-46F1-A3E5-FBFFB2BD7FB3}.Debug|x86.ActiveCfg = Debug|Win32
