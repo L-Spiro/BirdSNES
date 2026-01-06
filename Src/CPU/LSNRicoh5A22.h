@@ -29,14 +29,15 @@
 #define LSN_NEXT_FUNCTION												LSN_NEXT_FUNCTION_BY( 1 )
 #define LSN_FINISH_INST( CHECK_INTERRUPTS )								/*if constexpr ( CHECK_INTERRUPTS ) { LSN_CHECK_INTERRUPTS; }*/ m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_NextInstructionStd
 
-#define LSN_PUSH( VAL, SPEED )											LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? (0x100 | m_fsState.rRegs.ui8S[0]) : m_fsState.rRegs.ui16S, (VAL), (SPEED) ); m_fsState.ui16SModify = -1
-#define LSN_POP( RESULT, SPEED )										LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + 1 )) : (m_rRegs.ui16S + 1), (RESULT), (SPEED) ); m_fsState.ui16SModify = 1
+#define LSN_PUSH( VAL, SPEED )											LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? (0x100 | m_fsState.rRegs.ui8S[0]) : m_fsState.rRegs.ui16S, (VAL), (SPEED) ); m_fsState.ui16SModify = uint16_t( -1 )
+#define LSN_POP( RESULT, SPEED )										LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + 1 )) : (m_fsState.rRegs.ui16S + 1), (RESULT), (SPEED) ); m_fsState.ui16SModify = uint16_t( 1 )
 
 #define LSN_UPDATE_PC													if ( m_fsState.bAllowWritingToPc ) { m_fsState.rRegs.ui16Pc += m_fsState.ui16PcModify; } m_fsState.ui16PcModify = 0
 #define LSN_UPDATE_S													m_fsState.rRegs.ui16S += m_fsState.ui16SModify; m_fsState.ui16SModify = 0
 
-#define LSN_R															true
-#define LSN_W															false
+#define LSN_R															CRicoh5A22::LSN_CT_READ
+#define LSN_W															CRicoh5A22::LSN_CT_WRITE
+#define LSN_N															CRicoh5A22::LSN_CT_NULL
 
 #define LSN_TO_A														true
 #define LSN_TO_P														false
@@ -93,6 +94,13 @@ namespace lsn {
 			LSN_V_COP													= 0xFFE4,																		/**< The address of execution during a COP Software interrupt. */
 			LSN_V_RESERVED1												= 0xFFE2,																		/**< Reserved. */
 			LSN_V_RESERVED2												= 0xFFE0,																		/**< Reserved. */
+		};
+
+		/** Cycle type (read, write, null. */
+		enum LSN_CYCLE_TYPE {
+			LSN_CT_NULL													= 0,																			/**< Neither read nor write. */
+			LSN_CT_READ													= 1,																			/**< A read cycle. */
+			LSN_CT_WRITE												= 2,																			/**< A write cycle. */
 		};
 
 
@@ -183,6 +191,7 @@ namespace lsn {
 		/** The full state structure for instructions. */
 		LSN_ALIGN_STRUCT( 64 )
 		struct LSN_FULL_STATE {
+			const PfCycle *												pfCurInstruction = nullptr;															/**< The current instruction being executed. */
 			LSN_REGISTERS												rRegs;																				/**< Registers. */
 
 			LSN_VECTORS													vBrkVector = LSN_V_BRK;																/**< The vector to use inside BRK and whether to push B with status. */
@@ -222,6 +231,16 @@ namespace lsn {
 		LSN_FULL_STATE													m_fsState;																			/**< Everything a standard instruction-cycle function can modify.  Backed up at the start of the first DMA read cycle and restored at the end after the read address for that cycle has been calculated. */
 		LSN_FULL_STATE													m_fsStateBackup;																	/**< The backup of the state for the cycle that first gets interrupted by DMA and is then executed at the end of DMA. */
 		static LSN_INSTR												m_iInstructionSet[256];																/**< The instruction set. */
+
+		bool															m_bNmiStatusLine = false;															/**< The status line for NMI. */
+		bool															m_bLastNmiStatusLine = false;														/**< THe last status line for NMI. */
+		bool															m_bDetectedNmi = false;																/**< The edge detector for the PHI2 part of the cycle. */
+		bool															m_bHandleNmi = false;																/**< Once an NMI edge is detected, this is set to indicate that it needs to be handled on the PHI1 of the next cycle. */
+		bool															m_bHandleIrq = false;																/**< Once the IRQ status line is detected as having triggered, this tells us to handle an IRQ on the next instruction. */
+		bool															m_bIsReset = true;																	/**< Are we resetting? */
+		bool															m_bBrkIsReset = true;																/**< Shadows m_bIsReset, but m_bIsReset gets unset in the middle of BRK, while this lasts the whole BRK. */
+
+		bool															m_bRdyLow = false;																	/**< When RDY is pulled low, reads inside opcodes abort the CPU cycle. */
 
 
 #ifdef LSN_CPU_VERIFY
@@ -279,7 +298,86 @@ namespace lsn {
 		// CYCLES
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		/**
+		 * Fetches the current opcode and increments PC.
+		 **/
+		void															Fetch_Opcode_IncPc_Phi2();
+
+		/**
+		 * Fetches the operand and increments PC.
+		 * 
+		 * \tparam _bEndInstr If true, this is the end of the instruction and steps should be taken to prepare for the next instruction.
+		 **/
+		template <bool _bEndInstr = false>
+		void															Fetch_Operand_IncPc_Phi2();
+
+		/**
+		 * Generic null operation.
+		 * 
+		 * \tparam _ctReadWriteNull The cycle read/write/neither type.
+		 * \tparam _bIncPc If true, PC is updated.
+		 * \tparam _bAdjS If true, S is updated.
+		 * \tparam _bBeginInstr If true, BeginInst() is called.
+		 **/
+		template <CRicoh5A22::LSN_CYCLE_TYPE _ctReadWriteNull = CRicoh5A22::LSN_CT_NULL, bool _bIncPc = false, bool _bAdjS = false, bool _bBeginInstr = false>
+		void															Null();
+
+		/**
+		 * Generic null operation for BRK that can be either a read or write, depending on RESET.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
+		 * \tparam _bAdjS If true, S is updated.
+		 * \tparam _bBeginInstr If true, BeginInst() is called.
+		 **/
+		template <bool _bIncPc = false, bool _bAdjS = false, bool _bBeginInstr = false>
+		void															Null_RorW();
+
+		/**
+		 * Pushes PB.
+		 * 
+		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 **/
+		template <int8_t _i8SOff>
+		inline void														PushPb_Phi2();
+
+		/**
+		 * Pushes PCh with the given S offset.
+		 * 
+		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 **/
+		template <int8_t _i8SOff = 0>
+		void															Push_Pc_H_Phi2();
+
+		/**
+		 * Pushes PCl with the given S offset.
+		 * 
+		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 **/
+		template <int8_t _i8SOff = 0>
+		void															Push_Pc_L_Phi2();
+
+		/**
+		 * Pushes Status with or without B/X to the given S offset.
+		 * 
+		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 **/
+		template <int8_t _i8SOff = 0>
+		void															Push_S_Phi2();
+
+		/**
+		 * Selects the BRK vector etc.
+		 * 
+		 * \tparam _bAdjS If true, S is updated.
+		 **/
+		template <bool _bAdjS>
+		void															SelectBrkVectors();
+
+
+		/**
 		 * Prepares to enter a new instruction.
+		 *
+		 * \tparam _bIncPc If true, PC is updated.
+		 * \tparam _bAdjS If true, S is updated.
+		 * \tparam _bCheckStartOfFunction If true, the LSN_INSTR_START_PHI1( true ) macro call is embedded.
 		 */
 		template <bool _bIncPc = false, bool _bAdjS = false, bool _bCheckStartOfFunction = true>
 		inline void														BeginInst();
@@ -297,14 +395,242 @@ namespace lsn {
 
 	/** Performs a cycle inside an instruction. */
 	inline void CRicoh5A22::Tick_InstructionCycleStd() {
-		(this->*m_iInstructionSet[m_fsState.ui16OpCode].pfHandler[m_fsState.bEmulationMode][m_fsState.ui8FuncIndex])();
+		//(this->*m_iInstructionSet[m_fsState.ui16OpCode].pfHandler[m_fsState.bEmulationMode][m_fsState.ui8FuncIndex])();
+		(this->*m_fsState.pfCurInstruction[m_fsState.ui8FuncIndex])();
+	}
+
+	/**
+	 * Fetches the current opcode and increments PC.
+	 **/
+	void CRicoh5A22::Fetch_Opcode_IncPc_Phi2() {
+		uint8_t ui8Speed;
+		uint8_t ui8Op;
+		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, ui8Speed );
+		
+#ifdef LSN_CPU_VERIFY
+		m_fsState.ui16PcModify = 1;
+#else
+		if ( m_bHandleNmi || m_bHandleIrq || m_bIsReset ) {
+			ui8Op = 0;
+			m_fsState.bPushB = false;
+			m_fsState.ui16PcModify = 0;
+			m_fsState.bAllowWritingToPc = false;
+		}
+		else {
+			m_fsState.bPushB = true;
+			m_fsState.ui16PcModify = 1;
+		}
+#endif	// #ifdef LSN_CPU_VERIFY
+		m_fsState.ui16OpCode = ui8Op;
+		m_fsState.pfCurInstruction = m_iInstructionSet[m_fsState.ui16OpCode].pfHandler[m_fsState.bEmulationMode];
+
+#if 0
+		char szBUffer[256];
+		std::sprintf( szBUffer, "%s\t%.2X %lu %.4X\r\n", m_smdInstMetaData[m_iInstructionSet[m_fsState.ui16OpCode].iInstruction].pcName, m_fsState.ui16OpCode, m_ui64CycleCount, m_fsState.rRegs.ui16Pc );
+		::OutputDebugStringA( szBUffer );
+		if ( 0xB6FE == m_fsState.rRegs.ui16Pc ) {
+			volatile int gjhgh =0;
+		}
+#endif	// #if 1
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Fetches the operand and increments PC.
+	 * 
+	 * \tparam _bEndInstr If true, this is the end of the instruction and steps should be taken to prepare for the next instruction.
+	 **/
+	template <bool _bEndInstr>
+	void CRicoh5A22::Fetch_Operand_IncPc_Phi2() {
+		uint8_t ui8Speed;
+		uint8_t ui8Op;
+		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, ui8Speed );
+		m_fsState.ui16Operand = ui8Op;
+		m_fsState.ui16PcModify = 1;
+		
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Generic null operation.
+	 * 
+	 * \tparam _ctReadWriteNull The cycle read/write/neither type.
+	 * \tparam _bIncPc If true, PC is updated.
+	 * \tparam _bAdjS If true, S is updated.
+	 * \tparam _bBeginInstr If true, BeginInst() is called.
+	 **/
+	template <CRicoh5A22::LSN_CYCLE_TYPE _ctReadWriteNull, bool _bIncPc, bool _bAdjS, bool _bBeginInstr>
+	void CRicoh5A22::Null() {
+		if constexpr ( _bBeginInstr ) {
+			BeginInst<_bIncPc, _bAdjS>();
+		}
+		else {
+			LSN_INSTR_START_PHI1( _ctReadWriteNull );
+
+			if constexpr ( _bIncPc ) {
+				LSN_UPDATE_PC;
+			}
+			if constexpr ( _bAdjS ) {
+				LSN_UPDATE_S;
+			}
+
+			LSN_NEXT_FUNCTION;
+
+			LSN_INSTR_END_PHI1;
+		}
+	}
+
+	/**
+	 * Generic null operation for BRK that can be either a read or write, depending on RESET.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 * \tparam _bAdjS If true, S is updated.
+	 * \tparam _bBeginInstr If true, BeginInst() is called.
+	 **/
+	template <bool _bIncPc, bool _bAdjS, bool _bBeginInstr>
+	void CRicoh5A22::Null_RorW() {
+		if constexpr ( _bBeginInstr ) {
+			BeginInst<_bIncPc, _bAdjS>();
+		}
+		else {
+			if LSN_UNLIKELY( m_bIsReset ) {
+				LSN_INSTR_START_PHI1( true );
+			}
+			else {
+				LSN_INSTR_START_PHI1( false );
+			}
+
+			if constexpr ( _bIncPc ) {
+				LSN_UPDATE_PC;
+			}
+			if constexpr ( _bAdjS ) {
+				LSN_UPDATE_S;
+			}
+
+			LSN_NEXT_FUNCTION;
+
+			LSN_INSTR_END_PHI1;
+		}
+	}
+
+	/**
+	 * Pushes PB.
+	 * 
+	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 **/
+	template <int8_t _i8SOff>
+	void CRicoh5A22::PushPb_Phi2() {
+		uint8_t ui8Speed;
+		LSN_PUSH( m_fsState.rRegs.ui8Pb, ui8Speed );
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Pushes PCh with the given S offset.
+	 * 
+	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 **/
+	template <int8_t _i8SOff>
+	void CRicoh5A22::Push_Pc_H_Phi2() {
+		uint8_t ui8Speed;
+		LSN_PUSH( m_fsState.rRegs.ui8Pc[1], ui8Speed );
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Pushes PCl with the given S offset.
+	 * 
+	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 **/
+	template <int8_t _i8SOff>
+	void CRicoh5A22::Push_Pc_L_Phi2() {
+		uint8_t ui8Speed;
+		LSN_PUSH( m_fsState.rRegs.ui8Pc[0], ui8Speed );
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Pushes Status with or without B/X to the given S offset.
+	 * 
+	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 **/
+	template <int8_t _i8SOff>
+	void CRicoh5A22::Push_S_Phi2() {
+	}
+
+	/**
+	 * Selects the BRK vector etc.
+	 * 
+	 * \tparam _bAdjS If true, S is updated.
+	 **/
+	template <bool _bAdjS>
+	void CRicoh5A22::SelectBrkVectors() {
+		if constexpr ( _bAdjS ) {
+			LSN_INSTR_START_PHI1( true );
+			LSN_UPDATE_S;
+		}
+		else {
+			LSN_INSTR_START_PHI1( false );
+		}
+
+#ifdef LSN_CPU_VERIFY
+		m_fsState.vBrkVector = LSN_V_IRQ_BRK;
+		m_fsState.bPushB = true;
+#else
+
+		// Select vector to use.
+		if ( m_bIsReset ) {
+			m_fsState.vBrkVector = LSN_V_RESET_E;
+			m_bIsReset = false;
+		}
+		else if ( m_bDetectedNmi ) {
+			m_fsState.vBrkVector = LSN_V_NMI;
+		}
+		else if ( m_bHandleIrq ) {
+			m_fsState.vBrkVector = LSN_V_IRQ_BRK_E;
+		}
+		else {
+			m_fsState.vBrkVector = LSN_V_IRQ_BRK_E;
+		}
+
+		if LSN_LIKELY( !m_bRdyLow ) {
+			if ( m_bDetectedNmi ) {
+				m_bHandleNmi = m_bDetectedNmi = false;
+				m_bNmiStatusLine = false;
+			}
+			m_bHandleIrq = false;
+		}
+#endif	// #ifdef LSN_CPU_VERIFY
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
 	}
 
 	/**
 	 * Prepares to enter a new instruction.
 	 *
-	 * \tparam _bIncPc If true, PC is updatd.
-	 * \tparam _bAdjS If true, S is updatd.
+	 * \tparam _bIncPc If true, PC is updated.
+	 * \tparam _bAdjS If true, S is updated.
 	 * \tparam _bCheckStartOfFunction If true, the LSN_INSTR_START_PHI1( true ) macro call is embedded.
 	 */
 	template <bool _bIncPc, bool _bAdjS, bool _bCheckStartOfFunction>
