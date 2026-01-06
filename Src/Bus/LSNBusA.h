@@ -169,7 +169,7 @@ namespace lsn {
 				_ui8Speed = _ui8SpeedOverride;
 			}
 #ifdef LSN_CPU_VERIFY
-			m_vReadWriteLog.push_back( { .ui32Address = _ui16Address | (uint32_t( _ui8Bank ) << 16), .ui8Value = ui8Ret, .bRead = true } );
+			m_vReadWriteLog.push_back( { .ui32Address = m_rfpAccessFuncParms.ui32FullAddress, .ui8Value = ui8Ret, .bRead = true } );
 #endif	// #ifdef LSN_CPU_VERIFY
 			return ui8Ret;
 		}
@@ -205,7 +205,7 @@ namespace lsn {
 				_ui8Speed = _ui8SpeedOverride;
 			}
 #ifdef LSN_CPU_VERIFY
-			m_vReadWriteLog.push_back( { .ui32Address = _ui16Address | (uint32_t( _ui8Bank ) << 16), .ui8Value = _ui8Val, .bRead = false } );
+			m_vReadWriteLog.push_back( { .ui32Address = m_rfpAccessFuncParms.ui32FullAddress, .ui8Value = _ui8Val, .bRead = false } );
 #endif	// #ifdef LSN_CPU_VERIFY
 		}
 
@@ -353,6 +353,9 @@ namespace lsn {
 		 * Applies a basic direct-access mapping to the memory.
 		 **/
 		void										ApplyBasicMapping() {
+#ifdef LSN_CPU_VERIFY
+			m_vReadWriteLog.clear();
+#endif	// #ifdef LSN_CPU_VERIFY
 			for ( size_t I = 0; I < 0x1000000; I += 0x100 ) {
 				SetAccessor( uint16_t( I >> 8 ), &CBusA::StdRead, nullptr, &CBusA::StdWrite, nullptr,
 					&CBusA::StdDebugRead, &CBusA::StdDebugWrite );
@@ -442,6 +445,10 @@ namespace lsn {
 		LSN_ACCESSFUNCPARMS							m_rfpAccessFuncParms;				/**< Parameters to pass to read/write functions. */
 		uint8_t										m_ui8DataBus = 0;					/**< The data-bus value. 1 byte. */
 		uint8_t										m_ui8MemSel = 0;					/**< The MEMSEL flag. */
+
+#ifdef LSN_CPU_VERIFY
+		std::vector<LSN_READ_WRITE_LOG>				m_vReadWriteLog;
+#endif	// #ifdef LSN_CPU_VERIFY
 
 
 		// == Functions.

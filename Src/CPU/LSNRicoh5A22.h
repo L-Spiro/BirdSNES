@@ -744,23 +744,23 @@ namespace lsn {
 		}
 
 #ifdef LSN_CPU_VERIFY
-		m_fsState.vBrkVector = LSN_V_IRQ_BRK;
+		m_fsState.vBrkVector = LSN_V_IRQ_BRK_E;
 		m_fsState.bPushB = true;
 #else
 
 		// Select vector to use.
 		if ( m_bIsReset ) {
-			m_fsState.vBrkVector = LSN_V_RESET_E;
+			m_fsState.vBrkVector = m_fsState.bEmulationMode ? LSN_V_RESET_E : LSN_V_RESET_E;
 			m_bIsReset = false;
 		}
 		else if ( m_bDetectedNmi ) {
-			m_fsState.vBrkVector = LSN_V_NMI;
+			m_fsState.vBrkVector = m_fsState.bEmulationMode ? LSN_V_NMI_E : LSN_V_NMI;
 		}
 		else if ( m_bHandleIrq ) {
-			m_fsState.vBrkVector = LSN_V_IRQ_BRK_E;
+			m_fsState.vBrkVector = m_fsState.bEmulationMode ? LSN_V_IRQ_BRK_E : LSN_V_IRQ;
 		}
 		else {
-			m_fsState.vBrkVector = LSN_V_IRQ_BRK_E;
+			m_fsState.vBrkVector = m_fsState.bEmulationMode ? LSN_V_IRQ_BRK_E : LSN_V_BRK;
 		}
 
 		if LSN_LIKELY( !m_bRdyLow ) {

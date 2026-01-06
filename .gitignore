@@ -12,9 +12,7 @@ Src/MiniZ/examples/*
 *.pdb
 *.tlog
 *.ipdb
-Debug/*
-Release/*
-Research/*
+
 !Research/nes-test-roms-master/
 !Research/Instructions/
 *.sdf
@@ -23,42 +21,12 @@ Research/*
 *.exe
 *.idb
 *.log
-x64/Debug/*
-x64/Release/*
-x64/Final/*
-x64/CPU Verify/*
-x64/CPU Verify Release/*
-Win32/Final/*
-Win32/Release/*
-Win32/Debug/*
+
 /BirdSNES/Win32
 /BirdSNES/x64
 
-x64/DirectX 9 Debug/*
-x64/DirectX 9 Final/*
-x64/DirectX 9 Release/*
-x64/DirectX 12 Debug/*
-x64/DirectX 12 Final/*
-x64/DirectX 12 Release/*
-x64/Vulkan 1 Debug/*
-x64/Vulkan 1 Final/*
-x64/Vulkan 1 Release/*
-x64/Vulkan 1 DirectX 12 DirectX 9 Debug/*
-x64/Vulkan 1 DirectX 12 DirectX 9 Final/*
-x64/Vulkan 1 DirectX 12 DirectX 9 Release/*
-
-Win32/DirectX 9 Debug/*
-Win32/DirectX 9 Final/*
-Win32/DirectX 9 Release/*
-Win32/DirectX 12 Debug/*
-Win32/DirectX 12 Final/*
-Win32/DirectX 12 Release/*
-Win32/Vulkan 1 Debug/*
-Win32/Vulkan 1 Final/*
-Win32/Vulkan 1 Release/*
-Win32/Vulkan 1 DirectX 12 DirectX 9 Debug/*
-Win32/Vulkan 1 DirectX 12 DirectX 9 Final/*
-Win32/Vulkan 1 DirectX 12 DirectX 9 Release/*
+/x64
+/Win32
 
 Libraries/ExpressionEvaluator/x64/*
 Libraries/ExpressionEvaluator/Win32/*
@@ -144,4 +112,3 @@ fastlane/test_output
 iOSInjectionProject/
 
 .DS_Store
-Research/nes-test-roms-master/other/Irritating Ship (NESdev Compo 2022).nes
