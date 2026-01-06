@@ -163,7 +163,7 @@ namespace lsn {
 		/**
 		 * Resets the CPU to a known state.
 		 * 
-		 * \tparam _jJson The JSON file.
+		 * \tparam _bToKnown If true, the CPU is reset to a known state..
 		 */
 		template <bool _bToKnown = true>
 		void												Reset() {

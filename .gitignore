@@ -112,3 +112,7 @@ fastlane/test_output
 iOSInjectionProject/
 
 .DS_Store
+/Research/65816
+/Research/spc700
+Research/65816.zip
+Research/spc700.zip

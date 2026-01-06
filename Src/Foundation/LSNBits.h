@@ -20,7 +20,7 @@ namespace lsn {
 	/**
 	 * Sets a bit in a flag to 1 or 0.
 	 *
-	 * \param _uBit Bit mask.
+	 * \tparam _uBit Bit mask.
 	 * \param _ui8Val The value to modify in-place.
 	 * \param _bOn If true, the bit is set, otherwise it is unset.
 	 */
@@ -34,8 +34,8 @@ namespace lsn {
 	/**
 	 * Sets a bit in a flag to 1 or 0.
 	 *
-	 * \param _uBit Bit mask.
-	 * \param _bVal The bit value to write (0 or 1).
+	 * \tparam _uBit Bit mask.
+	 * \tparam _bVal The bit value to write (0 or 1).
 	 * \param _ui8Val The value to modify in-place.
 	 */
 	template <unsigned _uBit, bool _bVal>

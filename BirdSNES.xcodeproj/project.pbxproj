@@ -77,6 +77,34 @@
 		12CFC8E42F0B478F00792565 /* LSNRicoh5A22.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */; };
 		12CFC8E52F0B478F00792565 /* LSNRicoh5A22.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */; };
 		12CFC8E62F0B478F00792565 /* LSNRicoh5A22.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */; };
+		12CFC9072F0D992E00792565 /* LSNCrc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8152EFF991100792565 /* LSNCrc.cpp */; };
+		12CFC9082F0D992E00792565 /* LSNFileBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC80A2EFF991100792565 /* LSNFileBase.cpp */; };
+		12CFC9092F0D992E00792565 /* LSNStdFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8102EFF991100792565 /* LSNStdFile.cpp */; };
+		12CFC90A2F0D992E00792565 /* LSNUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8182EFF991100792565 /* LSNUtilities.cpp */; };
+		12CFC90B2F0D992E00792565 /* Renderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 126C27362EFCBA580036A687 /* Renderer.m */; };
+		12CFC90C2F0D992E00792565 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 126C276D2EFCBA590036A687 /* GameViewController.m */; };
+		12CFC90D2F0D992E00792565 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 126C27722EFCBA590036A687 /* main.m */; };
+		12CFC90E2F0D992E00792565 /* LSNZipFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8122EFF991100792565 /* LSNZipFile.cpp */; };
+		12CFC90F2F0D992E00792565 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 126C276A2EFCBA590036A687 /* AppDelegate.m */; };
+		12CFC9102F0D992E00792565 /* LSNRicoh5A22.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */; };
+		12CFC9112F0D992E00792565 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 126C27382EFCBA580036A687 /* Shaders.metal */; };
+		12CFC9122F0D992E00792565 /* miniz.c in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8422EFF991100792565 /* miniz.c */; };
+		12CFC9132F0D992E00792565 /* LSNFeatureSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8062EFF991100792565 /* LSNFeatureSet.cpp */; };
+		12CFC9142F0D992E00792565 /* LSNFileMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC80C2EFF991100792565 /* LSNFileMap.cpp */; };
+		12CFC9172F0D992E00792565 /* LSNStringsEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */; };
+		12CFC9182F0D992E00792565 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8442EFF991100792565 /* readme.md */; };
+		12CFC9192F0D992E00792565 /* LSNErrorEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8BF2F001F5000792565 /* LSNErrorEnum.inl */; };
+		12CFC91A2F0D992E00792565 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8412EFF991100792565 /* LICENSE */; };
+		12CFC91B2F0D992E00792565 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 126C27392EFCBA590036A687 /* Assets.xcassets */; };
+		12CFC91C2F0D992E00792565 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 126C27702EFCBA590036A687 /* Base */; };
+		12CFC91D2F0D992E00792565 /* LSNCycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8DC2F0B478F00792565 /* LSNCycleFuncs.inl */; };
+		12CFC91E2F0D992E00792565 /* ChangeLog.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8402EFF991100792565 /* ChangeLog.md */; };
+		12CFC9272F0D9A2F00792565 /* ExpressionEvaluator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC6F62EFCBF4100792565 /* ExpressionEvaluator.framework */; };
+		12CFC9282F0D9A2F00792565 /* LSon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC7C42EFF90B100792565 /* LSon.framework */; };
+		12CFC92D2F0D9A3B00792565 /* ExpressionEvaluator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC6F62EFCBF4100792565 /* ExpressionEvaluator.framework */; };
+		12CFC92E2F0D9A3B00792565 /* LSon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC7C42EFF90B100792565 /* LSon.framework */; };
+		12CFC9332F0D9A4900792565 /* ExpressionEvaluator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC6F62EFCBF4100792565 /* ExpressionEvaluator.framework */; };
+		12CFC9342F0D9A4900792565 /* LSon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC7C42EFF90B100792565 /* LSon.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,6 +130,48 @@
 			remoteInfo = LSon;
 		};
 		12CFC7E02EFF912D00792565 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 12CFC7BF2EFF90B100792565 /* LSon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12CFC7B42EFF906F00792565;
+			remoteInfo = LSon;
+		};
+		12CFC9232F0D9A2800792565 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 12CFC6F12EFCBF4100792565 /* ExpressionEvaluator.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12CFC6E62EFCBEFE00792565;
+			remoteInfo = ExpressionEvaluator;
+		};
+		12CFC9252F0D9A2800792565 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 12CFC7BF2EFF90B100792565 /* LSon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12CFC7B42EFF906F00792565;
+			remoteInfo = LSon;
+		};
+		12CFC9292F0D9A3600792565 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 12CFC6F12EFCBF4100792565 /* ExpressionEvaluator.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12CFC6E62EFCBEFE00792565;
+			remoteInfo = ExpressionEvaluator;
+		};
+		12CFC92B2F0D9A3600792565 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 12CFC7BF2EFF90B100792565 /* LSon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12CFC7B42EFF906F00792565;
+			remoteInfo = LSon;
+		};
+		12CFC92F2F0D9A4200792565 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 12CFC6F12EFCBF4100792565 /* ExpressionEvaluator.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12CFC6E62EFCBEFE00792565;
+			remoteInfo = ExpressionEvaluator;
+		};
+		12CFC9312F0D9A4200792565 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 12CFC7BF2EFF90B100792565 /* LSon.xcodeproj */;
 			proxyType = 1;
@@ -177,6 +247,7 @@
 		12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LSNRicoh5A22.cpp; sourceTree = "<group>"; };
 		12CFC8DE2F0B478F00792565 /* LSNRicoh5A22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNRicoh5A22.h; sourceTree = "<group>"; };
 		12CFC8DF2F0B478F00792565 /* LSNRicoh5A22Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNRicoh5A22Base.h; sourceTree = "<group>"; };
+		12CFC9222F0D992E00792565 /* BirdSNES macOS CPU Vfy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BirdSNES macOS CPU Vfy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +264,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12CFC9272F0D9A2F00792565 /* ExpressionEvaluator.framework in Frameworks */,
+				12CFC9282F0D9A2F00792565 /* LSon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,6 +273,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12CFC92D2F0D9A3B00792565 /* ExpressionEvaluator.framework in Frameworks */,
+				12CFC92E2F0D9A3B00792565 /* LSon.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		12CFC9152F0D992E00792565 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				12CFC9332F0D9A4900792565 /* ExpressionEvaluator.framework in Frameworks */,
+				12CFC9342F0D9A4900792565 /* LSon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,6 +331,7 @@
 				126C273E2EFCBA590036A687 /* BirdSNES.app */,
 				126C27532EFCBA590036A687 /* BirdSNES.app */,
 				126C27672EFCBA590036A687 /* BirdSNES.app */,
+				12CFC9222F0D992E00792565 /* BirdSNES macOS CPU Vfy.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -464,6 +549,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				12CFC9242F0D9A2800792565 /* PBXTargetDependency */,
+				12CFC9262F0D9A2800792565 /* PBXTargetDependency */,
 			);
 			name = "BirdSNES tvOS";
 			productName = "BirdSNES tvOS";
@@ -481,10 +568,31 @@
 			buildRules = (
 			);
 			dependencies = (
+				12CFC92A2F0D9A3600792565 /* PBXTargetDependency */,
+				12CFC92C2F0D9A3600792565 /* PBXTargetDependency */,
 			);
 			name = "BirdSNES macOS";
 			productName = "BirdSNES macOS";
 			productReference = 126C27672EFCBA590036A687 /* BirdSNES.app */;
+			productType = "com.apple.product-type.application";
+		};
+		12CFC9052F0D992E00792565 /* BirdSNES macOS CPU Vfy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 12CFC91F2F0D992E00792565 /* Build configuration list for PBXNativeTarget "BirdSNES macOS CPU Vfy" */;
+			buildPhases = (
+				12CFC9062F0D992E00792565 /* Sources */,
+				12CFC9152F0D992E00792565 /* Frameworks */,
+				12CFC9162F0D992E00792565 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				12CFC9302F0D9A4200792565 /* PBXTargetDependency */,
+				12CFC9322F0D9A4200792565 /* PBXTargetDependency */,
+			);
+			name = "BirdSNES macOS CPU Vfy";
+			productName = "BirdSNES macOS";
+			productReference = 12CFC9222F0D992E00792565 /* BirdSNES macOS CPU Vfy.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -533,6 +641,7 @@
 				126C273D2EFCBA590036A687 /* BirdSNES iOS */,
 				126C27522EFCBA590036A687 /* BirdSNES tvOS */,
 				126C27662EFCBA590036A687 /* BirdSNES macOS */,
+				12CFC9052F0D992E00792565 /* BirdSNES macOS CPU Vfy */,
 			);
 		};
 /* End PBXProject section */
@@ -602,6 +711,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		12CFC9162F0D992E00792565 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				12CFC9172F0D992E00792565 /* LSNStringsEnum.inl in Resources */,
+				12CFC9182F0D992E00792565 /* readme.md in Resources */,
+				12CFC9192F0D992E00792565 /* LSNErrorEnum.inl in Resources */,
+				12CFC91A2F0D992E00792565 /* LICENSE in Resources */,
+				12CFC91B2F0D992E00792565 /* Assets.xcassets in Resources */,
+				12CFC91C2F0D992E00792565 /* Base in Resources */,
+				12CFC91D2F0D992E00792565 /* LSNCycleFuncs.inl in Resources */,
+				12CFC91E2F0D992E00792565 /* ChangeLog.md in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -668,6 +792,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		12CFC9062F0D992E00792565 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				12CFC9072F0D992E00792565 /* LSNCrc.cpp in Sources */,
+				12CFC9082F0D992E00792565 /* LSNFileBase.cpp in Sources */,
+				12CFC9092F0D992E00792565 /* LSNStdFile.cpp in Sources */,
+				12CFC90A2F0D992E00792565 /* LSNUtilities.cpp in Sources */,
+				12CFC90B2F0D992E00792565 /* Renderer.m in Sources */,
+				12CFC90C2F0D992E00792565 /* GameViewController.m in Sources */,
+				12CFC90D2F0D992E00792565 /* main.m in Sources */,
+				12CFC90E2F0D992E00792565 /* LSNZipFile.cpp in Sources */,
+				12CFC90F2F0D992E00792565 /* AppDelegate.m in Sources */,
+				12CFC9102F0D992E00792565 /* LSNRicoh5A22.cpp in Sources */,
+				12CFC9112F0D992E00792565 /* Shaders.metal in Sources */,
+				12CFC9122F0D992E00792565 /* miniz.c in Sources */,
+				12CFC9132F0D992E00792565 /* LSNFeatureSet.cpp in Sources */,
+				12CFC9142F0D992E00792565 /* LSNFileMap.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -680,6 +825,36 @@
 			isa = PBXTargetDependency;
 			name = LSon;
 			targetProxy = 12CFC7E02EFF912D00792565 /* PBXContainerItemProxy */;
+		};
+		12CFC9242F0D9A2800792565 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ExpressionEvaluator;
+			targetProxy = 12CFC9232F0D9A2800792565 /* PBXContainerItemProxy */;
+		};
+		12CFC9262F0D9A2800792565 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LSon;
+			targetProxy = 12CFC9252F0D9A2800792565 /* PBXContainerItemProxy */;
+		};
+		12CFC92A2F0D9A3600792565 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ExpressionEvaluator;
+			targetProxy = 12CFC9292F0D9A3600792565 /* PBXContainerItemProxy */;
+		};
+		12CFC92C2F0D9A3600792565 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LSon;
+			targetProxy = 12CFC92B2F0D9A3600792565 /* PBXContainerItemProxy */;
+		};
+		12CFC9302F0D9A4200792565 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ExpressionEvaluator;
+			targetProxy = 12CFC92F2F0D9A4200792565 /* PBXContainerItemProxy */;
+		};
+		12CFC9322F0D9A4200792565 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LSon;
+			targetProxy = 12CFC9312F0D9A4200792565 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -998,6 +1173,58 @@
 			};
 			name = Release;
 		};
+		12CFC9202F0D992E00792565 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "BirdSNES macOS/BirdSNES_macOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "L.-Spiro.BirdSNES";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		12CFC9212F0D992E00792565 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "BirdSNES macOS/BirdSNES_macOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "L.-Spiro.BirdSNES";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1033,6 +1260,15 @@
 			buildConfigurations = (
 				126C27872EFCBA590036A687 /* Debug */,
 				126C27882EFCBA590036A687 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		12CFC91F2F0D992E00792565 /* Build configuration list for PBXNativeTarget "BirdSNES macOS CPU Vfy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				12CFC9202F0D992E00792565 /* Debug */,
+				12CFC9212F0D992E00792565 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
