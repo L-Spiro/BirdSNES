@@ -10,6 +10,8 @@
 
 #ifdef __APPLE__
 
+#define _FILE_OFFSET_BITS 						64
+#include <cstdio>
 #include <stdexcept>
 
 #define LSN_APPLE

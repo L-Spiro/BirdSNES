@@ -196,26 +196,52 @@ namespace lsn {
 			}
 			::_fseeki64( m_pfFile, i64Pos, SEEK_SET );
 #else
-			long lPos = std::ftell( m_pfFile );
-			std::fseek( m_pfFile, 0, SEEK_END );
-			long lLen = std::ftell( m_pfFile );
-			std::rewind( m_pfFile );
+			off_t oPos = ::ftello( m_pfFile );
+			if ( oPos < 0 ) { return LSN_E_OPERATION_NOT_PERMITTED; }
+
+			if ( ::fseeko( m_pfFile, 0, SEEK_END ) != 0 ) {
+				::fseeko( m_pfFile, oPos, SEEK_SET );
+				return LSN_E_OPERATION_NOT_PERMITTED;
+			}
+
+			off_t oLen = ::ftello( m_pfFile );
+			if ( oLen < 0 ) {
+				::fseeko( m_pfFile, oPos, SEEK_SET );
+				return LSN_E_OPERATION_NOT_PERMITTED;
+			}
+
+			if ( ::fseeko( m_pfFile, 0, SEEK_SET ) != 0 ) {
+				::fseeko( m_pfFile, oPos, SEEK_SET );
+				return LSN_E_OPERATION_NOT_PERMITTED;
+			}
+
+			if ( oLen == 0 ) {
+				_vResult.clear();
+				::fseeko( m_pfFile, oPos, SEEK_SET );
+				return LSN_E_SUCCESS;
+			}
+
+			if ( static_cast<uint64_t>(oLen) > static_cast<uint64_t>(std::numeric_limits<size_t>::max())) {
+				::fseeko( m_pfFile, oPos, SEEK_SET );
+				return LSN_E_FILE_ATTRIBUTE_TOO_LARGE;
+			}
+
+			std::vector<uint8_t> vTmp;
 			try {
-				_vResult.resize( size_t( lLen ) );
+				vTmp.resize( static_cast<size_t>(oLen) );
 			}
 			catch ( ... ) {
-				std::fseek( m_pfFile, lPos, SEEK_SET );
+				::fseeko( m_pfFile, oPos, SEEK_SET );
+				return LSN_E_OUT_OF_MEMORY;
+			}
+
+			size_t stRead = std::fread( vTmp.data(), 1, vTmp.size(), m_pfFile );
+			::fseeko( m_pfFile, oPos, SEEK_SET );
+			if ( stRead != vTmp.size() ) {
 				return LSN_E_OPERATION_NOT_PERMITTED;
 			}
-			if ( _vResult.size() != lLen ) {
-				std::fseek( m_pfFile, lPos, SEEK_SET );
-				return LSN_E_OPERATION_NOT_PERMITTED;
-			}
-			if ( std::fread( _vResult.data(), _vResult.size(), 1, m_pfFile ) != 1 ) {
-				std::fseek( m_pfFile, lPos, SEEK_SET );
-				return LSN_E_OPERATION_NOT_PERMITTED;
-			}
-			std::fseek( m_pfFile, lPos, SEEK_SET );
+
+			_vResult.swap( vTmp );
 #endif	// #ifdef _WIN32
 			return LSN_E_SUCCESS;
 		}

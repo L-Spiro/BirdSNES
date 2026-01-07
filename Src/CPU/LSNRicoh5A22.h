@@ -15,7 +15,7 @@
 #include "LSNRicoh5A22Base.h"
 
 #ifdef LSN_CPU_VERIFY
-#include "LSONJson.h"
+#include <LSONJson.h>
 #endif	// #ifdef LSN_CPU_VERIFY
 
 #define LSN_INSTR_START_PHI1( ISREAD )									/*m_fsState.bIsReadCycle = (ISREAD)*/

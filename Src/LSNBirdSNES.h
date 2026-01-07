@@ -117,4 +117,23 @@ namespace lsn {
 		LSN_AS_DMA,																/**< Memory is being accssed by DMA. */
 	};
 
+#ifdef __APPLE__
+	static inline void						DebugA( const char * _pcStr ) {
+		::fputs( _pcStr, stderr );
+	}
+
+	static inline void						DebugLine( const std::string &_sStr ) {
+		::fwrite( _sStr.data(), 1, _sStr.size(), stderr );
+		::fputc( '\n', stderr );
+	}
+#elif defined( _WIN32 )
+	static inline void						DebugA( const char * _pcStr ) {
+		::OutputDebugStringA( _pcStr );
+	}
+
+	static inline void						DebugLine( const std::string &_sStr ) {
+		::OutputDebugStringA( (_sStr + "\r\n").c_str() );
+	}
+#endif	// #ifdef __APPLE__
+
 }	// namespace lsn

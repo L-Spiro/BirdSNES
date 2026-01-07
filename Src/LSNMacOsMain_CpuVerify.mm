@@ -10,6 +10,9 @@
 #include "Cpu/LSNRicoh5A22.h"
 #include "LSONJson.h"
 
+#include <EEExpEval.h>
+
+#define _FILE_OFFSET_BITS 64
 #include <mach-o/dyld.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -21,19 +24,17 @@
 #include <codecvt>
 #include <locale>
 
-namespace {
+#if 0
+#import <Cocoa/Cocoa.h>
 
-	static void											DebugA( const char * _pcStr ) {
-		::fputs( _pcStr, stderr );
+
+int main(int argc, const char * argv[]) {
+	@autoreleasepool {
+		// Setup code that might create autoreleased objects goes here.
 	}
-
-	static void											DebugLine( const std::string &_sStr ) {
-		::fwrite( _sStr.data(), 1, _sStr.size(), stderr );
-		::fputc( '\n', stderr );
-	}
-
-}	// namespace
-
+	return NSApplicationMain(argc, argv);
+}
+#else
 int main( int /*_iArgC*/, char ** /*_ppcArgV*/ ) {
 	std::unique_ptr<lsn::CBusA> pbBus = std::make_unique<lsn::CBusA>();
 	pbBus->ApplyBasicMapping();
@@ -41,12 +42,14 @@ int main( int /*_iArgC*/, char ** /*_ppcArgV*/ ) {
 	std::vector<uint8_t> vRam( 0x1000000 );
 	pbBus->SetMemory( vRam.data() );
 
-	const std::filesystem::path pRoot = GetThisPath().remove_filename();
-	const std::filesystem::path pTests = std::filesystem::path( ".." ) / ".." / "Research" / "65816" / "v1";
+	//const std::filesystem::path pRoot = GetThisPath().remove_filename();
+	//const std::filesystem::path pTests = std::filesystem::path( ".." ) / ".." / "Research" / "65816" / "v1";
+	//"/Users/shawnwilcoxen/Documents/GitHub/BirdSNES/Research/65816/v1";
+	const std::filesystem::path pTests = std::filesystem::path( "/Users" ) / "shawnwilcoxen" / "Documents" / "GitHub" / "BirdSNES" / "Research" / "65816" / "v1";
 
 	static const char cChars[2] = { 'n', 'e' };
 
-	for ( uint32_t I = 0x00; I < 256; ++I ) {
+	for ( uint32_t I = 0x00; I < 1; ++I ) {
 		lson::CJson jSon;
 		std::vector<uint8_t> vBytes;
 		lsn::CStdFile sfFile;
@@ -55,17 +58,22 @@ int main( int /*_iArgC*/, char ** /*_ppcArgV*/ ) {
 			char szFile[64];
 			::snprintf( szFile, sizeof( szFile ), "%.2X.%c.json", I, cChars[N] );
 
-			const std::filesystem::path pFull = pRoot / pTests / szFile;
+			const std::filesystem::path pFull = pTests / szFile;
 
 			const std::string sFullUtf8 = pFull.string();
-			const std::u16string u16Full = Utf8ToUtf16( sFullUtf8 );
+			const std::u16string u16Full = ee::CExpEval::ToUtf16<std::u16string>( sFullUtf8 );
 
 			if ( sfFile.Open( u16Full.c_str() ) == lsn::LSN_E_SUCCESS ) {
-				sfFile.LoadToMemory( vBytes );
+				lsn::LSN_ERRORS eErr = sfFile.LoadToMemory( vBytes );
+				if ( eErr != lsn::LSN_E_SUCCESS ) {
+					lsn::DebugA( "JSON FAIL to load File\n" );
+				   continue;
+				}
+
 				vBytes.push_back( 0 );
 
 				if ( !jSon.SetJson( reinterpret_cast<const char *>(vBytes.data()) ) ) {
-					DebugA( "JSON FAIL\n" );
+					lsn::DebugA( "JSON FAIL\n" );
 				}
 				else {
 					pcCpu->Reset<true>();
@@ -79,15 +87,15 @@ int main( int /*_iArgC*/, char ** /*_ppcArgV*/ ) {
 						}
 					}
 
-					DebugA( "JSON NOT FAIL\n" );
-					DebugLine( sFullUtf8 );
+					lsn::DebugA( "JSON NOT FAIL\n" );
+					lsn::DebugLine( sFullUtf8 );
 				}
 			}
 		}
 	}
 	return 0;
 }
-
+#endif
 #endif	// #ifdef LSN_CPU_VERIFY
 
 #endif	// #ifdef __APPLE__

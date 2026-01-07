@@ -105,6 +105,7 @@
 		12CFC92E2F0D9A3B00792565 /* LSon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC7C42EFF90B100792565 /* LSon.framework */; };
 		12CFC9332F0D9A4900792565 /* ExpressionEvaluator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC6F62EFCBF4100792565 /* ExpressionEvaluator.framework */; };
 		12CFC9342F0D9A4900792565 /* LSon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC7C42EFF90B100792565 /* LSon.framework */; };
+		12CFC9392F0E8C3200792565 /* LSNMacOsMain_CpuVerify.mm in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC9382F0E8C3200792565 /* LSNMacOsMain_CpuVerify.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -248,6 +249,8 @@
 		12CFC8DE2F0B478F00792565 /* LSNRicoh5A22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNRicoh5A22.h; sourceTree = "<group>"; };
 		12CFC8DF2F0B478F00792565 /* LSNRicoh5A22Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNRicoh5A22Base.h; sourceTree = "<group>"; };
 		12CFC9222F0D992E00792565 /* BirdSNES macOS CPU Vfy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BirdSNES macOS CPU Vfy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		12CFC9372F0E87E100792565 /* LSNBirdSNES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LSNBirdSNES.h; path = Src/LSNBirdSNES.h; sourceTree = SOURCE_ROOT; };
+		12CFC9382F0E8C3200792565 /* LSNMacOsMain_CpuVerify.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = LSNMacOsMain_CpuVerify.mm; path = Src/LSNMacOsMain_CpuVerify.mm; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -316,6 +319,7 @@
 				12CFC8C82F0153BB00792565 /* OS */,
 				12CFC8CB2F0153BB00792565 /* Strings */,
 				12CFC81A2EFF991100792565 /* Utilities */,
+				12CFC9372F0E87E100792565 /* LSNBirdSNES.h */,
 				126C27352EFCBA580036A687 /* Renderer.h */,
 				126C27362EFCBA580036A687 /* Renderer.m */,
 				126C27372EFCBA580036A687 /* ShaderTypes.h */,
@@ -367,6 +371,7 @@
 		126C27682EFCBA590036A687 /* BirdSNES macOS */ = {
 			isa = PBXGroup;
 			children = (
+				12CFC9382F0E8C3200792565 /* LSNMacOsMain_CpuVerify.mm */,
 				126C27692EFCBA590036A687 /* AppDelegate.h */,
 				126C276A2EFCBA590036A687 /* AppDelegate.m */,
 				126C276C2EFCBA590036A687 /* GameViewController.h */,
@@ -797,6 +802,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				12CFC9072F0D992E00792565 /* LSNCrc.cpp in Sources */,
+				12CFC9392F0E8C3200792565 /* LSNMacOsMain_CpuVerify.mm in Sources */,
 				12CFC9082F0D992E00792565 /* LSNFileBase.cpp in Sources */,
 				12CFC9092F0D992E00792565 /* LSNStdFile.cpp in Sources */,
 				12CFC90A2F0D992E00792565 /* LSNUtilities.cpp in Sources */,
@@ -954,6 +960,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Libraries/ExpressionEvaluator/Src",
+					"$(SRCROOT)/Libraries/LSon/Src",
+					"$(SRCROOT)/Libraries/LSWindows/Src",
+				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1007,6 +1018,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Libraries/ExpressionEvaluator/Src",
+					"$(SRCROOT)/Libraries/LSon/Src",
+					"$(SRCROOT)/Libraries/LSWindows/Src",
+				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -1182,6 +1198,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					LSN_CPU_VERIFY,
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
@@ -1208,6 +1229,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_PREPROCESSOR_DEFINITIONS = LSN_CPU_VERIFY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
