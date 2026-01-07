@@ -3,6 +3,7 @@
 #include "LSONJsonSyntaxNodes.h"
 #include "Gen/LSONJsonParser.h"
 
+#include <map>
 #include <vector>
 
 
@@ -286,6 +287,8 @@ namespace lson {
 		std::vector<YYSTYPE::LSON_NODE>					m_vNodes;
 		/** The stack of UTF-8 strings. */
 		std::vector<std::string>						m_vStrings;
+		/** Map of strings and their indices. */
+		std::map<std::string, size_t>					m_mStringMap;
 		/** Tree values, referenced by index. */
 		std::vector<LSON_JSON_VALUE>					m_vValues;
 		/** The resulting tree. */

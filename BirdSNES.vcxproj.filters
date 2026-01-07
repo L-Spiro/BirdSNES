@@ -102,6 +102,12 @@
     <ClCompile Include="Src\CPU\LSNRicoh5A22.cpp">
       <Filter>Source Files\CPU</Filter>
     </ClCompile>
+    <ClCompile Include="Src\LSNWinMain_CpuVerify.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\LSNMacOsMain_CpuVerify.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\BirdSNES.h">

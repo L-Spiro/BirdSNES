@@ -21,8 +21,10 @@ namespace lson {
 	size_t CJsonContainer::AddString( const std::string &_sText ) {
 		size_t stRet = FindString( _sText );
 		if ( stRet == size_t( -1 ) ) {
+			auto sIdx = m_vStrings.size();
 			m_vStrings.push_back( _sText );
-			return m_vStrings.size() - 1;
+			m_mStringMap[_sText] = sIdx;
+			return sIdx;
 		}
 		return stRet;
 	}
@@ -44,10 +46,13 @@ namespace lson {
 	 * \return Returns the index of the string if it exists or size_t( -1 ).
 	 */
 	size_t CJsonContainer::FindString( const std::string &_sText ) const {
-		for ( auto I = m_vStrings.size(); I--; ) {
+		auto iStr = m_mStringMap.find( _sText );
+		if ( iStr == m_mStringMap.end() ) { return size_t( -1 ); }
+		return iStr->second;
+		/*for ( auto I = m_vStrings.size(); I--; ) {
 			if ( m_vStrings[I] == _sText ) { return I; }
 		}
-		return size_t( -1 );
+		return size_t( -1 );*/
 	}
 
 	/**

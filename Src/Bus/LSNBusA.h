@@ -95,7 +95,11 @@ namespace lsn {
 				_ui8Speed = _ui8SpeedOverride;
 			}
 #ifdef LSN_CPU_VERIFY
-			m_vReadWriteLog.push_back( { .ui32Address = m_rfpAccessFuncParms.ui32FullAddress, .ui8Value = ui8Ret, .bRead = true } );
+			if ( m_vReadWriteLog.size() ) {
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui32Address = m_rfpAccessFuncParms.ui32FullAddress;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui8Value = ui8Ret;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].bRead = true;
+			}
 #endif	// #ifdef LSN_CPU_VERIFY
 			return ui8Ret;
 		}
@@ -132,7 +136,14 @@ namespace lsn {
 				_ui8Speed = _ui8SpeedOverride;
 			}
 #ifdef LSN_CPU_VERIFY
-			m_vReadWriteLog.push_back( { .ui32Address = m_rfpAccessFuncParms.ui32FullAddress, .ui8Value = _ui8Val, .bRead = false } );
+			if ( m_vReadWriteLog.size() ) {
+				/*if ( 63529 == m_rfpAccessFuncParms.ui32FullAddress ) {
+					volatile int gjhgg = 0;
+				}*/
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui32Address = m_rfpAccessFuncParms.ui32FullAddress;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui8Value = _ui8Val;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].bRead = false;
+			}
 #endif	// #ifdef LSN_CPU_VERIFY
 		}
 
@@ -169,7 +180,11 @@ namespace lsn {
 				_ui8Speed = _ui8SpeedOverride;
 			}
 #ifdef LSN_CPU_VERIFY
-			m_vReadWriteLog.push_back( { .ui32Address = m_rfpAccessFuncParms.ui32FullAddress, .ui8Value = ui8Ret, .bRead = true } );
+			if ( m_vReadWriteLog.size() ) {
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui32Address = m_rfpAccessFuncParms.ui32FullAddress;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui8Value = ui8Ret;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].bRead = true;
+			}
 #endif	// #ifdef LSN_CPU_VERIFY
 			return ui8Ret;
 		}
@@ -205,7 +220,14 @@ namespace lsn {
 				_ui8Speed = _ui8SpeedOverride;
 			}
 #ifdef LSN_CPU_VERIFY
-			m_vReadWriteLog.push_back( { .ui32Address = m_rfpAccessFuncParms.ui32FullAddress, .ui8Value = _ui8Val, .bRead = false } );
+			if ( m_vReadWriteLog.size() ) {
+				/*if ( 63529 == m_rfpAccessFuncParms.ui32FullAddress ) {
+					volatile int gjhgg = 0;
+				}*/
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui32Address = m_rfpAccessFuncParms.ui32FullAddress;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui8Value = _ui8Val;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].bRead = false;
+			}
 #endif	// #ifdef LSN_CPU_VERIFY
 		}
 
@@ -407,9 +429,10 @@ namespace lsn {
 #ifdef LSN_CPU_VERIFY
 		// == Types.
 		struct LSN_READ_WRITE_LOG {
-			uint32_t								ui32Address;
-			uint8_t									ui8Value;
-			bool									bRead;
+			uint32_t								ui32Address = UINT_MAX;
+			uint8_t									ui8Value = 0;
+			uint8_t									ui8S = 0;
+			bool									bRead = false;
 		};
 
 

@@ -22,28 +22,309 @@ namespace lsn {
 
 	// == Functions.
 	/**
-	 * Resets the bus to a known state.
+	 * Performs a single PHI1 update.
 	 */
-	void CRicoh5A22::ResetToKnown() {
-		ResetAnalog();
-		std::memset( &m_fsState.rRegs, 0, sizeof( m_fsState.rRegs ) );
-		uint8_t ui8Speed;
-		m_fsState.rRegs.ui16Pc = m_baBusA.Read( 0xFFFC, 0x00, ui8Speed ) | (m_baBusA.Read( 0xFFFD, 0x00, ui8Speed ) << 8);
-		m_fsState.rRegs.ui16S = 0;
-		m_fsState.bEmulationMode = true;
-
-		m_ui64CycleCount = 0ULL;
+	void CRicoh5A22::Tick() {
+		(this->*m_pfTickFunc)();
 	}
 
 	/**
-	 * Performs an "analog" reset, allowing previous data to remain.
-	 */
-	void CRicoh5A22::ResetAnalog() {
-		//m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_NextInstructionStd;
-		m_fsState.bBoundaryCrossed = false;
-		m_fsState.ui16PcModify = 0;
-		m_fsState.ui16SModify = 0;
-		m_fsState.bAllowWritingToPc = true;
+	 * Performs a single PHI2 update.
+	 **/
+	void CRicoh5A22::TickPhi2() {
+		(this->*m_pfTickFunc)();
 	}
+
+#ifdef LSN_CPU_VERIFY
+	/**
+	 * Runs a test given a JSON's value representing the test to run.
+	 *
+	 * \param _jJson The JSON file.
+	 * \param _jvTest The test to run.
+	 * \return Returns true if te test succeeds, false otherwise.
+	 */
+	bool CRicoh5A22::RunJsonTest( lson::CJson &_jJson, const lson::CJsonContainer::LSON_JSON_VALUE &_jvTest ) {
+		LSN_CPU_VERIFY_OBJ cvoVerifyMe;
+		if ( !GetTest( _jJson, _jvTest, cvoVerifyMe ) ) { return false; }
+
+		// Create the initial state.
+		Reset<true>();
+		m_baBusA.ApplyBasicMapping();				// Set default read/write functions.
+		m_ui64CycleCount = 0;
+		
+		m_fsState.rRegs.ui16A = cvoVerifyMe.cvsStart.cvrRegisters.ui16A;
+		m_fsState.rRegs.ui16S = cvoVerifyMe.cvsStart.cvrRegisters.ui16S;
+		m_fsState.rRegs.ui16X = cvoVerifyMe.cvsStart.cvrRegisters.ui16X;
+		m_fsState.rRegs.ui16Y = cvoVerifyMe.cvsStart.cvrRegisters.ui16Y;
+
+		m_fsState.rRegs.ui16D = cvoVerifyMe.cvsStart.cvrRegisters.ui16D;
+		m_fsState.rRegs.ui8Db = cvoVerifyMe.cvsStart.cvrRegisters.ui8Db;
+		m_fsState.rRegs.ui8Pb = cvoVerifyMe.cvsStart.cvrRegisters.ui8Pb;
+		
+		m_fsState.rRegs.ui8Status = cvoVerifyMe.cvsStart.cvrRegisters.ui8Status;
+		m_fsState.rRegs.ui16Pc = cvoVerifyMe.cvsStart.cvrRegisters.ui16Pc;
+		m_fsState.bEmulationMode = cvoVerifyMe.cvsStart.bEmulationMode;
+
+		uint8_t ui8Speed;
+		{
+			for ( auto I = cvoVerifyMe.cvsStart.vRam.size(); I--; ) {
+				m_baBusA.Write( uint16_t( cvoVerifyMe.cvsStart.vRam[I].ui32Addr ), uint8_t( cvoVerifyMe.cvsStart.vRam[I].ui32Addr >> 16 ), cvoVerifyMe.cvsStart.vRam[I].ui8Value, ui8Speed );
+			}
+		}
+
+		if ( "00 n 2" == cvoVerifyMe.sName ) {
+			volatile int ghg = 0;
+		}
+		// Tick once for each cycle.
+		m_fsState.ui16Operand = m_baBusA.Read( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Speed );
+		m_fsState.ui16PcModify = 1;
+		m_baBusA.ReadWriteLog().clear();
+		/*for ( auto I = cvoVerifyMe.vCycles.size(); I--; ) {
+			Tick();
+			TickPhi2();
+		}
+		m_baBusA.ReadWriteLog().pop_back();*/
+
+		for ( auto I = cvoVerifyMe.vCycles.size(); I--; ) {
+			m_baBusA.ReadWriteLog().push_back( {} );
+			Tick();
+			/*if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_JAM ) {
+				if ( m_bHandleNmi != I < 1 ) {
+					::OutputDebugStringA( "\r\nDouble-check polling.\r\n" );
+				}
+			}*/
+			m_bDetectedNmi = true;
+			TickPhi2();
+			/*if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_JAM && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK &&
+				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BPL && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BNE && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVS &&
+				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCS && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BEQ && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BMI ) {
+				if ( m_bHandleNmi != (I <= 0) ) {
+					::OutputDebugStringA( "\r\nDouble-check polling.\r\n" );
+				}
+			}*/
+			m_baBusA.ReadWriteLog()[m_baBusA.ReadWriteLog().size()-1].ui8S = m_fsState.rRegs.ui8Status;
+		}
+		Tick();
+
+		if ( m_fsState.bEmulationMode ) {
+			m_fsState.rRegs.ui8S[1] = 1;
+		}
+
+		// Verify.
+#define LSN_VURIFFY( REG )																																													\
+	if ( m_fsState.rRegs. ## REG != cvoVerifyMe.cvsEnd.cvrRegisters. ## REG ) {																																\
+		::OutputDebugStringA( cvoVerifyMe.sName.c_str() );																																					\
+		::OutputDebugStringA( "\r\nCPU Failure: " # REG "\r\n" );																																			\
+		::OutputDebugStringA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.cvsEnd.cvrRegisters. ## REG ) + std::string( " Got: " ) + std::to_string( m_fsState.rRegs. ## REG ) ).c_str() );	\
+		::OutputDebugStringA( "\r\n\r\n" );																																									\
+	}
+
+		LSN_VURIFFY( ui16A );
+		LSN_VURIFFY( ui16X );
+		LSN_VURIFFY( ui16Y );
+		LSN_VURIFFY( ui16S );
+
+		LSN_VURIFFY( ui16D );
+		LSN_VURIFFY( ui8Db );
+		LSN_VURIFFY( ui8Pb );
+
+		LSN_VURIFFY( ui8Status );
+		LSN_VURIFFY( ui16Pc );
+#undef LSN_VURIFFY
+
+
+		if ( m_baBusA.ReadWriteLog().size() > cvoVerifyMe.vCycles.size() ) {
+			::OutputDebugStringA( cvoVerifyMe.sName.c_str() );
+			::OutputDebugStringA( "\r\nInternal Error\r\n" );
+			::OutputDebugStringA( "\r\n\r\n" );
+		}
+		else {
+			size_t J = 0;
+			for ( size_t I = 0; I < m_baBusA.ReadWriteLog().size(); ++I ) {
+				if ( cvoVerifyMe.vCycles[I].bNoReadOrWrite == false ) {
+					if ( m_baBusA.ReadWriteLog()[J].ui32Address != cvoVerifyMe.vCycles[I].ui32Addr ) {
+						::OutputDebugStringA( cvoVerifyMe.sName.c_str() );
+						::OutputDebugStringA( "\r\nCPU Failure: Cycle Address Wrong\r\n" );
+						::OutputDebugStringA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].ui32Addr ) + std::string( " Got: " ) + std::to_string( m_baBusA.ReadWriteLog()[J].ui32Address ) ).c_str() );
+						::OutputDebugStringA( "\r\n\r\n" );
+					}
+					if ( m_baBusA.ReadWriteLog()[J].ui8Value != cvoVerifyMe.vCycles[I].ui8Value ) {
+						::OutputDebugStringA( cvoVerifyMe.sName.c_str() );
+						::OutputDebugStringA( "\r\nCPU Failure: Cycle Value Wrong\r\n" );
+						::OutputDebugStringA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].ui8Value ) + std::string( " Got: " ) + std::to_string( m_baBusA.ReadWriteLog()[J].ui8Value ) ).c_str() );
+						::OutputDebugStringA( "\r\n\r\n" );
+					}
+					if ( m_baBusA.ReadWriteLog()[J].bRead != (cvoVerifyMe.vCycles[I].sStatus[3] == 'r') ) {
+						::OutputDebugStringA( cvoVerifyMe.sName.c_str() );
+						::OutputDebugStringA( "\r\nCPU Failure: Cycle Read/Write Wrong\r\n" );
+						::OutputDebugStringA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[3] ) + std::string( " Got: " ) + std::to_string( m_baBusA.ReadWriteLog()[J].bRead ) ).c_str() );
+						::OutputDebugStringA( "\r\n\r\n" );
+					}
+					if ( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[6] == 'x') ) {
+						::OutputDebugStringA( cvoVerifyMe.sName.c_str() );
+						::OutputDebugStringA( "\r\nCPU Failure: Cycle Status.X Wrong\r\n" );
+						::OutputDebugStringA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[6] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) ) ).c_str() );
+						::OutputDebugStringA( "\r\n\r\n" );
+					}
+					if ( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[5] == 'm') ) {
+						::OutputDebugStringA( cvoVerifyMe.sName.c_str() );
+						::OutputDebugStringA( "\r\nCPU Failure: Cycle Status.M Wrong\r\n" );
+						::OutputDebugStringA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[5] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) ) ).c_str() );
+						::OutputDebugStringA( "\r\n\r\n" );
+					}
+					++J;
+				}
+			}
+		}
+		return true;
+	}
+#endif	// #ifdef LSN_CPU_VERIFY
+
+
+#ifdef LSN_CPU_VERIFY
+	/**
+	 * Given a JSON object and the value for the test to run, this loads the test and fills a LSN_CPU_VERIFY structure.
+	 *
+	 * \param _jJson The JSON file.
+	 * \param _jvTest The test to run.
+	 * \param _cvoTest The test structure to fill out.
+	 * \return Returns true if the JSON data was successfully extracted and the test created.
+	 */
+	bool CRicoh5A22::GetTest( lson::CJson &_jJson, const lson::CJsonContainer::LSON_JSON_VALUE &_jvTest, LSN_CPU_VERIFY_OBJ &_cvoTest ) {
+		const lson::CJsonContainer::LSON_JSON_VALUE * pjvVal;
+		// The name.
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvTest, "name" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_STRING ) {
+			_cvoTest.sName = _jJson.GetContainer()->GetString( pjvVal->u.stString );
+		}
+		else { return false; }
+
+		// The initial state.
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvTest, "initial" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_OBJECT ) {
+			if ( !LoadState( _jJson, (*pjvVal), _cvoTest.cvsStart ) ) { return false; }
+		}
+		else { return false; }
+
+		// The final state.
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvTest, "final" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_OBJECT ) {
+			if ( !LoadState( _jJson, (*pjvVal), _cvoTest.cvsEnd ) ) { return false; }
+		}
+		else { return false; }
+
+		// The cycles.
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvTest, "cycles" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_ARRAY ) {
+			for ( size_t I = 0; I < pjvVal->vArray.size(); ++I ) {
+				const lson::CJsonContainer::LSON_JSON_VALUE & jvThis = _jJson.GetContainer()->GetValue( pjvVal->vArray[I] );
+				if ( jvThis.vtType == lson::CJsonContainer::LSON_VT_ARRAY && jvThis.vArray.size() == 3 ) {
+					auto aReadWrite = _jJson.GetContainer()->GetValue( jvThis.vArray[1] );
+					LSN_CPU_VERIFY_CYCLE cvcCycle = {
+						.ui32Addr = uint32_t( _jJson.GetContainer()->GetValue( jvThis.vArray[0] ).u.dDecimal ),
+						.ui8Value = uint8_t( aReadWrite.u.dDecimal ),
+						.sStatus = _jJson.GetContainer()->GetString( _jJson.GetContainer()->GetValue( jvThis.vArray[2] ).u.stString ),
+						.bNoReadOrWrite = aReadWrite.vtType == lson::CJsonContainer::LSON_VT_NULL,
+					};
+					_cvoTest.vCycles.push_back( cvcCycle );
+				}
+				else { return false; }
+			}
+		}
+		else { return false; }
+		return true;
+	}
+
+	/**
+	 * Fills out a LSN_CPU_VERIFY_STATE structure given a JSON "initial" or "final" member.
+	 *
+	 * \param _jJson The JSON file.
+	 * \param _jvState The bject member representing the state to load.
+	 * \param _cvsState The state structure to fill.
+	 * \return Returns true if the state was loaded.
+	 */
+	bool CRicoh5A22::LoadState( lson::CJson &_jJson, const lson::CJsonContainer::LSON_JSON_VALUE &_jvState, LSN_CPU_VERIFY_STATE &_cvsState ) {
+		const lson::CJsonContainer::LSON_JSON_VALUE * pjvVal;
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "pc" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.cvrRegisters.ui16Pc = uint16_t( pjvVal->u.dDecimal );
+		}
+		else { return false; }
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "s" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.cvrRegisters.ui16S = uint16_t( pjvVal->u.dDecimal );
+		}
+		else { return false; }
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "a" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.cvrRegisters.ui16A = uint16_t( pjvVal->u.dDecimal );
+		}
+		else { return false; }
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "x" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.cvrRegisters.ui16X = uint16_t( pjvVal->u.dDecimal );
+		}
+		else { return false; }
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "y" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.cvrRegisters.ui16Y = uint16_t( pjvVal->u.dDecimal );
+		}
+		else { return false; }
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "p" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.cvrRegisters.ui8Status = uint8_t( pjvVal->u.dDecimal );
+		}
+		else { return false; }
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "d" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.cvrRegisters.ui16D = uint16_t( pjvVal->u.dDecimal );
+		}
+		else { return false; }
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "dbr" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.cvrRegisters.ui8Db = uint8_t( pjvVal->u.dDecimal );
+		}
+		else { return false; }
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "pbr" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.cvrRegisters.ui8Pb = uint8_t( pjvVal->u.dDecimal );
+		}
+		else { return false; }
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "e" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_DECIMAL ) {
+			_cvsState.bEmulationMode = uint8_t( pjvVal->u.dDecimal ) != 0;
+		}
+		else { return false; }
+
+
+		pjvVal = _jJson.GetContainer()->GetMemberByName( _jvState, "ram" );
+		if ( pjvVal && pjvVal->vtType == lson::CJsonContainer::LSON_VT_ARRAY ) {
+			for ( size_t I = 0; I < pjvVal->vArray.size(); ++I ) {
+				const lson::CJsonContainer::LSON_JSON_VALUE & jvThis = _jJson.GetContainer()->GetValue( pjvVal->vArray[I] );
+				if ( jvThis.vtType == lson::CJsonContainer::LSON_VT_ARRAY && jvThis.vArray.size() == 2 ) {
+					LSN_CPU_VERIFY_RAM cvrRam = {
+						.ui32Addr = uint32_t( _jJson.GetContainer()->GetValue( jvThis.vArray[0] ).u.dDecimal ),
+						.ui8Value = uint8_t( _jJson.GetContainer()->GetValue( jvThis.vArray[1] ).u.dDecimal ),
+					};
+					_cvsState.vRam.push_back( cvrRam );
+				}
+				else { return false; }
+			}
+		}
+		else { return false; }
+
+		return true;
+	}
+#endif	// #ifdef LSN_CPU_VERIFY
 
 }	// namespace lsn

@@ -137,8 +137,8 @@ namespace lsn {
 			uint8_t														ui8Pb = 0;																		/**< PB    Program Counter Bank ;expands 16bit PC     to 24bit PB:PC. */
 		};
 
-		typedef void (CRicoh5A22:: *										PfCycle)();																		/**< A function pointer for the functions that handle each cycle. */
-		typedef void (CRicoh5A22:: *										PfTicks)();																		/**< A function pointer for the tick handlers. */
+		typedef void (CRicoh5A22:: *									PfCycle)();																		/**< A function pointer for the functions that handle each cycle. */
+		typedef void (CRicoh5A22:: *									PfTicks)();																		/**< A function pointer for the tick handlers. */
 
 		/** An instruction. The micro-functions (pfHandler) that make up each cycle of each instruction are programmed to know what to do and can correctly pass the cycles without
 		 *	using ui8TotalCycles or amAddrMode. This means pcName, ui8TotalCycles, and amAddrMode are only used for debugging, verification, printing things, etc.
@@ -166,7 +166,7 @@ namespace lsn {
 		 * \tparam _bToKnown If true, the CPU is reset to a known state..
 		 */
 		template <bool _bToKnown = true>
-		void												Reset() {
+		void															Reset() {
 			m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_NextInstructionStd;
 			m_fsState.bBoundaryCrossed = false;
 			m_fsState.ui16PcModify = 0;
@@ -214,21 +214,28 @@ namespace lsn {
 			}
 		}
 
+		/**
+		 * Sets m_bIsReset to true.
+		 **/
+		void															SetIsReset() {
+			m_bIsReset = m_bBrkIsReset = true;
+		}
+
+		/**
+		 * Performs a single PHI1 update.
+		 */
+		virtual void													Tick();
+
+		/**
+		 * Performs a single PHI2 update.
+		 **/
+		virtual void													TickPhi2();
+
 		/** Fetches the next opcode and begins the next instruction. */
 		inline void														Tick_NextInstructionStd();
 
 		/** Performs a cycle inside an instruction. */
 		inline void														Tick_InstructionCycleStd();
-
-		/**
-		 * Resets the bus to a known state.
-		 */
-		void															ResetToKnown();
-
-		/**
-		 * Performs an "analog" reset, allowing previous data to remain.
-		 */
-		void															ResetAnalog();
 
 #ifdef LSN_CPU_VERIFY
 		/**
@@ -472,11 +479,12 @@ namespace lsn {
 	}
 
 	/** Final touches to BRK (copies m_ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
-	void CRicoh5A22::Brk_BeginInst() {
+	inline void CRicoh5A22::Brk_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 		
 		m_bBrkIsReset = false;
 		m_fsState.rRegs.ui16Pc = m_fsState.ui16Address;
+		m_fsState.rRegs.ui8Pb = 0;
 
 		BeginInst<false, false, false>();
 	}
@@ -487,7 +495,7 @@ namespace lsn {
 	 * \tparam _bEndInstr Marks the end of an instruction.  If true, LSN_FINISH_INST() is called.
 	 **/
 	template <bool _bEndInstr>
-	void CRicoh5A22::CopyVectorToPc_H_Phi2() {
+	inline void CRicoh5A22::CopyVectorToPc_H_Phi2() {
 		uint8_t ui8Speed;
 		uint8_t ui8Op;
 		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector + 1, ui8Op, ui8Speed );
@@ -504,7 +512,7 @@ namespace lsn {
 	}
 			
 	/** Copies from the vector to PC.l. **/
-	void CRicoh5A22::CopyVectorToPc_L_Phi2() {
+	inline void CRicoh5A22::CopyVectorToPc_L_Phi2() {
 		uint8_t ui8Speed;
 		uint8_t ui8Op;
 		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector, ui8Op, ui8Speed );
@@ -517,7 +525,7 @@ namespace lsn {
 	}
 
 	/** Fetches the current opcode and increments PC. **/
-	void CRicoh5A22::Fetch_Opcode_IncPc_Phi2() {
+	inline void CRicoh5A22::Fetch_Opcode_IncPc_Phi2() {
 		uint8_t ui8Speed;
 		uint8_t ui8Op;
 		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, ui8Speed );
@@ -559,7 +567,7 @@ namespace lsn {
 	 * \tparam _bEndInstr If true, this is the end of the instruction and steps should be taken to prepare for the next instruction.
 	 **/
 	template <bool _bEndInstr>
-	void CRicoh5A22::Fetch_Operand_IncPc_Phi2() {
+	inline void CRicoh5A22::Fetch_Operand_IncPc_Phi2() {
 		uint8_t ui8Speed;
 		uint8_t ui8Op;
 		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, ui8Speed );
@@ -585,7 +593,7 @@ namespace lsn {
 	 * \tparam _bBeginInstr If true, BeginInst() is called.
 	 **/
 	template <CRicoh5A22::LSN_CYCLE_TYPE _ctReadWriteNull, bool _bIncPc, bool _bAdjS, bool _bBeginInstr>
-	void CRicoh5A22::Null() {
+	inline void CRicoh5A22::Null() {
 		if constexpr ( _bBeginInstr ) {
 			BeginInst<_bIncPc, _bAdjS>();
 		}
@@ -613,7 +621,7 @@ namespace lsn {
 	 * \tparam _bBeginInstr If true, BeginInst() is called.
 	 **/
 	template <bool _bIncPc, bool _bAdjS, bool _bBeginInstr>
-	void CRicoh5A22::Null_RorW() {
+	inline void CRicoh5A22::Null_RorW() {
 		if constexpr ( _bBeginInstr ) {
 			BeginInst<_bIncPc, _bAdjS>();
 		}
@@ -644,7 +652,7 @@ namespace lsn {
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 **/
 	template <int8_t _i8SOff>
-	void CRicoh5A22::PushPb_Phi2() {
+	inline void CRicoh5A22::PushPb_Phi2() {
 		uint8_t ui8Speed;
 		LSN_PUSH( m_fsState.rRegs.ui8Pb, ui8Speed );
 
@@ -659,7 +667,7 @@ namespace lsn {
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 **/
 	template <int8_t _i8SOff>
-	void CRicoh5A22::Push_Pc_H_Phi2() {
+	inline void CRicoh5A22::Push_Pc_H_Phi2() {
 		uint8_t ui8Speed;
 		if LSN_UNLIKELY( m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
@@ -681,7 +689,7 @@ namespace lsn {
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 **/
 	template <int8_t _i8SOff>
-	void CRicoh5A22::Push_Pc_L_Phi2() {
+	inline void CRicoh5A22::Push_Pc_L_Phi2() {
 		uint8_t ui8Speed;
 		if LSN_UNLIKELY( m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
@@ -695,10 +703,6 @@ namespace lsn {
 		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI2;
-
-		LSN_NEXT_FUNCTION;
-
-		LSN_INSTR_END_PHI2;
 	}
 
 	/**
@@ -707,7 +711,7 @@ namespace lsn {
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 **/
 	template <int8_t _i8SOff>
-	void CRicoh5A22::Push_S_Phi2() {
+	inline void CRicoh5A22::Push_S_Phi2() {
 		uint8_t ui8Speed;
 		if LSN_UNLIKELY( m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
@@ -734,7 +738,7 @@ namespace lsn {
 	 * \tparam _bAdjS If true, S is updated.
 	 **/
 	template <bool _bAdjS>
-	void CRicoh5A22::SelectBrkVectors() {
+	inline void CRicoh5A22::SelectBrkVectors() {
 		if constexpr ( _bAdjS ) {
 			LSN_INSTR_START_PHI1( true );
 			LSN_UPDATE_S;
@@ -744,8 +748,8 @@ namespace lsn {
 		}
 
 #ifdef LSN_CPU_VERIFY
-		m_fsState.vBrkVector = LSN_V_IRQ_BRK_E;
-		m_fsState.bPushB = true;
+		m_fsState.vBrkVector = m_fsState.bEmulationMode ? LSN_V_IRQ_BRK_E : LSN_V_BRK;
+		m_fsState.bPushB = m_fsState.bEmulationMode;
 #else
 
 		// Select vector to use.
@@ -806,11 +810,13 @@ namespace lsn {
 	}
 
 	/** Sets I and X. */
-	void CRicoh5A22::SetBrkFlags() {
+	inline void CRicoh5A22::SetBrkFlags() {
 		LSN_INSTR_START_PHI1( true );
 
-		SetBit<I() | M(), true>( m_fsState.rRegs.ui8Status );
-		SetBit<X(), false>( m_fsState.rRegs.ui8Status );
+		//SetBit<I() | M(), true>( m_fsState.rRegs.ui8Status );
+		//SetBit<X(), false>( m_fsState.rRegs.ui8Status );
+		SetBit<I(), true>( m_fsState.rRegs.ui8Status );
+		SetBit<D(), false>( m_fsState.rRegs.ui8Status );
 		m_fsState.bAllowWritingToPc = true;
 
 		LSN_NEXT_FUNCTION;

@@ -51,6 +51,8 @@
     <ClCompile Include="Src\Files\LSNStdFile.cpp" />
     <ClCompile Include="Src\Files\LSNZipFile.cpp" />
     <ClCompile Include="Src\Foundation\LSNFeatureSet.cpp" />
+    <ClCompile Include="Src\LSNMacOsMain_CpuVerify.cpp" />
+    <ClCompile Include="Src\LSNWinMain_CpuVerify.cpp" />
     <ClCompile Include="Src\Utilities\LSNCrc.cpp" />
     <ClCompile Include="Src\Utilities\LSNUtilities.cpp" />
   </ItemGroup>

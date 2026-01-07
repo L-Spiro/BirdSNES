@@ -46,6 +46,7 @@
 
 #pragma once
 
+#include "Errors/LSNErrors.h"
 #include "OS/LSNOs.h"
 
 #include <cassert>
