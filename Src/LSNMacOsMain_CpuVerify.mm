@@ -24,17 +24,7 @@
 #include <codecvt>
 #include <locale>
 
-#if 0
-#import <Cocoa/Cocoa.h>
 
-
-int main(int argc, const char * argv[]) {
-	@autoreleasepool {
-		// Setup code that might create autoreleased objects goes here.
-	}
-	return NSApplicationMain(argc, argv);
-}
-#else
 int main( int /*_iArgC*/, char ** /*_ppcArgV*/ ) {
 	std::unique_ptr<lsn::CBusA> pbBus = std::make_unique<lsn::CBusA>();
 	pbBus->ApplyBasicMapping();
@@ -49,7 +39,7 @@ int main( int /*_iArgC*/, char ** /*_ppcArgV*/ ) {
 
 	static const char cChars[2] = { 'n', 'e' };
 
-	for ( uint32_t I = 0x00; I < 1; ++I ) {
+	for ( uint32_t I = 0x00; I < 2; ++I ) {
 		lson::CJson jSon;
 		std::vector<uint8_t> vBytes;
 		lsn::CStdFile sfFile;
@@ -95,7 +85,7 @@ int main( int /*_iArgC*/, char ** /*_ppcArgV*/ ) {
 	}
 	return 0;
 }
-#endif
+
 #endif	// #ifdef LSN_CPU_VERIFY
 
 #endif	// #ifdef __APPLE__
