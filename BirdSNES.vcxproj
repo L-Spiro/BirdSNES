@@ -51,7 +51,6 @@
     <ClCompile Include="Src\Files\LSNStdFile.cpp" />
     <ClCompile Include="Src\Files\LSNZipFile.cpp" />
     <ClCompile Include="Src\Foundation\LSNFeatureSet.cpp" />
-    <ClCompile Include="Src\LSNMacOsMain_CpuVerify.cpp" />
     <ClCompile Include="Src\LSNWinMain_CpuVerify.cpp" />
     <ClCompile Include="Src\Utilities\LSNCrc.cpp" />
     <ClCompile Include="Src\Utilities\LSNUtilities.cpp" />
@@ -77,6 +76,7 @@
     <ClInclude Include="Src\OS\LSNWindows.h" />
     <ClInclude Include="Src\Resource.h" />
     <ClInclude Include="Src\Strings\LSNStrings.h" />
+    <ClInclude Include="Src\System\LSNTickable.h" />
     <ClInclude Include="Src\targetver.h" />
     <ClInclude Include="Src\Utilities\LSNCrc.h" />
     <ClInclude Include="Src\Utilities\LSNTimer.h" />

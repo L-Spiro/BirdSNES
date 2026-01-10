@@ -78,7 +78,7 @@ namespace lsn {
 			m_rfpAccessFuncParms.asAccessSource = _asAccessSource;
 			uint16_t ui16SpdAddr = uint16_t( m_rfpAccessFuncParms.ui32FullAddress >> 8 );
 			uint8_t * pui8Spd;
-			if constexpr ( _ui8SpeedOverride != 0 ) {
+			if constexpr ( _ui8SpeedOverride == 0 ) {
 				pui8Spd = m_ui8Speeds + ui16SpdAddr;
 				LSN_PREFETCH_LINE( pui8Spd );
 			}
@@ -88,8 +88,8 @@ namespace lsn {
 			m_rfpAccessFuncParms.pvParm0 = aaAccessor.pvReaderParm0;
 			aaAccessor.pfReader( m_rfpAccessFuncParms, ui8Ret, ui8Mask );
 			m_ui8DataBus = (m_ui8DataBus & ~ui8Mask) | (ui8Ret & ui8Mask);
-			if constexpr ( _ui8SpeedOverride != 0 ) {
-				_ui8Speed = ((*pui8Spd) >> ((m_ui8MemSel & 1) << 2)) & 0b1111;
+			if constexpr ( _ui8SpeedOverride == 0 ) {
+				_ui8Speed = ((*pui8Spd) >> ((m_ui8MemSel /*& 1*/) << 2)) & 0b1111;
 			}
 			else {
 				_ui8Speed = _ui8SpeedOverride;
@@ -122,15 +122,15 @@ namespace lsn {
 			m_rfpAccessFuncParms.asAccessSource = _asAccessSource;
 			uint16_t ui16SpdAddr = uint16_t( m_rfpAccessFuncParms.ui32FullAddress >> 8 );
 			uint8_t * pui8Spd;
-			if constexpr ( _ui8SpeedOverride != 0 ) {
+			if constexpr ( _ui8SpeedOverride == 0 ) {
 				pui8Spd = m_ui8Speeds + ui16SpdAddr;
 				LSN_PREFETCH_LINE( pui8Spd );
 			}
 			auto & aaAccessor = m_aaAccessors[ui16SpdAddr];
 			aaAccessor.pfWriter( m_rfpAccessFuncParms, _ui8Val );
 			m_ui8DataBus = _ui8Val;
-			if constexpr ( _ui8SpeedOverride != 0 ) {
-				_ui8Speed = ((*pui8Spd) >> ((m_ui8MemSel & 1) << 2)) & 0b1111;
+			if constexpr ( _ui8SpeedOverride == 0 ) {
+				_ui8Speed = ((*pui8Spd) >> ((m_ui8MemSel /*& 1*/) << 2)) & 0b1111;
 			}
 			else {
 				_ui8Speed = _ui8SpeedOverride;
@@ -164,7 +164,7 @@ namespace lsn {
 			m_rfpAccessFuncParms.asAccessSource = _asAccessSource;
 			uint16_t ui16SpdAddr = uint16_t( _ui16Address >> 8 );
 			uint8_t * pui8Spd;
-			if constexpr ( _ui8SpeedOverride != 0 ) {
+			if constexpr ( _ui8SpeedOverride == 0 ) {
 				pui8Spd = m_ui8Speeds + ui16SpdAddr;
 				LSN_PREFETCH_LINE( pui8Spd );
 			}
@@ -173,8 +173,8 @@ namespace lsn {
 			auto & aaAccessor = m_aaAccessors[ui16SpdAddr];
 			aaAccessor.pfReader( m_rfpAccessFuncParms, ui8Ret, ui8Mask );
 			m_ui8DataBus = (m_ui8DataBus & ~ui8Mask) | (ui8Ret & ui8Mask);
-			if constexpr ( _ui8SpeedOverride != 0 ) {
-				_ui8Speed = ((*pui8Spd) >> ((m_ui8MemSel & 1) << 2)) & 0b1111;
+			if constexpr ( _ui8SpeedOverride == 0 ) {
+				_ui8Speed = ((*pui8Spd) >> ((m_ui8MemSel /*& 1*/) << 2)) & 0b1111;
 			}
 			else {
 				_ui8Speed = _ui8SpeedOverride;
@@ -206,15 +206,15 @@ namespace lsn {
 			m_rfpAccessFuncParms.asAccessSource = _asAccessSource;
 			uint16_t ui16SpdAddr = uint16_t( _ui16Address >> 8 );
 			uint8_t * pui8Spd;
-			if constexpr ( _ui8SpeedOverride != 0 ) {
+			if constexpr ( _ui8SpeedOverride == 0 ) {
 				pui8Spd = m_ui8Speeds + ui16SpdAddr;
 				LSN_PREFETCH_LINE( pui8Spd );
 			}
 			auto & aaAccessor = m_aaAccessors[ui16SpdAddr];
 			aaAccessor.pfWriter( m_rfpAccessFuncParms, _ui8Val );
 			m_ui8DataBus = _ui8Val;
-			if constexpr ( _ui8SpeedOverride != 0 ) {
-				_ui8Speed = ((*pui8Spd) >> ((m_ui8MemSel & 1) << 2)) & 0b1111;
+			if constexpr ( _ui8SpeedOverride == 0 ) {
+				_ui8Speed = ((*pui8Spd) >> ((m_ui8MemSel /*& 1*/) << 2)) & 0b1111;
 			}
 			else {
 				_ui8Speed = _ui8SpeedOverride;

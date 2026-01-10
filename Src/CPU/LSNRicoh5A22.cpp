@@ -72,7 +72,7 @@ namespace lsn {
 			}
 		}
 
-		if ( "00 n 2" == cvoVerifyMe.sName ) {
+		if ( "01 n 2" == cvoVerifyMe.sName ) {
 			volatile int ghg = 0;
 		}
 		// Tick once for each cycle.
@@ -160,20 +160,21 @@ namespace lsn {
 						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[3] ) + std::string( " Got: " ) + std::to_string( m_baBusA.ReadWriteLog()[J].bRead ) ).c_str() );
 						lsn::DebugA( "\r\n\r\n" );
 					}
-					if ( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[6] == 'x') ) {
-						lsn::DebugA( cvoVerifyMe.sName.c_str() );
-						lsn::DebugA( "\r\nCPU Failure: Cycle Status.X Wrong\r\n" );
-						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[6] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) ) ).c_str() );
-						lsn::DebugA( "\r\n\r\n" );
-					}
-					if ( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[5] == 'm') ) {
-						lsn::DebugA( cvoVerifyMe.sName.c_str() );
-						lsn::DebugA( "\r\nCPU Failure: Cycle Status.M Wrong\r\n" );
-						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[5] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) ) ).c_str() );
-						lsn::DebugA( "\r\n\r\n" );
-					}
-					++J;
 				}
+				
+				if ( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[6] == 'x') ) {
+					lsn::DebugA( cvoVerifyMe.sName.c_str() );
+					lsn::DebugA( "\r\nCPU Failure: Cycle Status.X Wrong\r\n" );
+					lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[6] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) ) ).c_str() );
+					lsn::DebugA( "\r\n\r\n" );
+				}
+				if ( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[5] == 'm') ) {
+					lsn::DebugA( cvoVerifyMe.sName.c_str() );
+					lsn::DebugA( "\r\nCPU Failure: Cycle Status.M Wrong\r\n" );
+					lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[5] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) ) ).c_str() );
+					lsn::DebugA( "\r\n\r\n" );
+				}
+				++J;
 			}
 		}
 		return true;

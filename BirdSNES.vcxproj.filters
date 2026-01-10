@@ -70,6 +70,12 @@
     <Filter Include="Source Files\CPU">
       <UniqueIdentifier>{c3d37599-71be-4400-995c-25134fb37b97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\System">
+      <UniqueIdentifier>{dfb5ae3d-d201-4b20-99c5-a20d728c61e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System">
+      <UniqueIdentifier>{51684a2b-d24e-4159-bd85-092be3e08242}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\BirdSNES.cpp">
@@ -103,9 +109,6 @@
       <Filter>Source Files\CPU</Filter>
     </ClCompile>
     <ClCompile Include="Src\LSNWinMain_CpuVerify.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\LSNMacOsMain_CpuVerify.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="Src\CPU\LSNRicoh5A22Base.h">
       <Filter>Header Files\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\System\LSNTickable.h">
+      <Filter>Header Files\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

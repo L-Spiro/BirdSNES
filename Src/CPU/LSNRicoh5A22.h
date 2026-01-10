@@ -12,6 +12,7 @@
 #include "../LSNBirdSNES.h"
 #include "../Bus/LSNBusA.h"
 #include "../Foundation/LSNBits.h"
+#include "../System/LSNTickable.h"
 #include "LSNRicoh5A22Base.h"
 
 #ifdef LSN_CPU_VERIFY
@@ -57,7 +58,9 @@ namespace lsn {
 	 *
 	 * Description: A Ricoh 5A22 processor.
 	 */
-	class CRicoh5A22 : public CRicoh5A22Base {
+	/*template <uint64_t _ui64MasterClock = LSN_CS_NTSC_MASTER, uint64_t _ui64MasterDivisor = LSN_CS_NTSC_MASTER_DIVISOR,
+		uint8_t _ui8Fast = LSN_CS_NTSC_CPU_DIVISOR_FAST, uint8_t _ui8SLow = LSN_CS_NTSC_CPU_DIVISOR_SLOW, uint8_t _ui8XSLow = LSN_CS_NTSC_CPU_DIVISOR_XSLOW>*/
+	class CRicoh5A22 : public CRicoh5A22Base, CTickable {
 		typedef CRicoh5A22Base											Parent;
 	public :
 		// == Various constructors.
@@ -224,12 +227,12 @@ namespace lsn {
 		/**
 		 * Performs a single PHI1 update.
 		 */
-		virtual void													Tick();
+		void															Tick();
 
 		/**
 		 * Performs a single PHI2 update.
 		 **/
-		virtual void													TickPhi2();
+		void															TickPhi2();
 
 		/** Fetches the next opcode and begins the next instruction. */
 		inline void														Tick_NextInstructionStd();
@@ -361,7 +364,15 @@ namespace lsn {
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		// CYCLES
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-		/** Final touches to BRK (copies m_ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
+		/**
+		 * Adds X to m_fsState.ui16Pointer and D, stores to m_fsState.ui16Address.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+		 **/
+		template <bool _bTo = LSN_TO_A>	
+		void															Add_X_D_PtrOrAddr_To_AddrOrPtr_IncPc();
+
+		/** Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
 		void															Brk_BeginInst();
 
 		/**
@@ -387,6 +398,23 @@ namespace lsn {
 		void															Fetch_Operand_IncPc_Phi2();
 
 		/**
+		 * Fetches the operand and increments PC.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr If true, this is the end of the instruction and steps should be taken to prepare for the next instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
+		void															Fetch_PtrOrAddr_IncPc_Phi2();
+
+		/**
+		 * Fixes the high bit of m_fsState.ui16Address or m_fsState.ui16Pointer.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+		 **/
+		template <bool _bTo = LSN_TO_A>	
+		void															Fix_PtrOrAddr_From_AddrOrPtr_High();
+
+		/**
 		 * Generic null operation.
 		 * 
 		 * \tparam _ctReadWriteNull The cycle read/write/neither type.
@@ -396,6 +424,11 @@ namespace lsn {
 		 **/
 		template <CRicoh5A22::LSN_CYCLE_TYPE _ctReadWriteNull = CRicoh5A22::LSN_CT_NULL, bool _bIncPc = false, bool _bAdjS = false, bool _bBeginInstr = false>
 		void															Null();
+
+		/**
+		 * Generic null operation on PHI2.  Sets the bus access speed to Fast.
+		 **/
+		void															Null_Phi2();
 
 		/**
 		 * Generic null operation for BRK that can be either a read or write, depending on RESET.
@@ -408,12 +441,20 @@ namespace lsn {
 		void															Null_RorW();
 
 		/**
+		 * Performs ORA with m_ui8Operand[0].
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Ora();
+
+		/**
 		 * Pushes PB.
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 **/
 		template <int8_t _i8SOff>
-		inline void														PushPb_Phi2();
+		void															PushPb_Phi2();
 
 		/**
 		 * Pushes PCh with the given S offset.
@@ -440,6 +481,38 @@ namespace lsn {
 		void															Push_S_Phi2();
 
 		/**
+		 * Reads from m_fsState.ui16Address and Bank and stores the result in m_ui8Operand[1].
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 **/
+		template <bool _bFrom = LSN_FROM_A>
+		void															Read_PtrOrAddr_And_Bank_To_OperandHigh_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Address and Bank and stores the result in m_ui8Operand[0].
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 **/
+		template <bool _bFrom = LSN_FROM_A>
+		void															Read_PtrOrAddr_And_Bank_To_OperandLow_SkipIfM_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_ui8Pointer[1] or m_ui8Address[1].
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+		 **/
+		template <bool _bTo = LSN_TO_A>
+		void															ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the low byte in m_ui8Pointer[0] or m_ui8Address[0].
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+		 **/
+		template <bool _bTo = LSN_TO_A>
+		void															ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_Phi2();
+
+		/**
 		 * Selects the BRK vector etc.
 		 * 
 		 * \tparam _bAdjS If true, S is updated.
@@ -449,6 +522,12 @@ namespace lsn {
 
 		/** Sets I and X. */
 		void															SetBrkFlags();
+
+		/** Skips the next instruction if the M status flag is set. */
+		void															SkipIfM_Phi2();
+
+		/** Skips the next instruction if the low byte of D is 0. */
+		void															SkipOnDL_Phi2();
 
 
 		/**
@@ -478,7 +557,44 @@ namespace lsn {
 		(this->*m_fsState.pfCurInstruction[m_fsState.ui8FuncIndex])();
 	}
 
-	/** Final touches to BRK (copies m_ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
+	/**
+	 * Adds X to m_fsState.ui16Pointer and D, stores to m_fsState.ui16Address.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+	 **/
+	template <bool _bTo>	
+	void CRicoh5A22::Add_X_D_PtrOrAddr_To_AddrOrPtr_IncPc() {
+		LSN_INSTR_START_PHI1( false );
+
+		LSN_UPDATE_PC;
+
+		if constexpr ( _bTo == LSN_TO_A ) {
+			m_fsState.ui16Pointer = m_fsState.ui16Pointer + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D;
+			if ( m_fsState.bEmulationMode ) {
+				m_fsState.ui8Address[0] = m_fsState.ui8Pointer[0];	//uint8_t( m_fsState.ui16Pointer + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D );
+				m_fsState.ui8Address[1] = uint8_t( m_fsState.rRegs.ui8D[1] );
+			}
+			else {
+				m_fsState.ui16Address = m_fsState.ui16Pointer;	//m_fsState.ui16Pointer + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D;
+			}
+		}
+		else {
+			m_fsState.ui16Address = m_fsState.ui16Address + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D;
+			if ( m_fsState.bEmulationMode ) {
+				m_fsState.ui8Pointer[0] = m_fsState.ui8Address[0];	//uint8_t( m_fsState.ui16Address + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D );
+				m_fsState.ui8Pointer[1] = uint8_t( m_fsState.rRegs.ui8D[1] );
+			}
+			else {
+				m_fsState.ui16Pointer = m_fsState.ui16Address;	//m_fsState.ui16Address + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D;
+			}
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
+	}
+
+	/** Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
 	inline void CRicoh5A22::Brk_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 		
@@ -500,6 +616,7 @@ namespace lsn {
 		uint8_t ui8Op;
 		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector + 1, ui8Op, ui8Speed );
 		m_fsState.ui8Address[1] = ui8Op;
+		m_ui8Speed = ui8Speed;
 
 		if constexpr ( _bEndInstr ) {
 			LSN_FINISH_INST( true );
@@ -517,7 +634,7 @@ namespace lsn {
 		uint8_t ui8Op;
 		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector, ui8Op, ui8Speed );
 		m_fsState.ui8Address[0] = ui8Op;
-
+		m_ui8Speed = ui8Speed;
 
 		LSN_NEXT_FUNCTION;
 
@@ -529,7 +646,8 @@ namespace lsn {
 		uint8_t ui8Speed;
 		uint8_t ui8Op;
 		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, ui8Speed );
-		
+		m_ui8Speed = ui8Speed;
+
 #ifdef LSN_CPU_VERIFY
 		m_fsState.ui16PcModify = 1;
 #else
@@ -573,7 +691,8 @@ namespace lsn {
 		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, ui8Speed );
 		m_fsState.ui16Operand = ui8Op;
 		m_fsState.ui16PcModify = 1;
-		
+		m_ui8Speed = ui8Speed;
+
 		if constexpr ( _bEndInstr ) {
 			LSN_FINISH_INST( true );
 		}
@@ -582,6 +701,56 @@ namespace lsn {
 		}
 
 		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Fetches the operand and increments PC.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr If true, this is the end of the instruction and steps should be taken to prepare for the next instruction.
+	 **/
+	template <bool _bTo, bool _bEndInstr>
+	void CRicoh5A22::Fetch_PtrOrAddr_IncPc_Phi2() {
+		uint8_t ui8Speed;
+		uint8_t ui8Op;
+		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, ui8Speed );
+		if constexpr ( _bTo == LSN_TO_A ) {
+			m_fsState.ui16Address = ui8Op;
+		}
+		else {
+			m_fsState.ui16Pointer = ui8Op;
+		}
+		m_fsState.ui16PcModify = 1;
+		m_ui8Speed = ui8Speed;
+
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Fixes the high bit of m_fsState.ui16Address or m_fsState.ui16Pointer.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+	 **/
+	template <bool _bTo>	
+	inline void CRicoh5A22::Fix_PtrOrAddr_From_AddrOrPtr_High() {
+		LSN_INSTR_START_PHI1( false );
+		if constexpr ( _bTo ) {
+			m_fsState.ui8Address[1] = m_fsState.ui8Pointer[1];//uint8_t( (m_fsState.ui16Pointer + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D) >> 8 );
+		}
+		else {
+			m_fsState.ui8Pointer[1] = m_fsState.ui8Address[1];//uint8_t( (m_fsState.ui8Address + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D) >> 8 );
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
 	}
 
 	/**
@@ -611,6 +780,17 @@ namespace lsn {
 
 			LSN_INSTR_END_PHI1;
 		}
+	}
+
+	/**
+	 * Generic null operation on PHI2.  Sets the bus access speed to Fast.
+	 **/
+	inline void CRicoh5A22::Null_Phi2() {
+		m_ui8Speed = m_ui8FastDiv;
+		
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
 	}
 
 	/**
@@ -647,6 +827,30 @@ namespace lsn {
 	}
 
 	/**
+	 * Performs ORA with m_ui8Operand[0].
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Ora() {
+		LSN_INSTR_START_PHI1( false );
+		
+
+		m_fsState.rRegs.ui16A |= m_fsState.ui16Operand;
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+		}
+		else {
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[1] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+		}
+
+		BeginInst<_bIncPc, false, false>();
+	}
+
+	/**
 	 * Pushes PB.
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
@@ -655,6 +859,7 @@ namespace lsn {
 	inline void CRicoh5A22::PushPb_Phi2() {
 		uint8_t ui8Speed;
 		LSN_PUSH( m_fsState.rRegs.ui8Pb, ui8Speed );
+		m_ui8Speed = ui8Speed;
 
 		LSN_NEXT_FUNCTION;
 
@@ -677,6 +882,7 @@ namespace lsn {
 		else {
 			LSN_PUSH( m_fsState.rRegs.ui8Pc[1], ui8Speed );
 		}
+		m_ui8Speed = ui8Speed;
 
 		LSN_NEXT_FUNCTION;
 
@@ -699,6 +905,7 @@ namespace lsn {
 		else {
 			LSN_PUSH( m_fsState.rRegs.ui8Pc[0], ui8Speed );
 		}
+		m_ui8Speed = ui8Speed;
 
 		LSN_NEXT_FUNCTION;
 
@@ -712,21 +919,103 @@ namespace lsn {
 	 **/
 	template <int8_t _i8SOff>
 	inline void CRicoh5A22::Push_S_Phi2() {
-		uint8_t ui8Speed;
 		if LSN_UNLIKELY( m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
-			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, ui8Speed );
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, m_ui8Speed );
 			m_fsState.ui16SModify = uint16_t( -1L + _i8SOff );
 		}
 		else {
 			if ( m_fsState.bPushB ) {
-				LSN_PUSH( m_fsState.rRegs.ui8Status | X(), ui8Speed );
+				LSN_PUSH( m_fsState.rRegs.ui8Status | X(), m_ui8Speed );
 			}
 			else {
-				LSN_PUSH( m_fsState.rRegs.ui8Status, ui8Speed );
+				LSN_PUSH( m_fsState.rRegs.ui8Status, m_ui8Speed );
 			}
 		}
 
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Address and Bank and stores the result in m_ui8Operand[1].
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 **/
+	template <bool _bFrom>
+	inline void CRicoh5A22::Read_PtrOrAddr_And_Bank_To_OperandHigh_Phi2() {
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+		}
+		else {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Address and Bank and stores the result in m_ui8Operand[0].
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 **/
+	template <bool _bFrom>
+	inline void CRicoh5A22::Read_PtrOrAddr_And_Bank_To_OperandLow_SkipIfM_Phi2() {
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address, m_fsState.rRegs.ui8Db, m_fsState.ui16Operand, m_ui8Speed );
+		}
+		else {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer, m_fsState.rRegs.ui8Db, m_fsState.ui16Operand, m_ui8Speed );
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			LSN_NEXT_FUNCTION_BY( 2 );
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_ui8Pointer[1] or m_ui8Address[1].
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+	 **/
+	template <bool _bTo>	
+	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2() {
+		if constexpr( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Address[1], m_ui8Speed );
+		}
+		else {
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 1, m_fsState.ui8Pointer[1], m_ui8Speed );
+		}
+		
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the low byte in m_fsState.ui8Pointer[0] or m_fsState.ui8Address[0].
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+	 **/
+	template <bool _bTo>	
+	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_Phi2() {
+		uint8_t ui8Tmp;
+		if constexpr( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer, ui8Tmp, m_ui8Speed );
+			m_fsState.ui16Address = ui8Tmp;
+		}
+		else {
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address, ui8Tmp, m_ui8Speed );
+			m_fsState.ui16Pointer = ui8Tmp;
+		}
+		
 		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI2;
@@ -822,6 +1111,32 @@ namespace lsn {
 		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI1;
+	}
+
+	/** Skips the next instruction if the M status flag is set. */
+	inline void CRicoh5A22::SkipIfM_Phi2() {
+		LSN_NEXT_FUNCTION;
+
+		m_ui8Speed = m_ui8FastDiv;
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			LSN_NEXT_FUNCTION_BY( 2 );
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/** Skips the next instruction if the low byte of D is 0. */
+	inline void CRicoh5A22::SkipOnDL_Phi2() {
+		LSN_NEXT_FUNCTION;
+
+		m_ui8Speed = m_ui8FastDiv;
+
+		if ( !(m_fsState.rRegs.ui16D & 0xFF) ) {
+			LSN_NEXT_FUNCTION_BY( 2 );
+		}
+
+		LSN_INSTR_END_PHI2;
 	}
 
 #pragma warning( pop )
