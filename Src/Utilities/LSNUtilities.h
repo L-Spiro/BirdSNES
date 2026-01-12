@@ -964,7 +964,7 @@ namespace lsn {
 		/**
 		 * A proper CRT curve with WHITE and BRIGHTNESS controls.
 		 * 
-		 * \param param _dVal The value to convert.
+		 * \param _dVal The value to convert.
 		 * \param _dLw Screen luminance for white, reference setting is LW = 100 cd/m2.
 		 * \param _dB Variable for black level lift (legacy "brightness" control).
 		 *	The value of _dB is set so that the calculated luminance can be the same as the

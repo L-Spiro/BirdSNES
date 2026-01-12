@@ -7,7 +7,7 @@
 
 #include "Files/LSNStdFile.h"
 #include "Bus/LSNBusA.h"
-#include "Cpu/LSNRicoh5A22.h"
+#include "CPU/LSNRicoh5A22.h"
 #include "LSONJson.h"
 
 #include <EEExpEval.h>
@@ -39,7 +39,7 @@ int main( int /*_iArgC*/, char ** /*_ppcArgV*/ ) {
 
 	static const char cChars[2] = { 'n', 'e' };
 
-	for ( uint32_t I = 0x00; I < 2; ++I ) {
+	for ( uint32_t I = 0x00; I < 6; ++I ) {
 		lson::CJson jSon;
 		std::vector<uint8_t> vBytes;
 		lsn::CStdFile sfFile;

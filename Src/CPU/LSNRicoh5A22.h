@@ -419,7 +419,7 @@ namespace lsn {
 		/**
 		 * Fetches the operand and increments PC.
 		 * 
-		 * \tparam _bSkipIfDl If true, the next cycle is skipped if D.L is 0.
+		 * \tparam _bSkipOnDl If true, the next cycle is skipped if D.L is 0.
 		 * \tparam _bEndInstr If true, this is the end of the instruction and steps should be taken to prepare for the next instruction.
 		 **/
 		template <bool _bSkipOnDl = false, bool _bEndInstr = false>
@@ -905,6 +905,7 @@ namespace lsn {
 	/**
 	 * Fetches the operand and increments PC.
 	 * 
+	 * \tparam _bSkipOnDl If true, the next cycle is skipped if D.L is 0.
 	 * \tparam _bEndInstr If true, this is the end of the instruction and steps should be taken to prepare for the next instruction.
 	 **/
 	template <bool _bSkipOnDl, bool _bEndInstr>
