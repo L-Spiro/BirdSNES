@@ -25,6 +25,7 @@ namespace lsn {
 	 * Performs a single PHI1 update.
 	 */
 	void CRicoh5A22::Tick() {
+		m_ui8Speed = m_ui8Phi1Div;
 		(this->*m_pfTickFunc)();
 	}
 
@@ -41,11 +42,11 @@ namespace lsn {
 	 *
 	 * \param _jJson The JSON file.
 	 * \param _jvTest The test to run.
-	 * \return Returns true if te test succeeds, false otherwise.
+	 * \return Returns -1 on error, the number of cycles otherwise.
 	 */
-	bool CRicoh5A22::RunJsonTest( lson::CJson &_jJson, const lson::CJsonContainer::LSON_JSON_VALUE &_jvTest ) {
+	int32_t CRicoh5A22::RunJsonTest( lson::CJson &_jJson, const lson::CJsonContainer::LSON_JSON_VALUE &_jvTest ) {
 		LSN_CPU_VERIFY_OBJ cvoVerifyMe;
-		if ( !GetTest( _jJson, _jvTest, cvoVerifyMe ) ) { return false; }
+		if ( !GetTest( _jJson, _jvTest, cvoVerifyMe ) ) { return -1; }
 
 		// Create the initial state.
 		Reset<true>();
@@ -72,7 +73,7 @@ namespace lsn {
 			}
 		}
 
-		if ( "01 n 2" == cvoVerifyMe.sName ) {
+		if ( "05 e 242" == cvoVerifyMe.sName ) {
 			volatile int ghg = 0;
 		}
 		// Tick once for each cycle.
@@ -85,8 +86,18 @@ namespace lsn {
 		}
 		m_baBusA.ReadWriteLog().pop_back();*/
 
+		int32_t i32Cnt = 0;
+#ifdef LSN_CYCLES_DOC
+		
+		std::string sLine;
+#endif	// #ifdef LSN_CYCLES_DOC
 		for ( auto I = cvoVerifyMe.vCycles.size(); I--; ) {
 			m_baBusA.ReadWriteLog().push_back( {} );
+#ifdef LSN_CYCLES_DOC
+			if ( i32Cnt ) {
+				lsn::DebugA( (std::to_string( i32Cnt ) + ".1\t").c_str() );
+			}
+#endif	// #ifdef LSN_CYCLES_DOC
 			Tick();
 			/*if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_JAM ) {
 				if ( m_bHandleNmi != I < 1 ) {
@@ -94,6 +105,15 @@ namespace lsn {
 				}
 			}*/
 			m_bDetectedNmi = true;
+#ifdef LSN_CYCLES_DOC
+			if ( i32Cnt ) {
+				lsn::DebugA( ("\r\n" + std::to_string( i32Cnt ) + ".2\t").c_str() );
+			}
+			else {
+				lsn::DebugA( " -X.2\tRead **PC**\t" );
+			}
+			++i32Cnt;
+#endif	// #ifdef LSN_CYCLES_DOC
 			TickPhi2();
 			/*if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_JAM && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BPL && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BNE && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVS &&
@@ -102,9 +122,19 @@ namespace lsn {
 					lsn::DebugA( "\r\nDouble-check polling.\r\n" );
 				}
 			}*/
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "\r\n" );
+#endif	// #ifdef LSN_CYCLES_DOC
 			m_baBusA.ReadWriteLog()[m_baBusA.ReadWriteLog().size()-1].ui8S = m_fsState.rRegs.ui8Status;
 		}
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( (std::to_string( i32Cnt ) + ".1\t").c_str() );
+#endif	// #ifdef LSN_CYCLES_DOC
 		Tick();
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( (std::string( "\r\n" ) + std::to_string( i32Cnt ) + ".2\tRead **PC**.\tStore as OpCode.\r\n").c_str() );
+		lsn::DebugA( " +X.1\t\t\r\n\r\n\r\n" );
+#endif	// #ifdef LSN_CYCLES_DOC
 
 		if ( m_fsState.bEmulationMode ) {
 			m_fsState.rRegs.ui8S[1] = 1;
@@ -177,7 +207,7 @@ namespace lsn {
 				++J;
 			}
 		}
-		return true;
+		return i32Cnt;
 	}
 #endif	// #ifdef LSN_CPU_VERIFY
 

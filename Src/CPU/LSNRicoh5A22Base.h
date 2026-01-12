@@ -166,11 +166,13 @@ namespace lsn {
 		/**
 		 * Sets the clock divisors for bus access.
 		 * 
-		 * \param _ui8Fast The fast divisor (typically 6 or LSN_CS_*_CPU_DIVISOR_FAST).
-		 * \param _ui8Slow The slow divisor (typically 8 or LSN_CS_*_CPU_DIVISOR_SLOW).
-		 * \param _ui8XSlow The extra-slow divisor (typically 12 or LSN_CS_*_CPU_DIVISOR_XSLOW).
+		 * \param _ui8Phi1 The fast divisor (typically 3 or LSN_CS_*_CPU_DIVISOR_PHI1).
+		 * \param _ui8Fast The fast divisor (typically 3 or LSN_CS_*_CPU_DIVISOR_FAST).
+		 * \param _ui8Slow The slow divisor (typically 5 or LSN_CS_*_CPU_DIVISOR_SLOW).
+		 * \param _ui8XSlow The extra-slow divisor (typically 9 or LSN_CS_*_CPU_DIVISOR_XSLOW).
 		 **/
-		inline void							SetBusDivisors( uint8_t _ui8Fast, uint8_t _ui8Slow, uint8_t _ui8XSlow ) {
+		inline void							SetBusDivisors( uint8_t _ui8Phi1, uint8_t _ui8Fast, uint8_t _ui8Slow, uint8_t _ui8XSlow ) {
+			m_ui8Phi1Div = _ui8Phi1;
 			m_ui8FastDiv = _ui8Fast;
 			m_ui8SlowDiv = _ui8Slow;
 			m_ui8XSlowDiv = _ui8XSlow;
@@ -191,6 +193,7 @@ namespace lsn {
 
 		// == Members.
 		uint64_t							m_ui64CycleCount = 0ULL;						/**< The total CPU cycles that have ticked. */
+		uint8_t								m_ui8Phi1Div = LSN_CS_NTSC_CPU_DIVISOR_FAST;	/**< The PHI1 divisor. */
 		uint8_t								m_ui8FastDiv = LSN_CS_NTSC_CPU_DIVISOR_FAST;	/**< The fast divisor. */
 		uint8_t								m_ui8SlowDiv = LSN_CS_NTSC_CPU_DIVISOR_SLOW;	/**< The slow divisor. */
 		uint8_t								m_ui8XSlowDiv = LSN_CS_NTSC_CPU_DIVISOR_XSLOW;	/**< The extra-slow divisor. */
