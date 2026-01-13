@@ -21,13 +21,13 @@ int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevI
 	const std::filesystem::path pTests = std::filesystem::path( ".." ) / ".." / "Research" / "65816" / "v1";
 	{
 		static wchar_t wChars[2] = { L'n', L'e' };
-		for ( uint32_t I = 5; I < 6; ++I ) {
+		for ( uint32_t I = 10; I < 11; ++I ) {
 			std::wstring wsFile;
 			lson::CJson jSon;
 			std::vector<uint8_t> vBytes;
 			lsn::CStdFile sfFile;
 			
-			for ( size_t N = 0; N < std::size( wChars ); ++N ) {
+			for ( size_t N = 0; N < 1/*std::size( wChars )*/; ++N ) {
 				wchar_t wcFile[MAX_PATH];
 				std::swprintf( wcFile, std::size( wcFile ), L"%.2X.%c.json", I, wChars[N] );
 				const std::filesystem::path pFull = pRoot / pTests / wcFile;
@@ -48,7 +48,11 @@ int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevI
 						for ( size_t J = 0; J < jvRoot.vArray.size(); ++J ) {
 							const lson::CJsonContainer::LSON_JSON_VALUE & jvThis = jSon.GetContainer()->GetValue( jvRoot.vArray[J] );
 #ifdef LSN_CYCLES_DOC
-							lsn::DebugLine( std::format( "{} ({:02X})", lsn::CRicoh5A22::InstrTable()[I].pcName, I ) );
+							lsn::DebugLine( std::format( "{} ({:02X})\tCycles: {}\tSize: {}\r\n"
+							"\t{}\r\nCycle\tR/W\tDesc.", lsn::CRicoh5A22::InstrTable()[I].pcName, I,
+								wChars[N] == 'n' ? lsn::CRicoh5A22::InstrTable()[I].ui8TotalCyclesN : lsn::CRicoh5A22::InstrTable()[I].ui8TotalCyclesE,
+								wChars[N] == 'n' ? lsn::CRicoh5A22::InstrTable()[I].ui8SizeN : lsn::CRicoh5A22::InstrTable()[I].ui8SizeE,
+								lsn::CRicoh5A22::InstrTable()[I].pcTypeString ) );
 #endif	// #ifdef LSN_CYCLES_DOC
 							int32_t i32Cycles = pcCpu->RunJsonTest( jSon, jvThis );
 							if ( i32Cycles > 0 ) {

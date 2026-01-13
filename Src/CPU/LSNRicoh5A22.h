@@ -162,6 +162,7 @@ namespace lsn {
 			uint8_t														ui8SizeE;																		/**< Size in bytes of the instruction (emulation mode). Used only for debugging, disassembling, etc. */
 			LSN_INSTRUCTIONS											iInstruction;																	/**< The instruction. */
 			const char *												pcName;																			/**< The name of the instruction. */
+			const char *												pcTypeString;																	/**< The type string of the instruction. */
 		};
 
 
@@ -399,6 +400,22 @@ namespace lsn {
 		template <bool _bTo = LSN_TO_A>
 		void															Add_X_D_PtrOrAddr_To_AddrOrPtr_IncPc();
 
+		/**
+		 * Performs Performs m_fsState.ui16Operand <<= 1.  Sets C, N, and V, optionally increases PC.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Asl();
+
+		/**
+		 * Performs Performs m_fsState.rRegs.ui8A[0] <<= 1 or m_fsState.rRegs.ui16A <<= 1.  Sets C, N, and V, optionally increases PC.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															AslOnA();
+
 		/** Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
 		void															Brk_BeginInst();
 
@@ -416,13 +433,26 @@ namespace lsn {
 		/** Fetches the current opcode and increments PC. **/
 		void															Fetch_Opcode_IncPc_Phi2();
 
+		/** Fetches m_fsState.ui8Operand[1] and increments the PC. **/
+		void															Fetch_Operand_High_IncPc();
+
+		/** Fetches the next operand and discards without incrementing PC. **/
+		void															Fetch_Operand_Discard_Phi2();
+
+		/**
+		 * Fetches the next operand and increments the PC.
+		 * 
+		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+		 **/
+		template <bool _bSkipIfM = false>
+		void															Fetch_Operand_IncPc_SkipIfM_Phi2();
+
 		/**
 		 * Fetches the operand and increments PC.
 		 * 
 		 * \tparam _bSkipOnDl If true, the next cycle is skipped if D.L is 0.
-		 * \tparam _bEndInstr If true, this is the end of the instruction and steps should be taken to prepare for the next instruction.
 		 **/
-		template <bool _bSkipOnDl = false, bool _bEndInstr = false>
+		template <bool _bSkipOnDl = false>
 		void															Fetch_Operand_IncPc_SkipOnDl_Phi2();
 
 		/**
@@ -476,32 +506,43 @@ namespace lsn {
 		template <bool _bIncPc = false>
 		void															Ora();
 
-		/**
-		 * Pushes PB.
-		 * 
-		 * \tparam _i8SOff The offset from S to which to write the pushed value.
-		 **/
-		template <int8_t _i8SOff>
-		void															PushPb_Phi2();
+		/** Sets m_fsState.ui8Operand[0] to the status byte with Break (X) and Reserved (M) set. */
+		void															Php();
 
 		/**
-		 * Pushes PCh with the given S offset.
+		 * Pushes m_fsState.ui8Operand[0].
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 **/
 		template <int8_t _i8SOff = 0>
-		void															Push_Pc_H_Phi2();
+		void															Push_Operand_Low_Phi2();
 
 		/**
-		 * Pushes PCl with the given S offset.
+		 * Pushes m_fsState.rRegs.ui8Pb.
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 **/
 		template <int8_t _i8SOff = 0>
-		void															Push_Pc_L_Phi2();
+		void															Push_Pb_Phi2();
 
 		/**
-		 * Pushes Status with or without B/X to the given S offset.
+		 * Pushes m_fsState.rRegs.ui8Pc[1] with the given S offset.
+		 * 
+		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 **/
+		template <int8_t _i8SOff = 0>
+		void															Push_Pc_High_Phi2();
+
+		/**
+		 * Pushes m_fsState.rRegs.ui8Pc[0] with the given S offset.
+		 * 
+		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 **/
+		template <int8_t _i8SOff = 0>
+		void															Push_Pc_Low_Phi2();
+
+		/**
+		 * Pushes m_fsState.rRegs.ui8Status with or without B/X to the given S offset.
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 * \tparam _bCop If this is the COP instruction, just do a normal push.
@@ -510,7 +551,7 @@ namespace lsn {
 		void															Push_S_Phi2();
 
 		/**
-		 * Reads from m_fsState.ui16Address and Bank and stores the result in m_fsState.ui8Operand[1].
+		 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Operand[1].
 		 * 
 		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
 		 **/
@@ -518,13 +559,30 @@ namespace lsn {
 		void															Read_PtrOrAddr_And_Bank_To_Operand_High_Phi2();
 
 		/**
-		 * Reads from m_fsState.ui16Address and Bank and stores the result in m_fsState.ui8Operand[0].
+		 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Operand[0].
 		 * 
 		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
 		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 		 **/
 		template <bool _bFrom = LSN_FROM_A, bool _bSkipIfM = true>
 		void															Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.rRegs.ui8Db and stores the result in m_fsState.ui8Operand[1].
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 **/
+		template <bool _bFrom = LSN_FROM_A>
+		void															Read_PtrOrAddr_And_DB_To_Operand_High_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.rRegs.ui8Db and stores the result in m_fsState.ui8Operand[0].
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+		 **/
+		template <bool _bFrom = LSN_FROM_A, bool _bSkipIfM = true>
+		void															Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2();
 
 		/**
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
@@ -542,6 +600,22 @@ namespace lsn {
 		 **/
 		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false>
 		void															ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 **/
+		template <bool _bFrom = LSN_FROM_A>
+		void															ReadBank0_PtrOrAddr_To_Bank_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 **/
+		template <bool _bFrom = LSN_FROM_A>
+		void															ReadBank0_PtrOrAddr_To_Bank_LowByteWrap_Phi2();
 
 		/**
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
@@ -667,7 +741,7 @@ namespace lsn {
 		if constexpr ( _bIncPc ) {
 			LSN_UPDATE_PC;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tInc. **PC** if previous cycle was skipped. " );
+			lsn::DebugA( "\tInc. PC if previous cycle was skipped. " );
 #endif	// LSN_CYCLES_DOC
 		}
 		else {
@@ -679,13 +753,13 @@ namespace lsn {
 		if constexpr ( _bTo == LSN_TO_A ) {
 			m_fsState.ui16Address = m_fsState.ui16Operand + m_fsState.rRegs.ui16D;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Set Address to Operand + **D**." );
+			lsn::DebugA( "Set Address to Operand + D." );
 #endif	// LSN_CYCLES_DOC
 		}
 		else {
 			m_fsState.ui16Pointer = m_fsState.ui16Operand + m_fsState.rRegs.ui16D;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Set Pointer to Operand + **D**." );
+			lsn::DebugA( "Set Pointer to Operand + D." );
 #endif	// LSN_CYCLES_DOC
 		}
 
@@ -706,20 +780,20 @@ namespace lsn {
 		LSN_UPDATE_PC;
 
 #ifdef LSN_CYCLES_DOC
-		std::string sTmp = "\tInc. **PC**. ";
+		std::string sTmp = "\tInc. PC. ";
 #endif	// LSN_CYCLES_DOC
 
 		if constexpr ( _bTo == LSN_TO_A ) {
 			if ( m_fsState.bEmulationMode ) {
 				m_fsState.ui16Address = m_fsState.ui16Pointer + (m_fsState.rRegs.ui8S[0] | 0x100);
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Address to Pointer + **S**.L + $100. ";
+				sTmp += "Set Address to Pointer + S.L + $100. ";
 #endif	// LSN_CYCLES_DOC
 			}
 			else {
 				m_fsState.ui16Address = m_fsState.ui16Pointer + m_fsState.rRegs.ui16S;
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Address to Pointer + **S**. ";
+				sTmp += "Set Address to Pointer + S. ";
 #endif	// LSN_CYCLES_DOC
 			}
 		}
@@ -727,13 +801,13 @@ namespace lsn {
 			if ( m_fsState.bEmulationMode ) {
 				m_fsState.ui16Pointer = m_fsState.ui16Address + (m_fsState.rRegs.ui8S[0] | 0x100);
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Pointer to Address + **S**.L + $100. ";
+				sTmp += "Set Pointer to Address + S.L + $100. ";
 #endif	// LSN_CYCLES_DOC
 			}
 			else {
 				m_fsState.ui16Pointer = m_fsState.ui16Address + m_fsState.rRegs.ui16S;
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Pointer to Address + **S**. ";
+				sTmp += "Set Pointer to Address + S. ";
 #endif	// LSN_CYCLES_DOC
 			}
 		}
@@ -759,19 +833,19 @@ namespace lsn {
 		LSN_UPDATE_PC;
 
 #ifdef LSN_CYCLES_DOC
-		std::string sTmp = "\tInc. **PC**. ";
+		std::string sTmp = "\tInc. PC. ";
 #endif	// LSN_CYCLES_DOC
 
 		if constexpr ( _bTo == LSN_TO_A ) {
 			m_fsState.ui16Pointer = m_fsState.ui16Pointer + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D;
 #ifdef LSN_CYCLES_DOC
-			sTmp += "Set Pointer to Pointer + **X** + **D**. ";
+			sTmp += "Set Pointer to Pointer + X + D. ";
 #endif	// LSN_CYCLES_DOC
 			if ( m_fsState.bEmulationMode ) {
 				m_fsState.ui8Address[0] = m_fsState.ui8Pointer[0];
 				m_fsState.ui8Address[1] = uint8_t( m_fsState.rRegs.ui8D[1] );
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Address.L = Pointer.L.  Address.H = **D**.H. ";
+				sTmp += "Address.L = Pointer.L.  Address.H = D.H. ";
 #endif	// LSN_CYCLES_DOC
 			}
 			else {
@@ -784,13 +858,13 @@ namespace lsn {
 		else {
 			m_fsState.ui16Address = m_fsState.ui16Address + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D;
 #ifdef LSN_CYCLES_DOC
-			sTmp += "Set Address to Address + **X** + **D**. ";
+			sTmp += "Set Address to Address + X + D. ";
 #endif	// LSN_CYCLES_DOC
 			if ( m_fsState.bEmulationMode ) {
 				m_fsState.ui8Pointer[0] = m_fsState.ui8Address[0];
 				m_fsState.ui8Pointer[1] = uint8_t( m_fsState.rRegs.ui8D[1] );
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Pointer.L = Address.L.  Pointer.H = **D**.H. ";
+				sTmp += "Pointer.L = Address.L.  Pointer.H = D.H. ";
 #endif	// LSN_CYCLES_DOC
 			}
 			else {
@@ -810,6 +884,102 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
+	/**
+	 * Performs Performs m_fsState.ui16Operand <<= 1.  Sets C, N, and V, optionally increases PC.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Asl() {
+		LSN_INSTR_START_PHI1( false );
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
+
+			m_fsState.ui16Operand <<= 1;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand[0] );
+		}
+		else {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[1] & 0x80) != 0 );
+
+			m_fsState.ui16Operand <<= 1;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[1] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui16Operand );
+		}
+
+#ifdef LSN_CYCLES_DOC
+			if ( m_fsState.bEmulationMode ) {
+				lsn::DebugA( "\tSet C based off (Operand.L & $80). Perform Operand.L <<= 1. Set N based off (Operand.L & $80) and Z based off Operand.L." );
+			}
+			else {
+				lsn::DebugA( "\tIf M flag is set, set C based off (Operand.L & $80), perform Operand.L <<= 1, and set N based off (Operand.L & $80) and Z based off Operand.L, otherwise set C based off (Operand.H & $80), perform Operand <<= 1, and set N based off (Operand.H & $80) and Z based off Operand." );
+			}
+#endif	// LSN_CYCLES_DOC
+
+		if constexpr ( _bIncPc ) {
+			LSN_UPDATE_PC;
+
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " Inc. PC." );
+#endif	// LSN_CYCLES_DOC
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Performs Performs m_fsState.rRegs.ui8A[0] <<= 1 or m_fsState.rRegs.ui16A <<= 1.  Sets C, N, and V, optionally increases PC.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	void CRicoh5A22::AslOnA() {
+		LSN_INSTR_START_PHI1( false );
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & 0x80) != 0 );
+
+			m_fsState.rRegs.ui8A[0] <<= 1;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+		}
+		else {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[1] & 0x80) != 0 );
+
+			m_fsState.rRegs.ui16A <<= 1;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[1] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+		}
+
+#ifdef LSN_CYCLES_DOC
+			if ( m_fsState.bEmulationMode ) {
+				lsn::DebugA( "\tSet C based off (A.L & $80). Perform A.L <<= 1. Set N based off (A.L & $80) and Z based off A.L." );
+			}
+			else {
+				lsn::DebugA( "\tIf M flag is set, set C based off (A.L & $80), perform A.L <<= 1, and set N based off (A.L & $80) and Z based off A.L, otherwise set C based off (A.H & $80), perform A <<= 1, and set N based off (A.H & $80) and Z based off A." );
+			}
+#endif	// LSN_CYCLES_DOC
+
+		if constexpr ( _bIncPc ) {
+			LSN_UPDATE_PC;
+
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " Inc. PC." );
+#endif	// LSN_CYCLES_DOC
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
+	}
+
 	/** Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
 	inline void CRicoh5A22::Brk_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
@@ -817,9 +987,10 @@ namespace lsn {
 		m_bBrkIsReset = false;
 		m_fsState.rRegs.ui16Pc = m_fsState.ui16Address;
 		m_fsState.rRegs.ui8Pb = 0;
+		m_fsState.bAllowWritingToPc = true;
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tEnable writes to **PC** (disabled by NMI/IRQ).  Copy Address to **PC**.  Set **PB** to 0." );
+		lsn::DebugA( "\tEnable writes to PC (disabled by NMI/IRQ).  Copy Address to PC.  Set PB to 0." );
 #endif	// LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -835,7 +1006,7 @@ namespace lsn {
 		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector + 1, m_fsState.ui8Address[1], m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Read Vector.H\tStore to Address.H." );
+		lsn::DebugA( "Read Vector + 1\tStore to Address.H." );
 #endif // #ifdef LSN_CYCLES_DOC
 
 		if constexpr ( _bEndInstr ) {
@@ -853,7 +1024,7 @@ namespace lsn {
 		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector, m_fsState.ui8Address[0], m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Read Vector.L\tStore to Address.L." );
+		lsn::DebugA( "Read Vector\tStore to Address.L." );
 #endif // #ifdef LSN_CYCLES_DOC
 
 		LSN_NEXT_FUNCTION;
@@ -902,19 +1073,70 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 
+	/** Fetches m_fsState.ui8Operand[1] and increments the PC. **/
+	inline void CRicoh5A22::Fetch_Operand_High_IncPc() {
+		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui8Operand[1], m_ui8Speed );
+		m_fsState.ui16PcModify = 1;
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "Read PC:PB\tStore as Operand.H." );
+#endif	// LSN_CYCLES_DOC
+		
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/** Fetches the next operand and discards without incrementing PC. **/
+	inline void CRicoh5A22::Fetch_Operand_Discard_Phi2() {
+		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui8Operand[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "Read PC:PB\tDiscard." );
+#endif	// LSN_CYCLES_DOC
+		
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Fetches the next operand and increments the PC.
+	 * 
+	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+	 **/
+	template <bool _bSkipIfM>
+	inline void CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_Phi2() {
+		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui16Operand, m_ui8Speed );
+		m_fsState.ui16PcModify = 1;
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "Read PC:PB\tStore as Operand." );
+#endif	// LSN_CYCLES_DOC
+
+		if constexpr ( _bSkipIfM ) {
+			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If M flag is set, skip the next cycle." );
+#endif	// LSN_CYCLES_DOC
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
 	/**
 	 * Fetches the operand and increments PC.
 	 * 
 	 * \tparam _bSkipOnDl If true, the next cycle is skipped if D.L is 0.
-	 * \tparam _bEndInstr If true, this is the end of the instruction and steps should be taken to prepare for the next instruction.
 	 **/
-	template <bool _bSkipOnDl, bool _bEndInstr>
+	template <bool _bSkipOnDl>
 	inline void CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2() {
 		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui16Operand, m_ui8Speed );
 		m_fsState.ui16PcModify = 1;
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Read **PC**\tStore as Operand." );
+		lsn::DebugA( "Read PC:PB\tStore as Operand." );
 #endif	// LSN_CYCLES_DOC
 
 
@@ -924,16 +1146,11 @@ namespace lsn {
 			}
 
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( " If **D**.L is not 0, skip the next cycle." );
+			lsn::DebugA( " If D.L is not 0, skip the next cycle." );
 #endif	// LSN_CYCLES_DOC
 		}
 
-		if constexpr ( _bEndInstr ) {
-			LSN_FINISH_INST( true );
-		}
-		else {
-			LSN_NEXT_FUNCTION;
-		}
+		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI2;
 	}
@@ -951,13 +1168,13 @@ namespace lsn {
 		if constexpr ( _bTo == LSN_TO_A ) {
 			m_fsState.ui16Address = ui8Op;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read **PC**.\tStore as Address." );
+			lsn::DebugA( "Read PC:PB\tStore as Address." );
 #endif	// LSN_CYCLES_DOC
 		}
 		else {
 			m_fsState.ui16Pointer = ui8Op;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read **PC**.\tStore as Pointer." );
+			lsn::DebugA( "Read PC:PB.\tStore as Pointer." );
 #endif	// LSN_CYCLES_DOC
 		}
 		m_fsState.ui16PcModify = 1;
@@ -980,7 +1197,7 @@ namespace lsn {
 	template <bool _bTo>	
 	inline void CRicoh5A22::Fix_PtrOrAddr_From_AddrOrPtr_High() {
 		LSN_INSTR_START_PHI1( false );
-		if constexpr ( _bTo ) {
+		if constexpr ( _bTo == LSN_TO_A ) {
 			m_fsState.ui8Address[1] = m_fsState.ui8Pointer[1];
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "\tAddress.H = Pointer.H (fixes high byte of address)." );
@@ -1019,17 +1236,17 @@ namespace lsn {
 
 			if constexpr ( _bIncPc ) {
 #ifdef LSN_CYCLES_DOC
-				sDebug += "Inc. **PC**. ";
+				sDebug += "Inc. PC. ";
 #endif	// LSN_CYCLES_DOC
 				LSN_UPDATE_PC;
 			}
 			if constexpr ( _bAdjS ) {
 #ifdef LSN_CYCLES_DOC
 				if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
-					sDebug += "Dec. **S** by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ". ";
+					sDebug += "Dec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ". ";
 				}
 				else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
-					sDebug += "Inc. **S** by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ". ";
+					sDebug += "Inc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ". ";
 				}
 #endif	// LSN_CYCLES_DOC
 				LSN_UPDATE_S;
@@ -1081,17 +1298,17 @@ namespace lsn {
 			if constexpr ( _bIncPc ) {
 				LSN_UPDATE_PC;
 #ifdef LSN_CYCLES_DOC
-				sDebug += "Inc. **PC**. ";
+				sDebug += "Inc. PC. ";
 #endif	// LSN_CYCLES_DOC
 			}
 			if constexpr ( _bAdjS ) {
 				LSN_UPDATE_S;
 #ifdef LSN_CYCLES_DOC
 				if ( m_fsState.ui16SModify < 0 ) {
-					sDebug += "Dec. **S** by " + std::to_string( -m_fsState.ui16SModify ) + ". ";
+					sDebug += "Dec. S by " + std::to_string( -m_fsState.ui16SModify ) + ". ";
 				}
 				else if ( m_fsState.ui16SModify > 0 ) {
-					sDebug += "Inc. **S** by " + std::to_string( m_fsState.ui16SModify ) + ". ";
+					sDebug += "Inc. S by " + std::to_string( m_fsState.ui16SModify ) + ". ";
 				}
 #endif	// LSN_CYCLES_DOC
 			}
@@ -1127,23 +1344,73 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 			if ( m_fsState.bEmulationMode ) {
-				lsn::DebugA( "\tPerform **A** = **A** | Operand. Set **N** based off (**A**.L & $80) and **Z** based off **A**.L." );
+				lsn::DebugA( "\tPerform A |= Operand. Set N based off (A.L & $80) and Z based off A.L." );
 			}
 			else {
-				lsn::DebugA( "\tPerform **A** = **A** | Operand. If **M** flag is set, set **N** based off (**A**.L & $80) and **Z** based off **A**.L, otherwise set **N** based off (**A**.H & $80) and **Z** based off **A**." );
+				lsn::DebugA( "\tPerform A |= Operand. If M flag is set, set N based off (A.L & $80) and Z based off A.L, otherwise set N based off (A.H & $80) and Z based off A." );
+			}
+
+			if constexpr ( _bIncPc ) {
+				lsn::DebugA( " Inc. PC." );
 			}
 #endif	// LSN_CYCLES_DOC
 
 		BeginInst<_bIncPc, false, false>();
 	}
 
+	/** Sets m_fsState.ui8Operand[0] to the status byte with Break (X) and Reserved (M) set. */
+	inline void CRicoh5A22::Php() {
+		LSN_INSTR_START_PHI1( true );
+
+		m_fsState.ui8Operand[0] = m_fsState.rRegs.ui8Status;
+		if ( m_fsState.bEmulationMode ) {
+			SetBit<X() | M(), true>( m_fsState.ui8Operand[0] );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if ( !m_fsState.bEmulationMode ) {
+			lsn::DebugA( "\tSets Operand.L to P." );
+		}
+		else {
+			lsn::DebugA( "\tSets Operand.L to (P | X | M)." );
+		}
+#endif	// LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
+	}
+
 	/**
-	 * Pushes PB.
+	 * Pushes m_fsState.ui8Operand[0].
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 **/
 	template <int8_t _i8SOff>
-	inline void CRicoh5A22::PushPb_Phi2() {
+	inline void CRicoh5A22::Push_Operand_Low_Phi2() {
+		LSN_PUSH( m_fsState.ui8Operand[0], m_ui8Speed );
+
+#ifdef LSN_CYCLES_DOC
+		if ( m_fsState.bEmulationMode ) {
+			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush Operand.L onto stack.").c_str() );
+		}
+		else {
+			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.L onto stack.").c_str() );
+		}
+#endif	// LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Pushes m_fsState.rRegs.ui8Pb.
+	 * 
+	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 **/
+	template <int8_t _i8SOff>
+	inline void CRicoh5A22::Push_Pb_Phi2() {
 		if LSN_UNLIKELY( m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
 			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, m_ui8Speed );
@@ -1154,10 +1421,10 @@ namespace lsn {
 		}
 #ifdef LSN_CYCLES_DOC
 		if ( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("* Write to (**S**" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush **PB** onto stack.").c_str() );
+			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PB onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("* Write to (**S**" + std::format( "{:+}", _i8SOff ) + ")\tPush **PB** onto stack.").c_str() );
+			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
 		}
 #endif	// LSN_CYCLES_DOC
 
@@ -1167,12 +1434,12 @@ namespace lsn {
 	}
 
 	/**
-	 * Pushes PCh with the given S offset.
+	 * Pushes m_fsState.rRegs.ui8Pc[1] with the given S offset.
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 **/
 	template <int8_t _i8SOff>
-	inline void CRicoh5A22::Push_Pc_H_Phi2() {
+	inline void CRicoh5A22::Push_Pc_High_Phi2() {
 		if LSN_UNLIKELY( m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
 			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, m_ui8Speed );
@@ -1183,10 +1450,10 @@ namespace lsn {
 		}
 #ifdef LSN_CYCLES_DOC
 		if ( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("* Write to (**S**" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush **PC**.H onto stack.").c_str() );
+			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.H onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("* Write to (**S**" + std::format( "{:+}", _i8SOff ) + ")\tPush **PC**.H onto stack.").c_str() );
+			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
 		}
 #endif	// LSN_CYCLES_DOC
 
@@ -1196,12 +1463,12 @@ namespace lsn {
 	}
 
 	/**
-	 * Pushes PCl with the given S offset.
+	 * Pushes m_fsState.rRegs.ui8Pc[0] with the given S offset.
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 **/
 	template <int8_t _i8SOff>
-	inline void CRicoh5A22::Push_Pc_L_Phi2() {
+	inline void CRicoh5A22::Push_Pc_Low_Phi2() {
 		if LSN_UNLIKELY( m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
 			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, m_ui8Speed );
@@ -1212,10 +1479,10 @@ namespace lsn {
 		}
 #ifdef LSN_CYCLES_DOC
 		if ( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("* Write to (**S**" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush **PC**.L onto stack.").c_str() );
+			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.L onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("* Write to (**S**" + std::format( "{:+}", _i8SOff ) + ")\tPush **PC**.L onto stack.").c_str() );
+			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
 		}
 #endif	// LSN_CYCLES_DOC
 
@@ -1225,7 +1492,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Pushes Status with or without B/X to the given S offset.
+	 * Pushes m_fsState.rRegs.ui8Status with or without B/X to the given S offset.
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 * \tparam _bCop If this is the COP instruction, just do a normal push.
@@ -1236,10 +1503,10 @@ namespace lsn {
 			LSN_PUSH( m_fsState.rRegs.ui8Status, m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 			if ( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("Write to (**S**" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush **P** onto stack with.").c_str() );
+				lsn::DebugA( ("** Write to (S" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush P onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("Write to (**S**" + std::format( "{:+}", _i8SOff ) + ")\tPush **P** onto stack with.").c_str() );
+				lsn::DebugA( ("** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush P onto stack.").c_str() );
 			}
 #endif	// LSN_CYCLES_DOC
 		}
@@ -1259,10 +1526,10 @@ namespace lsn {
 			}
 #ifdef LSN_CYCLES_DOC
 			if ( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("* Write to (**S**" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush **P** onto stack with **B** flag is software BRK.").c_str() );
+				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush P onto stack with B flag if software BRK.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("* Write to (**S**" + std::format( "{:+}", _i8SOff ) + ")\tPush **P** onto stack with **B** flag is software BRK.").c_str() );
+				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush P onto stack with B flag if software BRK.").c_str() );
 			}
 #endif	// LSN_CYCLES_DOC
 		}
@@ -1273,22 +1540,24 @@ namespace lsn {
 	}
 
 	/**
-	 * Reads from m_fsState.ui16Address and Bank and stores the result in m_fsState.ui8Operand[1].
+	 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Operand[1].
 	 * 
 	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
 	 **/
 	template <bool _bFrom>
 	inline void CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_High_Phi2() {
 		if constexpr ( _bFrom == LSN_FROM_A ) {
-			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+			uint32_t ui32Offset = m_fsState.ui16Address + 1;
+			LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read Address +1:DB\tStore as Operand.H." );
+			lsn::DebugA( "* Read Address + 1:Bank\tStore as Operand.H." );
 #endif	// LSN_CYCLES_DOC
 		}
 		else {
-			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+			uint32_t ui32Offset = m_fsState.ui16Pointer + 1;
+			LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read Pointer +1:DB\tStore as Operand.H." );
+			lsn::DebugA( "* Read Pointer + 1:Bank\tStore as Operand.H." );
 #endif	// LSN_CYCLES_DOC
 		}
 
@@ -1298,13 +1567,78 @@ namespace lsn {
 	}
 
 	/**
-	 * Reads from m_fsState.ui16Address and Bank and stores the result in m_fsState.ui8Operand[0].
+	 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Operand[0].
 	 * 
 	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
 	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 	 **/
 	template <bool _bFrom, bool _bSkipIfM>
 	inline void CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2() {
+#ifdef LSN_CYCLES_DOC
+		std::string sDebug;
+#endif	// LSN_CYCLES_DOC
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address, m_fsState.ui8Bank, m_fsState.ui16Operand, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			sDebug += "Read Address:Bank\tStore as Operand.";
+#endif	// LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer, m_fsState.ui8Bank, m_fsState.ui16Operand, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			sDebug += "Read Pointer:Bank\tStore as Operand.";
+#endif	// LSN_CYCLES_DOC
+		}
+
+		LSN_NEXT_FUNCTION;
+		if constexpr ( _bSkipIfM ) {
+			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+			}
+#ifdef LSN_CYCLES_DOC
+			sDebug += " If M flag is set, skip the next cycle.";
+#endif	// LSN_CYCLES_DOC
+		}
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( sDebug.c_str() );
+#endif	// LSN_CYCLES_DOC
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.rRegs.ui8Db and stores the result in m_fsState.ui8Operand[1].
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 **/
+	template <bool _bFrom>
+	inline void CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_High_Phi2() {
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Read Address + 1:DB\tStore as Operand.H." );
+#endif	// LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Read Pointer + 1:DB\tStore as Operand.H." );
+#endif	// LSN_CYCLES_DOC
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.rRegs.ui8Db and stores the result in m_fsState.ui8Operand[0].
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+	 **/
+	template <bool _bFrom, bool _bSkipIfM>
+	inline void CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2() {
 #ifdef LSN_CYCLES_DOC
 		std::string sDebug;
 #endif	// LSN_CYCLES_DOC
@@ -1327,7 +1661,7 @@ namespace lsn {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 #ifdef LSN_CYCLES_DOC
-			sDebug += " If **M** flag is set, skip the next cycle.";
+			sDebug += " If M flag is set, skip the next cycle.";
 #endif	// LSN_CYCLES_DOC
 		}
 #ifdef LSN_CYCLES_DOC
@@ -1398,7 +1732,7 @@ namespace lsn {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 #ifdef LSN_CYCLES_DOC
-			sDebug += " If **M** flag is set, skip the next cycle.";
+			sDebug += " If M flag is set, skip the next cycle.";
 #endif	// LSN_CYCLES_DOC
 		}
 
@@ -1406,6 +1740,66 @@ namespace lsn {
 		lsn::DebugA( sDebug.c_str() );
 #endif	// LSN_CYCLES_DOC
 		
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 **/
+	template <bool _bFrom>
+	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_Phi2() {
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 2, m_fsState.ui8Bank, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Read Address + 2\tStore as Bank." );
+#endif	// LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 2, m_fsState.ui8Bank, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Read Pointer + 2\tStore as Bank." );
+#endif	// LSN_CYCLES_DOC
+		}
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 **/
+	template <bool _bFrom>
+	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_LowByteWrap_Phi2() {
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			if ( !(m_fsState.rRegs.ui16D & 0xFF) ) {
+				LSN_INSTR_START_PHI2_READ0_BUSA( uint8_t( m_fsState.ui8Address[0] + 2 ) | (m_fsState.ui8Address[1] << 8), m_fsState.ui8Bank, m_ui8Speed );
+			}
+			else {
+				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 2, m_fsState.ui8Bank, m_ui8Speed );
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "If D.L is 0, Read (((Address.L + 2) & $FF) | (Address.H << 8)), otherwise read Address + 2\tStore as Bank." );
+#endif	// LSN_CYCLES_DOC
+		}
+		else {
+			if ( !(m_fsState.rRegs.ui16D & 0xFF) ) {
+				LSN_INSTR_START_PHI2_READ0_BUSA( uint8_t( m_fsState.ui8Pointer[0] + 2 ) | (m_fsState.ui8Pointer[1] << 8), m_fsState.ui8Bank, m_ui8Speed );
+			}
+			else {
+				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 2, m_fsState.ui8Bank, m_ui8Speed );
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "If D.L is 0, Read (((Pointer.L + 2) & $FF) | (Pointer.H << 8)), otherwise read Pointer + 2\tStore as Bank." );
+#endif	// LSN_CYCLES_DOC
+		}
+
 		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI2;
@@ -1466,7 +1860,7 @@ namespace lsn {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 #ifdef LSN_CYCLES_DOC
-			sDebug += " If **M** flag is set, skip the next cycle.";
+			sDebug += " If M flag is set, skip the next cycle.";
 #endif	// LSN_CYCLES_DOC
 		}
 
@@ -1496,10 +1890,10 @@ namespace lsn {
 			LSN_UPDATE_S;
 #ifdef LSN_CYCLES_DOC
 			if ( m_fsState.ui16SModify < 0 ) {
-				sDebug += "Dec. **S** by " + std::to_string( -m_fsState.ui16SModify ) + ". ";
+				sDebug += "Dec. S by " + std::to_string( -m_fsState.ui16SModify ) + ". ";
 			}
 			else if ( m_fsState.ui16SModify > 0 ) {
-				sDebug += "Inc. **S** by " + std::to_string( m_fsState.ui16SModify ) + ". ";
+				sDebug += "Inc. S by " + std::to_string( m_fsState.ui16SModify ) + ". ";
 			}
 #endif	// LSN_CYCLES_DOC
 		}
@@ -1614,9 +2008,9 @@ namespace lsn {
 
 		SetBit<I(), true>( m_fsState.rRegs.ui8Status );
 		SetBit<D(), false>( m_fsState.rRegs.ui8Status );
-		m_fsState.bAllowWritingToPc = true;
+		
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSet **I**, unset **D**, enabled writes to **PC**." );
+		lsn::DebugA( "\tSet I, unset D." );
 #endif // #ifdef LSN_CYCLES_DOC
 
 		LSN_NEXT_FUNCTION;
@@ -1635,7 +2029,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tIf **M** is set, skip the next cycle." );
+			lsn::DebugA( "\tIf M is set, skip the next cycle." );
 #endif	// LSN_CYCLES_DOC
 
 		LSN_INSTR_END_PHI2;
@@ -1652,7 +2046,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tIf **D**.L is not 0, skip the next cycle." );
+			lsn::DebugA( "\tIf D.L is not 0, skip the next cycle." );
 #endif	// LSN_CYCLES_DOC
 
 		LSN_INSTR_END_PHI2;
@@ -1665,13 +2059,13 @@ namespace lsn {
 		if ( m_fsState.bEmulationMode ) {
 			m_fsState.rRegs.ui16S = m_fsState.rRegs.ui8A[0];
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tSets **S** to **A**.L." );
+			lsn::DebugA( "\tSets S to A.L." );
 #endif	// LSN_CYCLES_DOC
 		}
 		else {
 			m_fsState.rRegs.ui16S = m_fsState.rRegs.ui16A;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tSets **S** to **A**." );
+			lsn::DebugA( "\tSets S to A." );
 #endif	// LSN_CYCLES_DOC
 		}
 
@@ -1702,12 +2096,12 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if ( m_fsState.bEmulationMode ) {
-			lsn::DebugA( "\t**Z** based off (**A**.L & Operand.L)." );
+			lsn::DebugA( "\tZ based off (A.L & Operand.L)." );
 		}
 		else {
-			lsn::DebugA( "\tIf **M** flag is set, **Z** based off (**A**.L & Operand.L), otherwise set **Z** based off (**A** & Operand)." );
+			lsn::DebugA( "\tIf M flag is set, Z based off (A.L & Operand.L), otherwise set Z based off (A & Operand)." );
 		}
-		lsn::DebugA( " Perform Operand &= ~**A**." );
+		lsn::DebugA( " Perform Operand &= ~A." );
 #endif	// LSN_CYCLES_DOC
 		
 		m_fsState.ui16Operand &= ~m_fsState.rRegs.ui16A;
@@ -1731,12 +2125,12 @@ namespace lsn {
 		
 #ifdef LSN_CYCLES_DOC
 		if ( m_fsState.bEmulationMode ) {
-			lsn::DebugA( "\t**Z** based off (**A**.L & Operand.L)." );
+			lsn::DebugA( "\tSet Z based off (A.L & Operand.L)." );
 		}
 		else {
-			lsn::DebugA( "\tIf **M** flag is set, **Z** based off (**A**.L & Operand.L), otherwise set **Z** based off (**A** & Operand)." );
+			lsn::DebugA( "\tIf M flag is set, set Z based off (A.L & Operand.L), otherwise set Z based off (A & Operand)." );
 		}
-		lsn::DebugA( " Perform Operand |= **A**." );
+		lsn::DebugA( " Perform Operand |= A." );
 #endif	// LSN_CYCLES_DOC
 
 		m_fsState.ui16Operand |= m_fsState.rRegs.ui16A;
@@ -1824,7 +2218,7 @@ namespace lsn {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( " If **M** flag is set, skip the next cycle." );
+			lsn::DebugA( " If M flag is set, skip the next cycle." );
 #endif	// LSN_CYCLES_DOC
 		}
 
@@ -1858,7 +2252,7 @@ namespace lsn {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( " If **M** flag is set, skip the next cycle." );
+			lsn::DebugA( " If M flag is set, skip the next cycle." );
 #endif	// LSN_CYCLES_DOC
 		}
 

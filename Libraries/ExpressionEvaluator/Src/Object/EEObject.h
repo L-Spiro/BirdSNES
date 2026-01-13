@@ -8,6 +8,11 @@
 
 #if defined( _MSC_VER )
 #define EE_PURE_DECL								{ return { EE_NC_INVALID }; }
+
+#pragma warning( push )
+
+// warning C4100: '_i64Idx': unreferenced formal parameter
+#pragma warning( disable : 4100 )
 #else
 #define EE_PURE_DECL								;
 #endif	// #if defined( _MSC_VER )
@@ -371,5 +376,9 @@ namespace ee {
 	};
 
 }	// namespace ee
+
+#if defined( _MSC_VER )
+#pragma warning( pop )
+#endif	// #if defined( _MSC_VER )
 
 #undef EE_PURE_DECL

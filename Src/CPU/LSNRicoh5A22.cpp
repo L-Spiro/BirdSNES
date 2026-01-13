@@ -73,7 +73,7 @@ namespace lsn {
 			}
 		}
 
-		if ( "05 e 242" == cvoVerifyMe.sName ) {
+		if ( "07 n 231" == cvoVerifyMe.sName ) {
 			volatile int ghg = 0;
 		}
 		// Tick once for each cycle.
@@ -110,7 +110,7 @@ namespace lsn {
 				lsn::DebugA( ("\r\n" + std::to_string( i32Cnt ) + ".2\t").c_str() );
 			}
 			else {
-				lsn::DebugA( " -X.2\tRead **PC**\t" );
+				lsn::DebugA( " -X.2\tRead PC:PB\t" );
 			}
 			++i32Cnt;
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -132,7 +132,7 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 		Tick();
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( (std::string( "\r\n" ) + std::to_string( i32Cnt ) + ".2\tRead **PC**.\tStore as OpCode.\r\n").c_str() );
+		lsn::DebugA( (std::string( "\r\n" ) + std::to_string( i32Cnt ) + ".2\tRead PC:PB\tStore as OpCode.\r\n").c_str() );
 		lsn::DebugA( " +X.1\t\t\r\n\r\n\r\n" );
 #endif	// #ifdef LSN_CYCLES_DOC
 
