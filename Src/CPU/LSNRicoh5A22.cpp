@@ -26,6 +26,9 @@ namespace lsn {
 	 */
 	void CRicoh5A22::Tick() {
 		m_ui8Speed = m_ui8Phi1Div;
+		m_bIrqStatusPhi1Flag = m_bIrqSeenLowPhi2;
+		m_bIrqSeenLowPhi2 = false;
+
 		(this->*m_pfTickFunc)();
 	}
 
@@ -34,6 +37,10 @@ namespace lsn {
 	 **/
 	void CRicoh5A22::TickPhi2() {
 		(this->*m_pfTickFunc)();
+
+		m_bIrqSeenLowPhi2 |= (m_ui8IrqStatusLine != 0);
+
+		++m_ui64CycleCount;
 	}
 
 #ifdef LSN_CPU_VERIFY
@@ -73,7 +80,7 @@ namespace lsn {
 			}
 		}
 
-		if ( "07 n 231" == cvoVerifyMe.sName ) {
+		if ( "0b e 435" == cvoVerifyMe.sName ) {
 			volatile int ghg = 0;
 		}
 		// Tick once for each cycle.
@@ -115,13 +122,13 @@ namespace lsn {
 			++i32Cnt;
 #endif	// #ifdef LSN_CYCLES_DOC
 			TickPhi2();
-			/*if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_JAM && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK &&
+			if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_JAM && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_COP &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BPL && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BNE && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVS &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCS && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BEQ && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BMI ) {
 				if ( m_bHandleNmi != (I <= 0) ) {
 					lsn::DebugA( "\r\nDouble-check polling.\r\n" );
 				}
-			}*/
+			}
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "\r\n" );
 #endif	// #ifdef LSN_CYCLES_DOC
