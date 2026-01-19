@@ -80,18 +80,13 @@ namespace lsn {
 			}
 		}
 
-		if ( "0b e 435" == cvoVerifyMe.sName ) {
+		if ( "16 n 4" == cvoVerifyMe.sName ) {
 			volatile int ghg = 0;
 		}
 		// Tick once for each cycle.
 		m_fsState.ui16Operand = m_baBusA.Read( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Speed );
 		m_fsState.ui16PcModify = 1;
 		m_baBusA.ReadWriteLog().clear();
-		/*for ( auto I = cvoVerifyMe.vCycles.size(); I--; ) {
-			Tick();
-			TickPhi2();
-		}
-		m_baBusA.ReadWriteLog().pop_back();*/
 
 		int32_t i32Cnt = 0;
 #ifdef LSN_CYCLES_DOC
@@ -106,11 +101,7 @@ namespace lsn {
 			}
 #endif	// #ifdef LSN_CYCLES_DOC
 			Tick();
-			/*if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_JAM ) {
-				if ( m_bHandleNmi != I < 1 ) {
-					lsn::DebugA( "\r\nDouble-check polling.\r\n" );
-				}
-			}*/
+
 			m_bDetectedNmi = true;
 #ifdef LSN_CYCLES_DOC
 			if ( i32Cnt ) {
@@ -148,6 +139,10 @@ namespace lsn {
 		}
 
 		// Verify.
+		if ( m_fsState.ui8FuncIndex != 0 ) {
+			lsn::DebugA( "\r\nDid not end on BeginInst().\r\n" );
+		}
+
 #define LSN_VURIFFY( REG )																																											\
 	if ( m_fsState.rRegs.REG != cvoVerifyMe.cvsEnd.cvrRegisters.REG ) {																																\
 		lsn::DebugA( cvoVerifyMe.sName.c_str() );																																					\
