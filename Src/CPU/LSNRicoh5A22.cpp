@@ -80,7 +80,7 @@ namespace lsn {
 			}
 		}
 
-		if ( "16 n 4" == cvoVerifyMe.sName ) {
+		if ( "17 e 1412" == cvoVerifyMe.sName ) {
 			volatile int ghg = 0;
 		}
 		// Tick once for each cycle.

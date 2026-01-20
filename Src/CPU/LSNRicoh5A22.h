@@ -52,7 +52,7 @@
 #define LSN_FROM_P														false
 
 #ifdef LSN_CPU_VERIFY
-//#define LSN_CYCLES_DOC													1
+#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY
 
 
@@ -425,8 +425,9 @@ namespace lsn {
 		 * \tparam _bIncPc If true, PC is updated.
 		 * \tparam _bBankOverflow If true, m_fsState.ui8Bank accepts the carry from the Y+? operation.
 		 * \tparam _bPageSkip If true, if a page boundary has not been crossed then the next cycle (assumed to be a fix-up) is skipped.
+		 * \tparam _bCopyDbToBank If true, m_fsState.ui8Bank is copied from m_fsState.rRegs.ui8Db, otherwise m_fsState.ui8Bank is unmodified except in the case that overflow is applied to it.
 		 **/
-		template <bool _bTo = LSN_TO_A, bool _bIncPc = true, bool _bBankOverflow = true, bool _bPageSkip = true>
+		template <bool _bTo = LSN_TO_A, bool _bIncPc = true, bool _bBankOverflow = true, bool _bPageSkip = true, bool _bCopyDbToBank = true>
 		void															Add_Y_PtrOrAddr_BankOverflow_PageSkip();
 
 		/**
@@ -477,6 +478,12 @@ namespace lsn {
 
 		/** Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
 		void															Brk_BeginInst();
+
+		/** Clears the carry bit. */
+		void															Clc_BeginInst();
+
+		/** Clears the IRQ flag. */
+		void															Cli_BeginInst();
 
 		/**
 		 * Copies from the vector to PC.h.
@@ -695,8 +702,9 @@ namespace lsn {
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+		 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
 		 **/
-		template <bool _bTo = LSN_TO_A>
+		template <bool _bTo = LSN_TO_A, bool _bLowByteWrap = false>
 		void															ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2();
 
 		/**
@@ -712,8 +720,9 @@ namespace lsn {
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
 		 * 
 		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
 		 **/
-		template <bool _bFrom = LSN_FROM_A>
+		template <bool _bFrom = LSN_FROM_A, bool _bLowByteWrap = false>
 		void															ReadBank0_PtrOrAddr_To_Bank_Phi2();
 
 		/**
@@ -1080,8 +1089,9 @@ namespace lsn {
 	 * \tparam _bIncPc If true, PC is updated.
 	 * \tparam _bBankOverflow If true, m_fsState.ui8Bank accepts the carry from the Y+? operation.
 	 * \tparam _bPageSkip If true, if a page boundary has not been crossed then the next cycle (assumed to be a fix-up) is skipped.
+	 * \tparam _bCopyDbToBank If true, m_fsState.ui8Bank is copied from m_fsState.rRegs.ui8Db, otherwise m_fsState.ui8Bank is unmodified except in the case that overflow is applied to it.
 	 **/
-	template <bool _bTo, bool _bIncPc, bool _bBankOverflow, bool _bPageSkip>
+	template <bool _bTo, bool _bIncPc, bool _bBankOverflow, bool _bPageSkip, bool _bCopyDbToBank>
 	inline void CRicoh5A22::Add_Y_PtrOrAddr_BankOverflow_PageSkip() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -1103,10 +1113,20 @@ namespace lsn {
 			m_fsState.ui16Address = uint16_t( ui32Tmp );
 #ifdef LSN_CYCLES_DOC
 			if constexpr ( _bBankOverflow ) {
-				lsn::DebugA( "Perform Orig = Address. Tmp = ui32(Address + Y). Address = ui16(Tmp). " );
+				if constexpr ( _bPageSkip ) {
+					lsn::DebugA( "Perform Orig = Address. Tmp = ui32(Address + Y). Address = ui16(Tmp). " );
+				}
+				else {
+					lsn::DebugA( "Perform Tmp = ui32(Address + Y). Address = ui16(Tmp). " );
+				}
 			}
 			else {
-				lsn::DebugA( "Perform Orig = Address. Address += Y. " );
+				if constexpr ( _bPageSkip ) {
+					lsn::DebugA( "Perform Orig = Address. Address += Y. " );
+				}
+				else {
+					lsn::DebugA( "Perform Address += Y. " );
+				}
 			}
 #endif	// LSN_CYCLES_DOC
 			if constexpr ( _bPageSkip ) {
@@ -1129,10 +1149,20 @@ namespace lsn {
 			m_fsState.ui16Pointer = uint16_t( ui32Tmp );
 #ifdef LSN_CYCLES_DOC
 			if constexpr ( _bBankOverflow ) {
-				lsn::DebugA( "Perform Orig = Pointer. Tmp = ui32(Pointer + Y). Pointer = ui16(Tmp). " );
+				if constexpr ( _bPageSkip ) {
+					lsn::DebugA( "Perform Orig = Pointer. Tmp = ui32(Pointer + Y). Pointer = ui16(Tmp). " );
+				}
+				else {
+					lsn::DebugA( "Perform Tmp = ui32(Pointer + Y). Pointer = ui16(Tmp). " );
+				}
 			}
 			else {
-				lsn::DebugA( "Perform Orig = Pointer. Pointer += Y. " );
+				if constexpr ( _bPageSkip ) {
+					lsn::DebugA( "Perform Orig = Pointer. Pointer += Y. " );
+				}
+				else {
+					lsn::DebugA( "Perform Pointer += Y. " );
+				}
 			}
 #endif	// LSN_CYCLES_DOC
 			if constexpr ( _bPageSkip ) {
@@ -1149,17 +1179,28 @@ namespace lsn {
 #endif	// LSN_CYCLES_DOC
 			}
 		}
-		if constexpr ( _bBankOverflow ) {
-			m_fsState.ui8Bank = uint8_t( m_fsState.rRegs.ui8Db + (ui32Tmp >> 16) );
+
+		if constexpr ( _bCopyDbToBank ) {
+			if constexpr ( _bBankOverflow ) {
+				m_fsState.ui8Bank = uint8_t( m_fsState.rRegs.ui8Db + (ui32Tmp >> 16) );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Bank = DB + (Tmp >> 16)." );
+				lsn::DebugA( "Bank = DB + (Tmp >> 16)." );
 #endif	// LSN_CYCLES_DOC
+			}
+			else {
+				m_fsState.ui8Bank = m_fsState.rRegs.ui8Db;
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "Bank = DB." );
+#endif	// LSN_CYCLES_DOC
+			}
 		}
 		else {
-			m_fsState.ui8Bank = m_fsState.rRegs.ui8Db;
+			if constexpr ( _bBankOverflow ) {
+				m_fsState.ui8Bank += uint8_t( ui32Tmp >> 16 );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Bank = DB." );
+				lsn::DebugA( "Bank += (Tmp >> 16)." );
 #endif	// LSN_CYCLES_DOC
+			}
 		}
 
 		
@@ -1483,6 +1524,32 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tEnable writes to PC (disabled by NMI/IRQ).  Copy Address to PC.  Set PB to 0." );
+#endif	// LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
+	/** Clears the carry bit. */
+	inline void CRicoh5A22::Clc_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+		
+		SetBit<C(), false>( m_fsState.rRegs.ui8Status );
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tSets the C flag to 0." );
+#endif	// LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
+	/** Clears the IRQ flag. */
+	inline void CRicoh5A22::Cli_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+		
+		SetBit<I(), false>( m_fsState.rRegs.ui8Status );
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tSets the I flag to 0." );
 #endif	// LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -2162,7 +2229,7 @@ namespace lsn {
 	 **/
 	template <int8_t _i8SOff, bool _bCop>
 	inline void CRicoh5A22::Push_S_Phi2() {
-		if constexpr( _bCop ) {
+		if constexpr ( _bCop ) {
 			LSN_PUSH( m_fsState.rRegs.ui8Status, m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 			if ( m_fsState.bEmulationMode ) {
@@ -2389,23 +2456,42 @@ namespace lsn {
 	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
 	 * 
 	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+	 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
 	 **/
-	template <bool _bTo>	
+	template <bool _bTo, bool _bLowByteWrap>	
 	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2() {
 #ifdef LSN_CYCLES_DOC
 		std::string sDebug;
 #endif	// LSN_CYCLES_DOC
-		if constexpr( _bTo == LSN_TO_A ) {
-			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Address[1], m_ui8Speed );
+		if constexpr ( _bTo == LSN_TO_A ) {
+			if constexpr ( _bLowByteWrap ) {	// Emulation Mode only.
+				uint16_t ui16Target = (m_fsState.rRegs.ui8D[0]) ? m_fsState.ui16Pointer + 1 : (m_fsState.ui16Pointer & 0xFF00) | uint8_t( m_fsState.ui8Pointer[0] + 1 );
+				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, m_fsState.ui8Address[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			sDebug += "Read Pointer + 1\tStore as Address.H.";
+				sDebug += "If D.l is not 0, read (Pointer + 1), otherwise read (Pointer & $FF00) | ui8(Pointer.L + 1)\tStore as Address.H.";
 #endif	// LSN_CYCLES_DOC
+			}
+			else {
+				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Address[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				sDebug += "Read Pointer + 1\tStore as Address.H.";
+#endif	// LSN_CYCLES_DOC
+			}
 		}
 		else {
-			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 1, m_fsState.ui8Pointer[1], m_ui8Speed );
+			if constexpr ( _bLowByteWrap ) {	// Emulation Mode only.
+				uint16_t ui16Target = (m_fsState.rRegs.ui8D[0]) ? m_fsState.ui16Address + 1 : (m_fsState.ui16Address & 0xFF00) | uint8_t( m_fsState.ui8Address[0] + 1 );
+				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, m_fsState.ui8Pointer[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			sDebug += "Read Address + 1\tStore as Pointer.H.";
+				sDebug += "If D.l is not 0, read (Address + 1), otherwise read (Address & $FF00) | ui8(Address.L + 1)\tStore as Pointer.H.";
 #endif	// LSN_CYCLES_DOC
+			}
+			else {
+				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 1, m_fsState.ui8Pointer[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				sDebug += "Read Address + 1\tStore as Pointer.H.";
+#endif	// LSN_CYCLES_DOC
+			}
 		}
 		
 #ifdef LSN_CYCLES_DOC
@@ -2428,7 +2514,7 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 		std::string sDebug;
 #endif	// LSN_CYCLES_DOC
-		if constexpr( _bTo == LSN_TO_A ) {
+		if constexpr ( _bTo == LSN_TO_A ) {
 			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer, m_fsState.ui16Address, m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 			sDebug += "Read Pointer\tStore as Address.";
@@ -2463,20 +2549,39 @@ namespace lsn {
 	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
 	 * 
 	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
 	 **/
-	template <bool _bFrom>
+	template <bool _bFrom, bool _bLowByteWrap>
 	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_Phi2() {
 		if constexpr ( _bFrom == LSN_FROM_A ) {
-			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 2, m_fsState.ui8Bank, m_ui8Speed );
+			if constexpr ( _bLowByteWrap ) {	// Emulation Mode only.
+				uint16_t ui16Target = (m_fsState.rRegs.ui8D[0]) ? m_fsState.ui16Address + 2 : (m_fsState.ui16Address & 0xFF00) | uint8_t( m_fsState.ui8Address[0] + 2 );
+				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, m_fsState.ui8Bank, m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read Address + 2\tStore as Bank." );
+				lsn::DebugA( "If D.l is not 0, read (Address + 2), otherwise read (Address & $FF00) | ui8(Address.L + 2)\tStore as Bank." );
 #endif	// LSN_CYCLES_DOC
+			}
+			else {
+				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 2, m_fsState.ui8Bank, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "Read Address + 2\tStore as Bank." );
+#endif	// LSN_CYCLES_DOC
+			}
 		}
 		else {
-			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 2, m_fsState.ui8Bank, m_ui8Speed );
+			if constexpr ( _bLowByteWrap ) {	// Emulation Mode only.
+				uint16_t ui16Target = (m_fsState.rRegs.ui8D[0]) ? m_fsState.ui16Pointer + 2 : (m_fsState.ui16Pointer & 0xFF00) | uint8_t( m_fsState.ui8Pointer[0] + 2 );
+				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, m_fsState.ui8Bank, m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read Pointer + 2\tStore as Bank." );
+				lsn::DebugA( "If D.l is not 0, read (Pointer + 2), otherwise read (Pointer & $FF00) | ui8(Pointer.L + 2)\tStore as Bank." );
 #endif	// LSN_CYCLES_DOC
+			}
+			else {
+				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 2, m_fsState.ui8Bank, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "Read Pointer + 2\tStore as Bank." );
+#endif	// LSN_CYCLES_DOC
+			}
 		}
 
 		LSN_NEXT_FUNCTION;
@@ -2527,7 +2632,7 @@ namespace lsn {
 	 **/
 	template <bool _bFrom, bool _bEndInstr>
 	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_Phi2() {
-		if constexpr( _bFrom == LSN_FROM_P ) {
+		if constexpr ( _bFrom == LSN_FROM_P ) {
 			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "Read Pointer + 1\tStore as Operand.H." );
@@ -2563,7 +2668,7 @@ namespace lsn {
 		std::string sDebug;
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		if constexpr( _bFrom == LSN_FROM_P ) {
+		if constexpr ( _bFrom == LSN_FROM_P ) {
 			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer, m_fsState.ui16Operand, m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 			sDebug += "Read Pointer\tStore as Operand.";
@@ -2720,7 +2825,7 @@ namespace lsn {
 	 */
 	template <bool _bIncPc, bool _bAdjS, bool _bCheckStartOfFunction>
 	inline void CRicoh5A22::BeginInst() {
-		if constexpr( _bCheckStartOfFunction ) {
+		if constexpr ( _bCheckStartOfFunction ) {
 			LSN_INSTR_START_PHI1( true );
 		}
 
