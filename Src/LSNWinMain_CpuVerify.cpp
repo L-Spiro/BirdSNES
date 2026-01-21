@@ -21,13 +21,13 @@ int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevI
 	const std::filesystem::path pTests = std::filesystem::path( ".." ) / ".." / "Research" / "65816" / "v1";
 	{
 		static wchar_t wChars[2] = { L'n', L'e' };
-		for ( uint32_t I = 0x25; I < 0x26; ++I ) {
+		for ( uint32_t I = 0x27; I < 0x28; ++I ) {
 			std::wstring wsFile;
 			lson::CJson jSon;
 			std::vector<uint8_t> vBytes;
 			lsn::CStdFile sfFile;
 			
-			for ( size_t N = 0; N < 1/*std::size( wChars )*/; ++N ) {
+			for ( size_t N = 1; N < 2/*std::size( wChars )*/; ++N ) {
 				wchar_t wcFile[MAX_PATH];
 				std::swprintf( wcFile, std::size( wcFile ), L"%.2X.%c.json", I, wChars[N] );
 				const std::filesystem::path pFull = pRoot / pTests / wcFile;

@@ -749,6 +749,14 @@ namespace lsn {
 		void															Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2();
 
 		/**
+		 * Reads (and discards) a byte from the stack.
+		 * 
+		 * \tparam _i8SOff Offset from S to read.
+		 **/
+		template <int8_t _i8SOff = 0>
+		void															Read_Stack_Discard_Phi2();
+
+		/**
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
@@ -803,12 +811,12 @@ namespace lsn {
 		void															ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_Phi2();
 
 		/**
-		 * Reads (and discards) a byte from the stack.
+		 * Performs Operand = (Operand << 1) | C.  Sets C, N, and Z, optionally increases PC.
 		 * 
-		 * \tparam _i8SOff Offset from S to read.
+		 * \tparam _bIncPc If true, PC is updated.
 		 **/
-		template <int8_t _i8SOff = 0>
-		void															Read_Stack_Discard_Phi2();
+		template <bool _bIncPc = false>
+		void															Rol();
 
 		/**
 		 * Selects the BRK vector etc.
@@ -985,13 +993,13 @@ namespace lsn {
 			if ( m_fsState.bEmulationMode ) {
 				m_fsState.ui16Address = m_fsState.ui16Pointer + (m_fsState.rRegs.ui8S[0] | 0x100);
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Address to Pointer + S.L + $100. ";
+				sTmp += "Set Address to Pointer + (S.L | $100).";
 #endif	// LSN_CYCLES_DOC
 			}
 			else {
 				m_fsState.ui16Address = m_fsState.ui16Pointer + m_fsState.rRegs.ui16S;
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Address to Pointer + S. ";
+				sTmp += "Set Address to Pointer + S.";
 #endif	// LSN_CYCLES_DOC
 			}
 		}
@@ -999,13 +1007,13 @@ namespace lsn {
 			if ( m_fsState.bEmulationMode ) {
 				m_fsState.ui16Pointer = m_fsState.ui16Address + (m_fsState.rRegs.ui8S[0] | 0x100);
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Pointer to Address + S.L + $100. ";
+				sTmp += "Set Pointer to Address + S.L | $100.";
 #endif	// LSN_CYCLES_DOC
 			}
 			else {
 				m_fsState.ui16Pointer = m_fsState.ui16Address + m_fsState.rRegs.ui16S;
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Pointer to Address + S. ";
+				sTmp += "Set Pointer to Address + S.";
 #endif	// LSN_CYCLES_DOC
 			}
 		}
@@ -1975,7 +1983,7 @@ namespace lsn {
 		m_fsState.ui16PcModify = uint16_t( -1 );
 
 	#ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Read PC:PB\tDiscard, then schedule PC -= 1." );
+		lsn::DebugA( "Read PC:PB\tDiscard." );
 	#endif	// LSN_CYCLES_DOC
 
 		if constexpr ( _bEndInstr ) {
@@ -2193,11 +2201,6 @@ namespace lsn {
 		LSN_INSTR_START_PHI1( true );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tInc PC." );
-#endif	// LSN_CYCLES_DOC
-		LSN_UPDATE_PC;
-
-#ifdef LSN_CYCLES_DOC
 		if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
 			lsn::DebugA( (" Dec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ". ").c_str() );
 		}
@@ -2207,7 +2210,6 @@ namespace lsn {
 #endif	// LSN_CYCLES_DOC
 		LSN_UPDATE_S;
 
-		// Jump long.
 		m_fsState.rRegs.ui16Pc = m_fsState.ui16Address;
 		m_fsState.rRegs.ui8Pb = m_fsState.ui8Bank;
 
@@ -2404,16 +2406,19 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-			if ( m_fsState.bEmulationMode ) {
-				lsn::DebugA( "\tPerform A |= Operand. Set N based off (A.L & $80) and Z based off A.L." );
-			}
-			else {
-				lsn::DebugA( "\tPerform A |= Operand. If M flag is set, set N based off (A.L & $80) and Z based off A.L, otherwise set N based off (A.H & $80) and Z based off A." );
+			lsn::DebugA( "\t" );
+			if constexpr ( _bIncPc ) {
+				lsn::DebugA( "Inc. PC. " );
 			}
 
-			if constexpr ( _bIncPc ) {
-				lsn::DebugA( " Inc. PC." );
+			if ( m_fsState.bEmulationMode ) {
+				lsn::DebugA( "Perform A |= Operand. Set N based off (A.L & $80) and Z based off A.L." );
 			}
+			else {
+				lsn::DebugA( "Perform A |= Operand. If M flag is set, set N based off (A.L & $80) and Z based off A.L, otherwise set N based off (A.H & $80) and Z based off A." );
+			}
+
+			
 #endif	// LSN_CYCLES_DOC
 
 		BeginInst<_bIncPc, false, false>();
@@ -2433,7 +2438,7 @@ namespace lsn {
 			lsn::DebugA( "\tSets Operand.L to P." );
 		}
 		else {
-			lsn::DebugA( "\tSets Operand.L to (P | X | M)." );
+			lsn::DebugA( "\tSets Operand.L to P with X and M flags set." );
 		}
 #endif	// LSN_CYCLES_DOC
 
@@ -2884,6 +2889,34 @@ namespace lsn {
 	}
 
 	/**
+	 * Reads (and discards) a byte from the stack.
+	 * 
+	 * \tparam _i8SOff Offset from S to read.
+	 **/
+	template <int8_t _i8SOff>
+	inline void CRicoh5A22::Read_Stack_Discard_Phi2() {
+		uint8_t ui8Tmp;
+		const uint16_t ui16Addr = m_fsState.bEmulationMode ?
+			(0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) :
+			uint16_t( m_fsState.rRegs.ui16S + _i8SOff );
+
+		LSN_INSTR_START_PHI2_READ0_BUSA( ui16Addr, ui8Tmp, m_ui8Speed );
+
+#ifdef LSN_CYCLES_DOC
+		if ( m_fsState.bEmulationMode ) {
+			lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ") | $0100\tDiscard.").c_str() );
+		}
+		else {
+			lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ")\tDiscard.").c_str() );
+		}
+#endif	// LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
 	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
 	 * 
 	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
@@ -3147,31 +3180,61 @@ namespace lsn {
 	}
 
 	/**
-	 * Reads (and discards) a byte from the stack.
+	 * Performs Operand = (Operand << 1) | C.  Sets C, N, and Z, optionally increases PC.
 	 * 
-	 * \tparam _i8SOff Offset from S to read.
+	 * \tparam _bIncPc If true, PC is updated.
 	 **/
-	template <int8_t _i8SOff>
-	inline void CRicoh5A22::Read_Stack_Discard_Phi2() {
-		uint8_t ui8Tmp;
-		const uint16_t ui16Addr = m_fsState.bEmulationMode ?
-			(0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) :
-			uint16_t( m_fsState.rRegs.ui16S + _i8SOff );
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Rol() {
+		LSN_INSTR_START_PHI1( false );
 
-		LSN_INSTR_START_PHI2_READ0_BUSA( ui16Addr, ui8Tmp, m_ui8Speed );
+		const bool bOldC = (m_fsState.rRegs.ui8Status & C()) != 0;
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
+
+			m_fsState.ui16Operand <<= 1;
+			if ( bOldC ) { m_fsState.ui8Operand[0] |= 0x01; }
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand[0] );
+		}
+		else {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[1] & 0x80) != 0 );
+
+			m_fsState.ui16Operand <<= 1;
+			if ( bOldC ) { m_fsState.ui16Operand |= 0x0001; }
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[1] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui16Operand );
+		}
+
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "\t" );
+#endif	// LSN_CYCLES_DOC
+
+		if constexpr ( _bIncPc ) {
+			LSN_UPDATE_PC;
+
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Inc. PC. " );
+#endif	// LSN_CYCLES_DOC
+		}
 
 #ifdef LSN_CYCLES_DOC
 		if ( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ") | $0100\tDiscard.").c_str() );
+			lsn::DebugA( "Set C based off (Operand.L & $80). Perform Operand.L = (Operand.L << 1) | C. Set N based off (Operand.L & $80) and Z based off Operand.L." );
 		}
 		else {
-			lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ")\tDiscard.").c_str() );
+			lsn::DebugA( "If M flag is set, set C based off (Operand.L & $80), perform Operand.L = (Operand.L << 1) | C, and set N based off (Operand.L & $80) and Z based off Operand.L, otherwise set C based off (Operand.H & $80), perform Operand = (Operand << 1) | C, and set N based off (Operand.H & $80) and Z based off Operand." );
 		}
 #endif	// LSN_CYCLES_DOC
 
+		
+
 		LSN_NEXT_FUNCTION;
 
-		LSN_INSTR_END_PHI2;
+		LSN_INSTR_END_PHI1;
 	}
 
 	/**

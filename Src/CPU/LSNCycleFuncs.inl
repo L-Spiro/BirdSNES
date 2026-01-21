@@ -333,8 +333,14 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		LSN_DIRECT_PAGE_R( AND, And )
 	},
 	{	// 26
-		//LSN_DIRECT_PAGE_RMW( ASL, Asl )
+		LSN_DIRECT_PAGE_RMW( ROL, Rol )
 	},
+	{	// 27
+		LSN_DIRECT_PAGE_INDIRECT_LONG_R( AND, And )
+	},
+
+
+	/** 08-0F */
 };
 
 
