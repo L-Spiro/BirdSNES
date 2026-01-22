@@ -268,7 +268,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 	},
 
 
-	/** 18-1F */
+	/** 20-27 */
 	{	// 20
 		{
 			{
@@ -340,7 +340,65 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 	},
 
 
-	/** 08-0F */
+	/** 28-2F */
+	{	// 28
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
+				&CRicoh5A22::Null<LSN_N, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<0, true>,
+				&CRicoh5A22::Plp_BeginInst,
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
+				&CRicoh5A22::Null<LSN_N, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<0, true>,
+				&CRicoh5A22::Plp_BeginInst,
+			},
+		},
+		4, 4, LSN_AM_IMPLIED, 1, 1, LSN_I_PLP, "PLP", "Implied"
+	},
+	{	// 29
+		LSN_IMMEDIATE( AND, And<true> )
+	},
+	{	// 2A
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
+				&CRicoh5A22::RolOnA_BeginInst<false>
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
+				&CRicoh5A22::RolOnA_BeginInst<false>
+			},
+		},
+		2, 2, LSN_AM_IMPLIED, 1, 1, LSN_I_ROL, "ROL", "Implied"
+	},
+	{	// 2B
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<1, false>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<2, true>,
+				&CRicoh5A22::Pld_BeginInst,
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<1, false>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<2, true>,
+				&CRicoh5A22::Pld_BeginInst,
+			},
+		},
+		5, 5, LSN_AM_IMPLIED, 1, 1, LSN_I_PLD, "PLD", "Implied"
+	},
 };
 
 

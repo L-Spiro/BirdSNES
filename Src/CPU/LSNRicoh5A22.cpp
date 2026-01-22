@@ -80,7 +80,7 @@ namespace lsn {
 			}
 		}
 
-		if ( "17 e 1412" == cvoVerifyMe.sName ) {
+		if ( "2b e 42" == cvoVerifyMe.sName ) {
 			volatile int ghg = 0;
 		}
 		// Tick once for each cycle.
@@ -113,7 +113,7 @@ namespace lsn {
 			++i32Cnt;
 #endif	// #ifdef LSN_CYCLES_DOC
 			TickPhi2();
-			if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_JAM && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_COP &&
+			if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_COP &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BPL && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BNE && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVS &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCS && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BEQ && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BMI ) {
 				if ( m_bHandleNmi != (I <= 0) ) {
@@ -138,9 +138,11 @@ namespace lsn {
 			m_fsState.rRegs.ui8S[1] = 1;
 		}
 
+		bool bErrored = false;
 		// Verify.
 		if ( m_fsState.ui8FuncIndex != 0 ) {
 			lsn::DebugA( "\r\nDid not end on BeginInst().\r\n" );
+			bErrored = true;
 		}
 
 #define LSN_VURIFFY( REG )																																											\
@@ -148,7 +150,7 @@ namespace lsn {
 		lsn::DebugA( cvoVerifyMe.sName.c_str() );																																					\
 		lsn::DebugA( "\r\nCPU Failure: " # REG "\r\n" );																																			\
 		lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.cvsEnd.cvrRegisters.REG ) + std::string( " Got: " ) + std::to_string( m_fsState.rRegs.REG ) ).c_str() );				\
-		lsn::DebugA( "\r\n\r\n" );																																									\
+		lsn::DebugA( "\r\n\r\n" ); bErrored = true;																																					\
 	}
 
 		LSN_VURIFFY( ui16A );
@@ -164,11 +166,22 @@ namespace lsn {
 		LSN_VURIFFY( ui16Pc );
 #undef LSN_VURIFFY
 
+		// Ensure no pending updates to PC or S.
+		if ( m_fsState.ui16SModify ) {
+			lsn::DebugA( cvoVerifyMe.sName.c_str() );
+			lsn::DebugA( "\r\nS is pending an update.\r\n" );
+			lsn::DebugA( "\r\n\r\n" ); bErrored = true;
+		}
+		if ( m_fsState.ui16PcModify ) {
+			lsn::DebugA( cvoVerifyMe.sName.c_str() );
+			lsn::DebugA( "\r\nPC is pending an update.\r\n" );
+			lsn::DebugA( "\r\n\r\n" ); bErrored = true;
+		}
 
 		if ( m_baBusA.ReadWriteLog().size() > cvoVerifyMe.vCycles.size() ) {
 			lsn::DebugA( cvoVerifyMe.sName.c_str() );
 			lsn::DebugA( "\r\nInternal Error\r\n" );
-			lsn::DebugA( "\r\n\r\n" );
+			lsn::DebugA( "\r\n\r\n" ); bErrored = true;
 		}
 		else {
 			size_t J = 0;
@@ -178,19 +191,19 @@ namespace lsn {
 						lsn::DebugA( cvoVerifyMe.sName.c_str() );
 						lsn::DebugA( "\r\nCPU Failure: Cycle Address Wrong\r\n" );
 						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].ui32Addr ) + std::string( " Got: " ) + std::to_string( m_baBusA.ReadWriteLog()[J].ui32Address ) ).c_str() );
-						lsn::DebugA( "\r\n\r\n" );
+						lsn::DebugA( "\r\n\r\n" ); bErrored = true;
 					}
 					if ( m_baBusA.ReadWriteLog()[J].ui8Value != cvoVerifyMe.vCycles[I].ui8Value ) {
 						lsn::DebugA( cvoVerifyMe.sName.c_str() );
 						lsn::DebugA( "\r\nCPU Failure: Cycle Value Wrong\r\n" );
 						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].ui8Value ) + std::string( " Got: " ) + std::to_string( m_baBusA.ReadWriteLog()[J].ui8Value ) ).c_str() );
-						lsn::DebugA( "\r\n\r\n" );
+						lsn::DebugA( "\r\n\r\n" ); bErrored = true;
 					}
 					if ( m_baBusA.ReadWriteLog()[J].bRead != (cvoVerifyMe.vCycles[I].sStatus[3] == 'r') ) {
 						lsn::DebugA( cvoVerifyMe.sName.c_str() );
 						lsn::DebugA( "\r\nCPU Failure: Cycle Read/Write Wrong\r\n" );
 						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[3] ) + std::string( " Got: " ) + std::to_string( m_baBusA.ReadWriteLog()[J].bRead ) ).c_str() );
-						lsn::DebugA( "\r\n\r\n" );
+						lsn::DebugA( "\r\n\r\n" ); bErrored = true;
 					}
 				}
 				
@@ -198,16 +211,19 @@ namespace lsn {
 					lsn::DebugA( cvoVerifyMe.sName.c_str() );
 					lsn::DebugA( "\r\nCPU Failure: Cycle Status.X Wrong\r\n" );
 					lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[6] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) ) ).c_str() );
-					lsn::DebugA( "\r\n\r\n" );
+					lsn::DebugA( "\r\n\r\n" ); bErrored = true;
 				}
 				if ( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[5] == 'm') ) {
 					lsn::DebugA( cvoVerifyMe.sName.c_str() );
 					lsn::DebugA( "\r\nCPU Failure: Cycle Status.M Wrong\r\n" );
 					lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[5] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) ) ).c_str() );
-					lsn::DebugA( "\r\n\r\n" );
+					lsn::DebugA( "\r\n\r\n" ); bErrored = true;
 				}
 				++J;
 			}
+		}
+		if ( bErrored ) {
+				lsn::DebugA( (std::format( "M: {}\r\nD.L: {}\r\nX: {}\r\n\r\n", (m_fsState.rRegs.ui8Status & M()) ? true : false, m_fsState.rRegs.ui8D[0], (m_fsState.rRegs.ui8Status & X()) ? true : false )).c_str() );
 		}
 		return i32Cnt;
 	}

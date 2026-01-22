@@ -212,5 +212,8 @@
     <None Include="Src\CPU\LSNCycleFuncs.inl">
       <Filter>Header Files\CPU</Filter>
     </None>
+    <None Include="Src\CPU\LSNInstructions.inl">
+      <Filter>Header Files\CPU</Filter>
+    </None>
   </ItemGroup>
 </Project>

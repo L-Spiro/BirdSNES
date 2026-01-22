@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\CPU\LSNCycleFuncs.inl" />
+    <None Include="Src\CPU\LSNInstructions.inl" />
     <None Include="Src\Errors\LSNErrorEnum.inl" />
     <None Include="Src\Strings\LSNStringsEnum.inl" />
   </ItemGroup>
