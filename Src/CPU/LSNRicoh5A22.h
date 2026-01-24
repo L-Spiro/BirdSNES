@@ -52,7 +52,7 @@
 #define LSN_FROM_P														false
 
 #ifdef LSN_CPU_VERIFY
-#define LSN_CYCLES_DOC													1
+//#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY
 
 
@@ -2585,7 +2585,7 @@ namespace lsn {
 	 **/
 	template <int8_t _i8SOff>
 	inline void CRicoh5A22::Pull_To_A_Phi2() {
-		LSN_POP( m_fsState.rRegs.ui8A, m_ui8Speed );
+		LSN_POP( m_fsState.rRegs.ui8A[0], m_ui8Speed );
 
 		LSN_NEXT_FUNCTION;
 
@@ -2599,7 +2599,7 @@ namespace lsn {
 	 **/
 	template <int8_t _i8SOff>
 	inline void CRicoh5A22::Pull_To_Operand_Phi2() {
-		LSN_POP( m_fsState.ui8Operand, m_ui8Speed );
+		LSN_POP( m_fsState.ui8Operand[0], m_ui8Speed );
 
 		LSN_NEXT_FUNCTION;
 
