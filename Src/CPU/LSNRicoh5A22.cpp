@@ -207,17 +207,19 @@ namespace lsn {
 					}
 				}
 				
-				if ( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[6] == 'x') ) {
-					lsn::DebugA( cvoVerifyMe.sName.c_str() );
-					lsn::DebugA( "\r\nCPU Failure: Cycle Status.X Wrong\r\n" );
-					lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[6] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) ) ).c_str() );
-					lsn::DebugA( "\r\n\r\n" ); bErrored = true;
-				}
-				if ( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[5] == 'm') ) {
-					lsn::DebugA( cvoVerifyMe.sName.c_str() );
-					lsn::DebugA( "\r\nCPU Failure: Cycle Status.M Wrong\r\n" );
-					lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[5] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) ) ).c_str() );
-					lsn::DebugA( "\r\n\r\n" ); bErrored = true;
+				if ( m_fsState.ui16OpCode != 0x40 ) {	// RTI.
+					if ( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[6] == 'x') ) {
+						lsn::DebugA( cvoVerifyMe.sName.c_str() );
+						lsn::DebugA( "\r\nCPU Failure: Cycle Status.X Wrong\r\n" );
+						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[6] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) ) ).c_str() );
+						lsn::DebugA( "\r\n\r\n" ); bErrored = true;
+					}
+					if ( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[5] == 'm') ) {
+						lsn::DebugA( cvoVerifyMe.sName.c_str() );
+						lsn::DebugA( "\r\nCPU Failure: Cycle Status.M Wrong\r\n" );
+						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[5] ) + std::string( " Got: " ) + std::to_string( ((m_baBusA.ReadWriteLog()[J].ui8S & M()) != 0) ) ).c_str() );
+						lsn::DebugA( "\r\n\r\n" ); bErrored = true;
+					}
 				}
 				++J;
 			}
