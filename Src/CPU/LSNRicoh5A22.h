@@ -36,8 +36,8 @@
 #define LSN_PUSH( VAL, SPEED )											LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), (VAL), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( -1 + _i8SOff ) )
 #define LSN_POP( RESULT, SPEED )										LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), (RESULT), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( _i8SOff ) )
 
-#define LSN_PUSH_SPECIAL( VAL, SPEED )									LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? ((0x100 + m_fsState.rRegs.ui8S[0]) + _i8SOff) : (m_fsState.rRegs.ui16S + _i8SOff), (VAL), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( -1 + _i8SOff ) )
-#define LSN_POP_SPECIAL( RESULT, SPEED )								LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? ((0x100 + m_fsState.rRegs.ui8S[0]) + _i8SOff) : (m_fsState.rRegs.ui16S + _i8SOff), (RESULT), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( _i8SOff ) )
+#define LSN_PUSH_SPECIAL( VAL, SPEED )									LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? ((0x100 | m_fsState.rRegs.ui8S[0]) + _i8SOff) : (m_fsState.rRegs.ui16S + _i8SOff), (VAL), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( -1 + _i8SOff ) )
+#define LSN_POP_SPECIAL( RESULT, SPEED )								LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? ((0x100 | m_fsState.rRegs.ui8S[0]) + _i8SOff) : (m_fsState.rRegs.ui16S + _i8SOff), (RESULT), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( _i8SOff ) )
 
 #define LSN_UPDATE_PC													if LSN_LIKELY( m_fsState.bAllowWritingToPc ) { m_fsState.rRegs.ui16Pc += m_fsState.ui16PcModify; } m_fsState.ui16PcModify = 0
 #define LSN_UPDATE_S													m_fsState.rRegs.ui16S += m_fsState.ui16SModify; m_fsState.ui16SModify = 0
@@ -52,7 +52,7 @@
 #define LSN_FROM_P														false
 
 #ifdef LSN_CPU_VERIFY
-//#define LSN_CYCLES_DOC													1
+#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY
 
 
@@ -519,6 +519,9 @@ namespace lsn {
 		/** Copies from the vector to PC.l. **/
 		void															CopyVectorToPc_L_Phi2();
 
+		/** Performs A--. Sets N and Z. */
+		void															DecOnA_BeginInst();
+
 		/** Fetches m_fsState.ui8Bank and increments PC. **/
 		void															Fetch_Bank_IncPc_Phi2();
 
@@ -869,6 +872,9 @@ namespace lsn {
 		template <bool _bIncPc = false>
 		void															RolOnA_BeginInst();
 
+		/** Sets the carry bit. */
+		void															Sec_BeginInst();
+
 		/**
 		 * Selects the BRK vector etc.
 		 * 
@@ -902,6 +908,9 @@ namespace lsn {
 
 		/** Performs m_ui16Operand |= A.  Sets Z. */
 		void															Tsb();
+
+		/** Transfer 16-bit S to A.  Sets N and Z. */
+		void															Tsc_BeginInst();
 
 		/**
 		 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Address or m_fsState.ui16Pointer with bank.
@@ -1044,7 +1053,7 @@ namespace lsn {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 				m_fsState.ui16Address = m_fsState.ui16Pointer + (m_fsState.rRegs.ui8S[0] | 0x100);
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Address to Pointer + (S.L | $100).";
+				sTmp += "Set Address to Pointer + (S.L | $0100).";
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
@@ -1058,7 +1067,7 @@ namespace lsn {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 				m_fsState.ui16Pointer = m_fsState.ui16Address + (m_fsState.rRegs.ui8S[0] | 0x100);
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Set Pointer to Address + S.L | $100.";
+				sTmp += "Set Pointer to Address + S.L | $0100.";
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
@@ -1516,8 +1525,6 @@ namespace lsn {
 		else {
 			lsn::DebugA( "Perform A &= Operand. If M flag is set, set N based off (A.L & $80) and Z based off A.L, otherwise set N based off (A.H & $80) and Z based off A." );
 		}
-
-		
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<_bIncPc, false, false>();
@@ -1635,10 +1642,10 @@ namespace lsn {
 		
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( "\tSet Z based off (A.L & Operand.L). Set N based off (Operand.L & $80). Set V based off (Operand.L & $40)." );
+			lsn::DebugA( "\tSet Z based off (A.L & Operand.L), set N based off (Operand.L & $80), and set V based off (Operand.L & $40)." );
 		}
 		else {
-			lsn::DebugA( "\tIf M flag is set, set Z based off (A.L & Operand.L), set N based off (Operand.L & $80), and set V based off (Operand.L & $40), otherwise set Z based off (A & Operand), set N based off (Operand.H & $80), set V based off (Operand.H & $40)." );
+			lsn::DebugA( "\tIf M flag is set, set Z based off (A.L & Operand.L), set N based off (Operand.L & $80), and set V based off (Operand.L & $40), otherwise set Z based off (A & Operand), set N based off (Operand.H & $80), and set V based off (Operand.H & $40)." );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -1664,35 +1671,35 @@ namespace lsn {
 
 		switch ( _uBit ) {
 			case C() : {
-				lsn::DebugA( std::format( " Decide to branch if C is {}.", (_uVal * _uBit) ).c_str() );
+				lsn::DebugA( std::format( " Decide to branch if C is {}.", _uVal ).c_str() );
 				break;
 			}
 			case Z() : {
-				lsn::DebugA( std::format( " Decide to branch if Z is {}.", (_uVal * _uBit) ).c_str() );
+				lsn::DebugA( std::format( " Decide to branch if Z is {}.", _uVal ).c_str() );
 				break;
 			}
 			case I() : {
-				lsn::DebugA( std::format( " Decide to branch if I is {}.", (_uVal * _uBit) ).c_str() );
+				lsn::DebugA( std::format( " Decide to branch if I is {}.", _uVal ).c_str() );
 				break;
 			}
 			case D() : {
-				lsn::DebugA( std::format( " Decide to branch if D is {}.", (_uVal * _uBit) ).c_str() );
+				lsn::DebugA( std::format( " Decide to branch if D is {}.", _uVal ).c_str() );
 				break;
 			}
 			case X() : {
-				lsn::DebugA( std::format( " Decide to branch if X is {}.", (_uVal * _uBit) ).c_str() );
+				lsn::DebugA( std::format( " Decide to branch if X is {}.", _uVal ).c_str() );
 				break;
 			}
 			case M() : {
-				lsn::DebugA( std::format( " Decide to branch if M is {}.", (_uVal * _uBit) ).c_str() );
+				lsn::DebugA( std::format( " Decide to branch if M is {}.", _uVal ).c_str() );
 				break;
 			}
 			case V() : {
-				lsn::DebugA( std::format( " Decide to branch if V is {}.", (_uVal * _uBit) ).c_str() );
+				lsn::DebugA( std::format( " Decide to branch if V is {}.", _uVal ).c_str() );
 				break;
 			}
 			case N() : {
-				lsn::DebugA( std::format( " Decide to branch if N is {}.", (_uVal * _uBit) ).c_str() );
+				lsn::DebugA( std::format( " Decide to branch if N is {}.", _uVal ).c_str() );
 				break;
 			}
 		}
@@ -1923,6 +1930,33 @@ namespace lsn {
 		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI2;
+	}
+
+	/** Performs A--. Sets N and Z. */
+	inline void CRicoh5A22::DecOnA_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			--m_fsState.rRegs.ui8A[0];
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+		}
+		else {
+			--m_fsState.rRegs.ui16A;
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[1] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "\tPerform A.L -= 1, set N based off (A.L & $80), set Z based off A.L." );
+		}
+		else {
+			lsn::DebugA( "\tIf M flag is set, perform A.L -= 1, set N based off (A.L & $80), and set Z based off A.L, otherwise perform A -= 1, set N based off (A.H & $80), and set Z based off A." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
 	}
 
 	/** Fetches m_fsState.ui8Bank and increments PC. **/
@@ -2281,7 +2315,7 @@ namespace lsn {
 	 * and begins the next instruction.
 	 **/
 	inline void CRicoh5A22::Jsr_Absolute_BeginInst() {
-		LSN_INSTR_START_PHI1( false );
+		LSN_INSTR_START_PHI1( true );
 
 #ifdef LSN_CYCLES_DOC
 		if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
@@ -2502,7 +2536,7 @@ namespace lsn {
 
 	/** Performs PLP and begins the next instruction. */
 	inline void CRicoh5A22::Plp_BeginInst() {
-		LSN_INSTR_START_PHI1( false );
+		LSN_INSTR_START_PHI1( true );
 
 		m_fsState.rRegs.ui8Status = m_fsState.ui8Operand[0];
 		m_fsState.ui16SModify = 0;
@@ -2537,12 +2571,11 @@ namespace lsn {
 		SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8D[1] & 0x80) != 0 );
 		SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16D == 0 );
 
-#ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSet D to Operand. Set N based off (D.H & $80). Set Z based off D." );
-#endif	// LSN_CYCLES_DOC
-
-		// Apply pending S += 2 (set on the last stack read), then enter next instruction.
 		BeginInst<false, true, false>();
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( " Set D to Operand. Set N based off (D.H & $80). Set Z based off D." );
+#endif	// LSN_CYCLES_DOC
 	}
 
 	/**
@@ -3051,12 +3084,6 @@ namespace lsn {
 	 **/
 	template <int8_t _i8SOff, bool _bEndInstr>
 	inline void CRicoh5A22::Read_Stack_To_Operand_High_Phi2() {
-		/*const uint16_t ui16Addr = m_fsState.bEmulationMode ?
-			(0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) :
-			uint16_t( m_fsState.rRegs.ui16S + _i8SOff );
-
-		LSN_INSTR_START_PHI2_READ0_BUSA( ui16Addr, m_fsState.ui8Operand[1], m_ui8Speed );*/
-
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 			LSN_POP_SPECIAL( m_fsState.ui8Operand[1], m_ui8Speed );
 		}
@@ -3064,30 +3091,13 @@ namespace lsn {
 			LSN_POP( m_fsState.ui8Operand[1], m_ui8Speed );
 		}
 
-		/*if LSN_UNLIKELY( _bSpecial && m_fsState.rRegs.ui8D[0] != 0 ) {
-			LSN_POP_SPECIAL( m_fsState.ui8Operand[1], m_ui8Speed );
-		}
-		else {
-			LSN_POP( m_fsState.ui8Operand[1], m_ui8Speed );
-		}*/
-		//m_fsState.ui16SModify = uint16_t( _i8SOff );
-
 #ifdef LSN_CYCLES_DOC
-		if constexpr ( _bSpecial ) {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("Read ((S | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tStore as Operand.H.").c_str() );
-			}
-			else {
-				lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ")\tStore as Operand.H.").c_str() );
-			}
+		
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( ("Read ((S | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tStore as Operand.H.").c_str() );
 		}
 		else {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ") | $0100\tStore as Operand.H.").c_str() );
-			}
-			else {
-				lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ")\tStore as Operand.H.").c_str() );
-			}
+			lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ")\tStore as Operand.H.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 		
@@ -3109,11 +3119,6 @@ namespace lsn {
 	 **/
 	template <int8_t _i8SOff, bool _bEndInstr>
 	inline void CRicoh5A22::Read_Stack_To_Operand_Low_Phi2() {
-		/*const uint16_t ui16Addr = m_fsState.bEmulationMode ?
-			(0x100 | uint8_t( m_fsState.rRegs.ui8S[0] )) :
-			uint16_t( m_fsState.rRegs.ui16S );
-
-		LSN_INSTR_START_PHI2_READ0_BUSA( ui16Addr, m_fsState.ui8Operand[0], m_ui8Speed );*/
 
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 			LSN_POP_SPECIAL( m_fsState.ui8Operand[0], m_ui8Speed );
@@ -3121,19 +3126,13 @@ namespace lsn {
 		else {
 			LSN_POP( m_fsState.ui8Operand[0], m_ui8Speed );
 		}
-		/*if LSN_UNLIKELY( _bSpecial && m_fsState.rRegs.ui8D[0] != 0 ) {
-			LSN_POP_SPECIAL( m_fsState.ui8Operand[0], m_ui8Speed );
-		}
-		else {
-			LSN_POP( m_fsState.ui8Operand[0], m_ui8Speed );
-		}*/
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( "Read S | $0100\tStore as Operand.L." );
+			lsn::DebugA( ("Read ((S | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tStore as Operand.L.").c_str() );
 		}
 		else {
-			lsn::DebugA( "Read S\tStore as Operand.L." );
+			lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ")\tStore as Operand.L.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 		
@@ -3461,6 +3460,19 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
+	/** Sets the carry bit. */
+	inline void CRicoh5A22::Sec_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+		
+		SetBit<C(), true>( m_fsState.rRegs.ui8Status );
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tSets the C flag to 1." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
 	/**
 	 * Performs Operand = (Operand << 1) | C.  Sets C, N, and Z, optionally increases PC.
 	 * 
@@ -3683,7 +3695,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tIf M is set, skip the next cycle." );
+			lsn::DebugA( "\tIf M flag is set, skip the next cycle." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		LSN_INSTR_END_PHI2;
@@ -3708,7 +3720,7 @@ namespace lsn {
 
 	/** Transfer 16 bit A to S.  Sets N and Z. */
 	inline void CRicoh5A22::Tcs_BeginInst() {
-		LSN_INSTR_START_PHI1( false );
+		LSN_INSTR_START_PHI1( true );
 
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 			m_fsState.rRegs.ui16S = m_fsState.rRegs.ui8A[0];
@@ -3782,6 +3794,31 @@ namespace lsn {
 		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI1;
+	}
+
+	/** Transfer 16-bit S to A.  Sets N and Z. */
+	inline void CRicoh5A22::Tsc_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			m_fsState.rRegs.ui16A = m_fsState.rRegs.ui8S[0] | 0x0100;
+		}
+		else {
+			m_fsState.rRegs.ui16A = m_fsState.rRegs.ui16S;
+		}
+		SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[1] & 0x80 );
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "\tSet A to (S | $0100). Set N based off (A.H & $80) and Z based off A." );
+		}
+		else {
+			lsn::DebugA( "\tSet A to S. Set N based off (A.H & $80) and Z based off A." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
 	}
 
 	/**
