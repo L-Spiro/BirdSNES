@@ -115,7 +115,8 @@ namespace lsn {
 			TickPhi2();
 			if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_COP &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BPL && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BNE && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVS &&
-				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCS && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BEQ && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BMI ) {
+				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCS && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BEQ && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BMI &&
+				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVP && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVN ) {
 				if ( m_bHandleNmi != (I <= 0) ) {
 					lsn::DebugA( "\r\nDouble-check polling.\r\n" );
 				}
@@ -141,8 +142,11 @@ namespace lsn {
 		bool bErrored = false;
 		// Verify.
 		if ( m_fsState.ui8FuncIndex != 0 ) {
-			lsn::DebugA( "\r\nDid not end on BeginInst().\r\n" );
-			bErrored = true;
+			if ( (m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVP && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVN) ||
+				((m_iInstructionSet[m_fsState.ui16OpCode].iInstruction == LSN_I_MVP || m_iInstructionSet[m_fsState.ui16OpCode].iInstruction == LSN_I_MVN) && m_fsState.rRegs.ui16A == 0xFFFF) ) {
+				lsn::DebugA( "\r\nDid not end on BeginInst().\r\n" );
+				bErrored = true;
+			}
 		}
 
 #define LSN_VURIFFY( REG )																																											\

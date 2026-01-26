@@ -53,6 +53,7 @@ namespace lsn {
 			LSN_AM_INDIRECT_X,																/**< Indirect X addressing = 5 extra cycles. */
 			LSN_AM_INDIRECT_Y,																/**< Indirect Y addressing = 4 extra cycles + optional cycle. */
 			LSN_AM_INDIRECT,																/**< Absolute indirect addressing (JMP) = 4 extra cycles. */
+			LSN_AM_BLOCK_MOVE,																/**< Block Move (xyc) addressing used by the Block Move instructions. */
 		};
 
 		/** Instructions. Numbers specified because these are used in look-up tables. */
