@@ -52,7 +52,7 @@
 #define LSN_FROM_P														false
 
 #ifdef LSN_CPU_VERIFY
-#define LSN_CYCLES_DOC													1
+//#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY
 
 
@@ -383,6 +383,14 @@ namespace lsn {
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		// CYCLES
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+		/**
+		 * Performs an add-with-carry with an operand, setting flags C, N, V, and Z.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Adc_BeginInst();
+
 		/**
 		 * Adds D and operand, stores in m_fsState.ui16Address or m_fsState.ui16Pointer.
 		 * 
@@ -1023,6 +1031,17 @@ namespace lsn {
 		/** Performs RTI (sets PC/PB from pulled bytes) and begins the next instruction. */
 		void															Rti_BeginInst();
 
+		/** Returns from subroutine.  Pulls PC from stack, adds 1, begins next instruction. */
+		void															Rts_BeginInst();
+
+		/**
+		 * Performs a subtract-with-borrow with an operand, setting flags C, N, V, and Z.
+		 *
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc>
+		void															Sbc_BeginInst();
+
 		/** Sets the carry bit. */
 		void															Sec_BeginInst();
 
@@ -1138,6 +1157,48 @@ namespace lsn {
 		 */
 		template <bool _bIncPc = false, bool _bAdjS = false, bool _bCheckStartOfFunction = true>
 		inline void														BeginInst();
+
+		/**
+		 * Performs an 8-bit add-with-carry with an operand, setting flags C, N, V, and Z.
+		 *
+		 * \param _ui8RegVal The register value used in the comparison.
+		 * \param _ui8OpVal The operand value used in the comparison.
+		 */
+		inline void														Adc_8( uint8_t &_ui8RegVal, uint8_t _ui8OpVal );
+
+		/**
+		 * Performs a 16-bit add-with-carry with an operand, setting flags C, N, V, and Z.
+		 * Respects Decimal Mode (D) when enabled.
+		 *
+		 * \param _ui16RegVal The register value used in the operation.
+		 * \param _ui16OpVal The operand value used in the operation.
+		 */
+		void															Adc_16( uint16_t &_ui16RegVal, uint16_t _ui16OpVal );
+
+		/**
+		 * Performs a compare against a register and an operand by setting flags.
+		 *
+		 * \param _ui8RegVal The register value used in the comparison.
+		 * \param _ui8OpVal The operand value used in the comparison.
+		 */
+		inline void														Cmp( uint8_t _ui8RegVal, uint8_t _ui8OpVal );
+
+		/**
+		 * Performs an 8-bit subtract-with-carry with an operand, setting flags C, N, V, and Z.
+		 *
+		 * \param _ui8RegVal The register value used in the comparison.
+		 * \param _ui8OpVal The operand value used in the comparison.
+		 */
+		inline void														Sbc_8( uint8_t &_ui8RegVal, uint8_t _ui8OpVal );
+
+		/**
+		 * Performs a 16-bit subtract-with-carry with an operand, setting flags C, N, V, and Z.
+		 * Respects Decimal Mode (D) when enabled.
+		 *
+		 * \param _ui16RegVal The register value used in the operation.
+		 * \param _ui16OpVal The operand value used in the operation.
+		 */
+		void															Sbc_16( uint16_t &_ui16RegVal, uint16_t _ui16OpVal );
 	};
 
 
@@ -1154,6 +1215,41 @@ namespace lsn {
 	inline void CRicoh5A22::Tick_InstructionCycleStd() {
 		//(this->*m_iInstructionSet[m_fsState.ui16OpCode].pfHandler[m_fsState.bEmulationMode][m_fsState.ui8FuncIndex])();
 		(this->*m_fsState.pfCurInstruction[m_fsState.ui8FuncIndex])();
+	}
+
+	/**
+	 * Performs an add-with-carry with an operand, setting flags C, N, V, and Z.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	void CRicoh5A22::Adc_BeginInst() {
+		BeginInst<_bIncPc>();
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			Adc_8( m_fsState.rRegs.ui8A[0], m_fsState.ui8Operand[0] );
+		}
+		else {
+			Adc_16( m_fsState.rRegs.ui16A, m_fsState.ui16Operand );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA(
+				"\tIf D=0: Sum = A + Op + C; V = ~(A ^ Op) & (A ^ Sum) & 0x80; C = Sum > 0xFF; A = ui8(Sum)."
+				" If D=1: Lo = (A & 0x0F) + (Op & 0x0F) + C; if (Lo > 9) Lo += 6; HiSum = (A >> 4) + (Op >> 4) + (Lo > 0x0F); V = ~((A >> 4) ^ (Op >> 4)) & ((A >> 4) ^ HiSum) & 0x08; Hi = HiSum; if (Hi > 9) Hi += 6; C = Hi > 0x0F; A = ((Hi & 0x0F) << 4) | (Lo & 0x0F)."
+				" Set N based off (A.L & $80) and Z based off A.L." );
+		}
+		else {
+			lsn::DebugA( "\tIf D=0: Sum = A.L + Op.L + C; V = ~(A.L ^ Op.L) & (A.L ^ Sum) & 0x80; C = Sum > 0xFF; A.L = ui8(Sum)."
+				" If D=1: Lo = (A.L & 0x0F) + (Op.L & 0x0F) + C; if (Lo > 9) Lo += 6; HiSum = (A.L >> 4) + (Op.L >> 4) + (Lo > 0x0F); V = ~((A.L >> 4) ^ (Op.L >> 4)) & ((A.L >> 4) ^ HiSum) & 0x08; Hi = HiSum; if (Hi > 9) Hi += 6; C = Hi > 0x0F; A.L = ((Hi & 0x0F) << 4) | (Lo & 0x0F)."
+				" Set N based off (A.L & $80) and Z based off A.L."
+				" If M=0 (16-bit):"
+				" If D=0: Sum = A + Op + C; V = ~(A ^ Op) & (A ^ Sum) & 0x8000; C = Sum > 0xFFFF; A = ui16(Sum)."
+				" If D=1: Carry = C; For each nibble i (0, 4, 8, 12): Sum_i = (A_i + Op_i + Carry); if (i == 12) V = ~((A_15) ^ (Op_15)) & ((A_15) ^ Sum_15) & 0x8; if (Sum_i > 9) Sum_i += 6; Carry = (Sum_i > 0x0F); Result_i = Sum_i & 0x0F; C = Carry; A = Result."
+				" Set N based off (A.H & $80) and Z based off A." );
+		}
+#endif // #ifdef LSN_CYCLES_DOC
 	}
 
 	/**
@@ -4262,7 +4358,7 @@ namespace lsn {
 		m_fsState.rRegs.ui16Pc = m_fsState.ui16Operand;
 		m_fsState.ui16PcModify = 0;
 
-		if ( !m_fsState.bEmulationMode ) {
+		if LSN_LIKELY( !m_fsState.bEmulationMode ) {
 			m_fsState.rRegs.ui8Pb = m_fsState.ui8Bank;
 			if ( lsn::CheckBit( m_fsState.rRegs.ui8Status, X() ) ) {	
 				m_fsState.rRegs.ui16X = m_fsState.rRegs.ui8X[0];
@@ -4280,6 +4376,36 @@ namespace lsn {
 			lsn::DebugA( " Set PB to Bank. Set PC to Operand. If X flag is set, set X to X.L and Y to Y.L." );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
+	}
+
+	/** Returns from subroutine.  Pulls PC from stack, adds 1, begins next instruction. */
+	inline void CRicoh5A22::Rts_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		m_fsState.rRegs.ui16Pc = m_fsState.ui16Operand + 1;
+
+		BeginInst<false, true, false>();
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( " Set PC to (Operand + 1)." );
+#endif	// #ifdef LSN_CYCLES_DOC
+	}
+
+	/**
+	 * Performs a subtract-with-borrow with an operand, setting flags C, N, V, and Z.
+	 *
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	void CRicoh5A22::Sbc_BeginInst() {
+		BeginInst<_bIncPc>();
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			Sbc_8( m_fsState.rRegs.ui8A[0], m_fsState.ui8Operand[0] );
+		}
+		else {
+			Sbc_16( m_fsState.rRegs.ui16A, m_fsState.ui16Operand );
+		}
 	}
 
 	/** Sets the carry bit. */
@@ -4449,43 +4575,6 @@ namespace lsn {
 
 		LSN_NEXT_FUNCTION;
 
-		LSN_INSTR_END_PHI1;
-	}
-
-	/**
-	 * Prepares to enter a new instruction.
-	 *
-	 * \tparam _bIncPc If true, PC is updated.
-	 * \tparam _bAdjS If true, S is updated.
-	 * \tparam _bCheckStartOfFunction If true, the LSN_INSTR_START_PHI1( true ) macro call is embedded.
-	 */
-	template <bool _bIncPc, bool _bAdjS, bool _bCheckStartOfFunction>
-	inline void CRicoh5A22::BeginInst() {
-		if constexpr ( _bCheckStartOfFunction ) {
-			LSN_INSTR_START_PHI1( true );
-		}
-
-		if constexpr ( _bIncPc ) {
-			LSN_UPDATE_PC;
-		}
-
-		if constexpr ( _bAdjS ) {
-#ifdef LSN_CYCLES_DOC
-			if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
-				lsn::DebugA( ("\tDec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ".").c_str() );
-			}
-			else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
-				lsn::DebugA( ("\tInc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ".").c_str() );
-			}
-#endif	// #ifdef LSN_CYCLES_DOC
-			LSN_UPDATE_S;
-		}
-
-		// Enter normal instruction context.
-		m_fsState.ui8FuncIndex = 0;
-		m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_InstructionCycleStd;
-		m_fsState.bBoundaryCrossed = false;
-		//m_ui8RdyOffCnt = 0;
 		LSN_INSTR_END_PHI1;
 	}
 
@@ -4920,6 +5009,244 @@ namespace lsn {
 		}
 
 		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Prepares to enter a new instruction.
+	 *
+	 * \tparam _bIncPc If true, PC is updated.
+	 * \tparam _bAdjS If true, S is updated.
+	 * \tparam _bCheckStartOfFunction If true, the LSN_INSTR_START_PHI1( true ) macro call is embedded.
+	 */
+	template <bool _bIncPc, bool _bAdjS, bool _bCheckStartOfFunction>
+	inline void CRicoh5A22::BeginInst() {
+		if constexpr ( _bCheckStartOfFunction ) {
+			LSN_INSTR_START_PHI1( true );
+		}
+
+		if constexpr ( _bIncPc ) {
+			LSN_UPDATE_PC;
+		}
+
+		if constexpr ( _bAdjS ) {
+#ifdef LSN_CYCLES_DOC
+			if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
+				lsn::DebugA( ("\tDec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ".").c_str() );
+			}
+			else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
+				lsn::DebugA( ("\tInc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ".").c_str() );
+			}
+#endif	// #ifdef LSN_CYCLES_DOC
+			LSN_UPDATE_S;
+		}
+
+		// Enter normal instruction context.
+		m_fsState.ui8FuncIndex = 0;
+		m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_InstructionCycleStd;
+		m_fsState.bBoundaryCrossed = false;
+		//m_ui8RdyOffCnt = 0;
+		LSN_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Performs an 8-bit add-with-carry with an operand, setting flags C, N, V, and Z.
+	 *
+	 * \param _ui8RegVal The register value used in the comparison.
+	 * \param _ui8OpVal The operand value used in the comparison.
+	 */
+	inline void CRicoh5A22::Adc_8( uint8_t &_ui8RegVal, uint8_t _ui8OpVal ) {
+		const uint8_t ui8A = _ui8RegVal;
+		const uint8_t ui8CarryIn = (m_fsState.rRegs.ui8Status & C()) ? 1 : 0;
+
+		if ( (m_fsState.rRegs.ui8Status & D()) ) {
+			uint16_t ui16Lo = uint16_t( ui8A & 0x0F ) + uint16_t( _ui8OpVal & 0x0F ) + uint16_t( ui8CarryIn );
+			if ( ui16Lo > 9 ) { ui16Lo += 6; }
+			
+			const uint8_t ui8CarryToHi = (ui16Lo > 0x0F) ? 1 : 0;
+			const uint16_t ui16HiSum = uint16_t( ui8A >> 4 ) + uint16_t( _ui8OpVal >> 4 ) + uint16_t( ui8CarryToHi );
+
+			SetBit<V()>( m_fsState.rRegs.ui8Status,
+				(~((ui8A >> 4) ^ (_ui8OpVal >> 4)) & ((ui8A >> 4) ^ ui16HiSum) & 0x08) != 0 );
+
+			uint16_t ui16Hi = ui16HiSum;
+			if ( ui16Hi > 9 ) { ui16Hi += 6; }
+
+			SetBit<C()>( m_fsState.rRegs.ui8Status, ui16Hi > 0x0F );
+
+			_ui8RegVal = uint8_t( ((ui16Hi & 0x0F) << 4) | (ui16Lo & 0x0F) );
+
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui8RegVal == 0x00 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (_ui8RegVal & 0x80) != 0 );
+		}
+		else {
+			const uint16_t ui16Result = uint16_t( ui8A ) + uint16_t( _ui8OpVal ) + uint16_t( ui8CarryIn );
+
+			SetBit<V()>( m_fsState.rRegs.ui8Status,
+				(~(uint16_t( ui8A ) ^ uint16_t( _ui8OpVal )) & (uint16_t( ui8A ) ^ (uint8_t)ui16Result) & 0x0080) != 0 );
+
+			_ui8RegVal = uint8_t( ui16Result );
+
+			SetBit<C()>( m_fsState.rRegs.ui8Status, ui16Result > 0x00FF );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui8RegVal == 0x00 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (_ui8RegVal & 0x80) != 0 );
+		}
+	}
+
+	/**
+	 * Performs a 16-bit add-with-carry with an operand, setting flags C, N, V, and Z.
+	 * Respects Decimal Mode (D) when enabled.
+	 *
+	 * \param _ui16RegVal The register value used in the operation.
+	 * \param _ui16OpVal The operand value used in the operation.
+	 */
+	inline void CRicoh5A22::Adc_16( uint16_t &_ui16RegVal, uint16_t _ui16OpVal ) {
+		const uint16_t ui16A = _ui16RegVal;
+		const uint16_t ui16CarryIn = (m_fsState.rRegs.ui8Status & C()) ? 1 : 0;
+
+		if ( (m_fsState.rRegs.ui8Status & D()) ) {
+			uint16_t ui16Res = 0;
+			uint16_t ui16Carry = ui16CarryIn;
+
+			for ( int32_t I = 0; I < 16; I += 4 ) {
+				uint16_t ui16DigitSum = uint16_t( (ui16A >> I) & 0x000F ) + uint16_t( (_ui16OpVal >> I) & 0x000F ) + ui16Carry;
+
+				if ( I == 12 ) {
+					SetBit<V()>( m_fsState.rRegs.ui8Status,
+						(~((ui16A >> 12) ^ (_ui16OpVal >> 12)) & ((ui16A >> 12) ^ ui16DigitSum) & 0x08) != 0 );
+				}
+
+				if ( ui16DigitSum > 9 ) { ui16DigitSum += 6; }
+
+				ui16Carry = (ui16DigitSum > 0x000F) ? 1 : 0;
+				ui16Res |= uint16_t( (ui16DigitSum & 0x000F) << I );
+			}
+
+			_ui16RegVal = ui16Res;
+
+			SetBit<C()>( m_fsState.rRegs.ui8Status, ui16Carry != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui16RegVal == 0x0000 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (_ui16RegVal & 0x8000) != 0 );
+		}
+		else {
+			const uint32_t ui32Result = uint32_t( ui16A ) + uint32_t( _ui16OpVal ) + uint32_t( ui16CarryIn );
+
+			SetBit<V()>( m_fsState.rRegs.ui8Status,
+				(~(uint32_t( ui16A ) ^ uint32_t( _ui16OpVal )) & (uint32_t( ui16A ) ^ (uint16_t)ui32Result) & 0x00008000) != 0 );
+
+			_ui16RegVal = uint16_t( ui32Result );
+
+			SetBit<C()>( m_fsState.rRegs.ui8Status, ui32Result > 0xFFFF );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui16RegVal == 0x0000 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (_ui16RegVal & 0x8000) != 0 );
+		}
+	}
+
+	/**
+	 * Performs a compare against a register and an operand by setting flags.
+	 *
+	 * \param _ui8RegVal The register value used in the comparison.
+	 * \param _ui8OpVal The operand value used in the comparison.
+	 */
+	inline void CRicoh5A22::Cmp( uint8_t _ui8RegVal, uint8_t _ui8OpVal ) {
+		// If the value in the register is equal or greater than the compared value, the Carry will be set.
+		SetBit<C()>( m_fsState.rRegs.ui8Status, _ui8RegVal >= _ui8OpVal );
+		// The equal (Z) and negative (N) flags will be set based on equality or lack thereof...
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui8RegVal == _ui8OpVal );
+		// ...and the sign (IE A>=$80) of the register.
+		SetBit<N()>( m_fsState.rRegs.ui8Status, ((_ui8RegVal - _ui8OpVal) & 0x80) != 0 );
+	}
+
+	/**
+	 * Performs an 8-bit subtract-with-carry with an operand, setting flags C, N, V, and Z.
+	 *
+	 * \param _ui8RegVal The register value used in the comparison.
+	 * \param _ui8OpVal The operand value used in the comparison.
+	 */
+	inline void CRicoh5A22::Sbc_8( uint8_t &_ui8RegVal, uint8_t _ui8OpVal ) {
+		const uint8_t ui8A = _ui8RegVal;
+		const uint8_t ui8CarryIn = (m_fsState.rRegs.ui8Status & C()) ? 1 : 0;
+
+		if ( (m_fsState.rRegs.ui8Status & D()) ) {
+			int16_t i16Lo = int16_t( ui8A & 0x0F ) - int16_t( _ui8OpVal & 0x0F ) - (1 - ui8CarryIn);
+			if ( i16Lo < 0 ) { i16Lo -= 6; }
+			
+			const int16_t i16BorrowToHi = (i16Lo < 0) ? 1 : 0;
+			const int16_t i16HiSum = int16_t( ui8A >> 4 ) - int16_t( _ui8OpVal >> 4 ) - i16BorrowToHi;
+
+			SetBit<V()>( m_fsState.rRegs.ui8Status,
+				(((ui8A >> 4) ^ (_ui8OpVal >> 4)) & ((ui8A >> 4) ^ i16HiSum) & 0x08) != 0 );
+
+			int16_t i16Hi = i16HiSum;
+			if ( i16Hi < 0 ) { i16Hi -= 6; }
+
+			SetBit<C()>( m_fsState.rRegs.ui8Status, i16Hi >= 0 );
+
+			_ui8RegVal = uint8_t( ((i16Hi & 0x0F) << 4) | (i16Lo & 0x0F) );
+
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui8RegVal == 0x00 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (_ui8RegVal & 0x80) != 0 );
+		}
+		else {
+			const uint32_t ui32Result = uint32_t( ui8A ) - uint32_t( _ui8OpVal ) - (1 - ui8CarryIn);
+
+			SetBit<V()>( m_fsState.rRegs.ui8Status,
+				(((uint16_t( ui8A ) ^ uint16_t( _ui8OpVal )) & (uint16_t( ui8A ) ^ (uint16_t)ui32Result) & 0x0080) != 0) );
+
+			_ui8RegVal = uint8_t( ui32Result );
+
+			SetBit<C()>( m_fsState.rRegs.ui8Status, ui32Result <= 0xFF );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui8RegVal == 0x00 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (_ui8RegVal & 0x80) != 0 );
+		}
+	}
+
+	/**
+	 * Performs a 16-bit subtract-with-carry with an operand, setting flags C, N, V, and Z.
+	 * Respects Decimal Mode (D) when enabled.
+	 *
+	 * \param _ui16RegVal The register value used in the operation.
+	 * \param _ui16OpVal The operand value used in the operation.
+	 */
+	inline void CRicoh5A22::Sbc_16( uint16_t &_ui16RegVal, uint16_t _ui16OpVal ) {
+		const uint16_t ui16A = _ui16RegVal;
+		const uint16_t ui16CarryIn = (m_fsState.rRegs.ui8Status & C()) ? 1 : 0;
+
+		if ( (m_fsState.rRegs.ui8Status & D()) ) {
+			uint16_t ui16Res = 0;
+			int16_t i16Borrow = (1 - ui16CarryIn);
+
+			for ( int32_t i = 0; i < 16; i += 4 ) {
+				int16_t i16DigitSum = int16_t( (ui16A >> i) & 0x000F ) - int16_t( (_ui16OpVal >> i) & 0x000F ) - i16Borrow;
+				
+				if ( i == 12 ) {
+					SetBit<V()>( m_fsState.rRegs.ui8Status,
+						(((ui16A >> 12) ^ (_ui16OpVal >> 12)) & ((ui16A >> 12) ^ i16DigitSum) & 0x08) != 0 );
+				}
+
+				if ( i16DigitSum < 0 ) { i16DigitSum -= 6; }
+
+				i16Borrow = (i16DigitSum < 0) ? 1 : 0;
+				ui16Res |= uint16_t( (i16DigitSum & 0x000F) << i );
+			}
+
+			_ui16RegVal = ui16Res;
+
+			SetBit<C()>( m_fsState.rRegs.ui8Status, i16Borrow == 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui16RegVal == 0x0000 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (_ui16RegVal & 0x8000) != 0 );
+		}
+		else {
+			const uint32_t ui32Result = uint32_t( ui16A ) - uint32_t( _ui16OpVal ) - (1 - ui16CarryIn);
+
+			SetBit<V()>( m_fsState.rRegs.ui8Status,
+				(((uint32_t( ui16A ) ^ uint32_t( _ui16OpVal )) & (uint32_t( ui16A ) ^ (uint32_t)ui32Result) & 0x00008000) != 0) );
+
+			_ui16RegVal = uint16_t( ui32Result );
+
+			SetBit<C()>( m_fsState.rRegs.ui8Status, ui32Result <= 0xFFFF );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui16RegVal == 0x0000 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (_ui16RegVal & 0x8000) != 0 );
+		}
 	}
 
 #pragma warning( pop )

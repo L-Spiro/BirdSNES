@@ -110,8 +110,8 @@ namespace lsn {
 			else {
 				lsn::DebugA( " -X.2\tRead PC:PB\t" );
 			}
-			++i32Cnt;
 #endif	// #ifdef LSN_CYCLES_DOC
+			++i32Cnt;
 			TickPhi2();
 			if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_COP &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BPL && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BNE && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVS &&
