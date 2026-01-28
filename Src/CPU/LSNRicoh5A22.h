@@ -718,6 +718,9 @@ namespace lsn {
 		template <bool _bIncPc = false>
 		void															Ora();
 
+		/** Increases m_fsState.rRegs.ui16Pc and then sets m_fsState.ui16Operand to m_fsState.ui16Operand + m_fsState.rRegs.ui16Pc. */
+		void															Per_IncPc();
+
 		/** Sets m_fsState.ui8Operand[0] to the status byte with Break (X) and Reserved (M) set. */
 		void															Php();
 
@@ -760,6 +763,14 @@ namespace lsn {
 		 **/
 		template <int8_t _i8SOff = -1, bool _bEndInstr = true>
 		void															Push_D_Low_Phi2();
+
+		/**
+		 * Pushes m_fsState.ui8Operand[1].
+		 * 
+		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 **/
+		template <int8_t _i8SOff = 0>
+		void															Push_Operand_High_Phi2();
 
 		/**
 		 * Pushes m_fsState.ui8Operand[0].
@@ -1089,6 +1100,44 @@ namespace lsn {
 		void															Wdm_BeginInst();
 
 		/**
+		 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Address or m_fsState.ui16Pointer.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
+		void															WriteBank0_Operand_High_To_AddrOrPtr_Phi2();
+
+		/**
+		 * Writes m_fsState.ui8Operand[0] to m_fsState.ui16Address or m_fsState.ui16Pointer.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
+		void															WriteBank0_Operand_Low_To_AddrOrPtr_SkipIfM_Phi2();
+
+		/**
+		 * Writes 0 to m_fsState.ui16Address + 1 or m_fsState.ui16Pointer + 1.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
+		void															WriteBank0_Zero_High_To_AddrOrPtr_Phi2();
+
+		/**
+		 * Writes 0 to m_fsState.ui16Address or m_fsState.ui16Pointer.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
+		void															WriteBank0_Zero_Low_To_AddrOrPtr_SkipIfM_Phi2();
+
+		/**
 		 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Address or m_fsState.ui16Pointer with bank.
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
@@ -1109,25 +1158,6 @@ namespace lsn {
 		 * Writes m_fsState.ui8Operand[0] to [m_fsState.rRegs.ui16Y:m_fsState.ui8Pointer[0]] for MVP.
 		 */
 		void															Write_Operand_Low_To_Y_And_DB_Phi2();
-
-		/**
-		 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Address or m_fsState.ui16Pointer.
-		 * 
-		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
-		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
-		 **/
-		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
-		void															WriteBank0_Operand_High_To_AddrOrPtr_Phi2();
-
-		/**
-		 * Writes m_fsState.ui8Operand[0] to m_fsState.ui16Address or m_fsState.ui16Pointer.
-		 * 
-		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
-		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
-		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
-		 **/
-		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
-		void															WriteBank0_Operand_Low_To_AddrOrPtr_SkipIfM_Phi2();
 
 		/**
 		 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank.
@@ -1236,18 +1266,56 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 			lsn::DebugA(
-				"\tIf D=0: Sum = A + Op + C; V = ~(A ^ Op) & (A ^ Sum) & 0x80; C = Sum > 0xFF; A = ui8(Sum)."
-				" If D=1: Lo = (A & 0x0F) + (Op & 0x0F) + C; if (Lo > 9) Lo += 6; HiSum = (A >> 4) + (Op >> 4) + (Lo > 0x0F); V = ~((A >> 4) ^ (Op >> 4)) & ((A >> 4) ^ HiSum) & 0x08; Hi = HiSum; if (Hi > 9) Hi += 6; C = Hi > 0x0F; A = ((Hi & 0x0F) << 4) | (Lo & 0x0F)."
-				" Set N based off (A.L & $80) and Z based off A.L." );
+				"\tIf D flag == 0:\r\n"
+				"\t\t  Result = ui16(A.L) + ui16(Operand) + C.\r\n"
+				"\t\t  V flag = (~(ui16(A.L) ^ ui16(Operand)) & (ui16(A.L) ^ ui8(Result)) & $80) != 0.\r\n"
+				"\t\t  C flag = Result > $FF.\r\n"
+				"\t\t  Result = ui8(Result). Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n"
+				"\t\tIf D flag == 1:\r\n"
+				"\t\t  Lo = ui16(A.L & 0x0F) + ui16(Operand & 0x0F) + C;\r\n"
+				"\t\t  if (Lo > 9) Lo += 6.\r\n"
+				"\t\t  CarryToHi = Lo > $0F ? 1 : 0.\r\n"
+				"\t\t  HiSum = ui16(A.L >> 4) + ui16(Operand >> 4) + CarryToHi.\r\n"
+				"\t\t  V flag = (~((A.L >> 4) ^ (Operand >> 4)) & ((A.L >> 4) ^ HiSum) & $08) != 0.\r\n"
+				"\t\t  if (HiSum > 9) HiSum += 6.\r\n"
+				"\t\t  C flag = HiSum > $0F.\r\n"
+				"\t\t  Result = ui8(((HiSum & 0x0F) << 4) | (Lo & $0F)).\r\n"
+				"\t\t  Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n" );
 		}
 		else {
-			lsn::DebugA( "\tIf D=0: Sum = A.L + Op.L + C; V = ~(A.L ^ Op.L) & (A.L ^ Sum) & 0x80; C = Sum > 0xFF; A.L = ui8(Sum)."
-				" If D=1: Lo = (A.L & 0x0F) + (Op.L & 0x0F) + C; if (Lo > 9) Lo += 6; HiSum = (A.L >> 4) + (Op.L >> 4) + (Lo > 0x0F); V = ~((A.L >> 4) ^ (Op.L >> 4)) & ((A.L >> 4) ^ HiSum) & 0x08; Hi = HiSum; if (Hi > 9) Hi += 6; C = Hi > 0x0F; A.L = ((Hi & 0x0F) << 4) | (Lo & 0x0F)."
-				" Set N based off (A.L & $80) and Z based off A.L."
-				" If M=0 (16-bit):"
-				" If D=0: Sum = A + Op + C; V = ~(A ^ Op) & (A ^ Sum) & 0x8000; C = Sum > 0xFFFF; A = ui16(Sum)."
-				" If D=1: Carry = C; For each nibble i (0, 4, 8, 12): Sum_i = (A_i + Op_i + Carry); if (i == 12) V = ~((A_15) ^ (Op_15)) & ((A_15) ^ Sum_15) & 0x8; if (Sum_i > 9) Sum_i += 6; Carry = (Sum_i > 0x0F); Result_i = Sum_i & 0x0F; C = Carry; A = Result."
-				" Set N based off (A.H & $80) and Z based off A." );
+			lsn::DebugA( 
+				"\tIf M flag == 0 (8-bit):\r\n"
+				"\t\t  If D flag == 0:\r\n"
+				"\t\t    Result = ui16(A.L) + ui16(Operand) + C.\r\n"
+				"\t\t    V flag = (~(ui16(A.L) ^ ui16(Operand)) & (ui16(A.L) ^ ui8(Result)) & $80) != 0.\r\n"
+				"\t\t    C flag = Result > $FF.\r\n"
+				"\t\t    Result = ui8(Result). Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n"
+				"\t\t  If D flag == 1:\r\n"
+				"\t\t    Lo = ui16(A.L & 0x0F) + ui16(Operand & 0x0F) + C;\r\n"
+				"\t\t    if (Lo > 9) Lo += 6.\r\n"
+				"\t\t    CarryToHi = Lo > $0F ? 1 : 0.\r\n"
+				"\t\t    HiSum = ui16(A.L >> 4) + ui16(Operand >> 4) + CarryToHi.\r\n"
+				"\t\t    V flag = (~((A.L >> 4) ^ (Operand >> 4)) & ((A.L >> 4) ^ HiSum) & $08) != 0.\r\n"
+				"\t\t    if (HiSum > 9) HiSum += 6.\r\n"
+				"\t\t    C flag = HiSum > $0F.\r\n"
+				"\t\t    Result = ui8(((HiSum & 0x0F) << 4) | (Lo & $0F)).\r\n"
+				"\t\t    Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n"
+				"\t\tIf M flag == 0 (16-bit):\r\n"
+				"\t\t  If D flag == 0:\r\n"
+				"\t\t    Result = ui32(A) + ui32(Operand) + C.\r\n"
+				"\t\t    V flag = (~(ui32(A) ^ ui32(Operand)) & (ui32(A) ^ ui16(Result)) & $8000) != 0 ).\r\n"
+				"\t\t    C flag = Result > $FFFF.\r\n"
+				"\t\t    Result = ui16(Result).\r\n"
+				"\t\t    Z flag = Result == $0000. N flag = (Result & $8000) != 0.\r\n"
+				"\t\t  If D flag == 1:\r\n"
+				"\t\t    Result = ui16(0). Carry = ui16(C).\r\n"
+				"\t\t    for i = 0, 4, 8, 12:\r\n"
+				"\t\t      DigitSum = ui16((A >> i) & $0F) + ui16((Operand >> i) & $0F) + Carry.\r\n"
+				"\t\t      if (i == 12) V flag = (~((A >> 12) ^ (Operand >> 12)) & ((A >> 12) ^ DigitSum) & $08) != 0.\r\n"
+				"\t\t      if (DigitSum > 9) DigitSum += 6.\r\n"
+				"\t\t      Carry = (DigitSum > $0F) ? 1 : 0.\r\n"
+				"\t\t      Result |= ui16((DigitSum & $0F) << i).\r\n"
+				"\t\t    C flag = Carry != 0. Z flag = Result != $0000. N flag = (Result & $8000) != 0." );
 		}
 #endif // #ifdef LSN_CYCLES_DOC
 	}
@@ -2518,7 +2586,7 @@ namespace lsn {
 		else {
 			m_fsState.ui8Pointer[1] = ui8Op;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read PC:PB.\tStore as Pointer.H." );
+			lsn::DebugA( "Read PC:PB\tStore as Pointer.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		m_fsState.ui16PcModify = 1;
@@ -2552,7 +2620,7 @@ namespace lsn {
 		else {
 			m_fsState.ui16Pointer = ui8Op;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read PC:PB.\tStore as Pointer." );
+			lsn::DebugA( "Read PC:PB\tStore as Pointer." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		m_fsState.ui16PcModify = 1;
@@ -3052,6 +3120,23 @@ namespace lsn {
 		BeginInst<_bIncPc, false, false>();
 	}
 
+	/** Increases m_fsState.rRegs.ui16Pc and then sets m_fsState.ui16Operand to m_fsState.ui16Operand + m_fsState.rRegs.ui16Pc. */
+	inline void CRicoh5A22::Per_IncPc() {
+		LSN_INSTR_START_PHI1( false );
+
+		LSN_UPDATE_PC;
+
+		m_fsState.ui16Operand += m_fsState.rRegs.ui16Pc;
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tInc. PC. Set Operand to Operand + PC." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
+	}
+
 	/** Sets m_fsState.ui8Operand[0] to the status byte with Break (X) and Reserved (M) set. */
 	inline void CRicoh5A22::Php() {
 		LSN_INSTR_START_PHI1( false );
@@ -3232,18 +3317,41 @@ namespace lsn {
 	}
 
 	/**
-	 * Pushes m_fsState.ui8Operand[0].
+	 * Pushes m_fsState.ui8Operand[1].
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
-		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 **/
-	template <int8_t _i8SOff, bool _bEndInstr>
-	inline void CRicoh5A22::Push_Operand_Low_Phi2() {
-		LSN_PUSH( m_fsState.ui8Operand[0], m_ui8Speed );
+	template <int8_t _i8SOff>
+	inline void CRicoh5A22::Push_Operand_High_Phi2() {
+		LSN_PUSH_SPECIAL( m_fsState.ui8Operand[1], m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush Operand.L onto stack.").c_str() );
+			lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.H onto stack.").c_str() );
+		}
+		else {
+			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.H onto stack.").c_str() );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Pushes m_fsState.ui8Operand[0].
+	 * 
+	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <int8_t _i8SOff, bool _bEndInstr>
+	inline void CRicoh5A22::Push_Operand_Low_Phi2() {
+		LSN_PUSH_SPECIAL( m_fsState.ui8Operand[0], m_ui8Speed );
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.L onto stack.").c_str() );
 		}
 		else {
 			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.L onto stack.").c_str() );
@@ -4406,6 +4514,62 @@ namespace lsn {
 		else {
 			Sbc_16( m_fsState.rRegs.ui16A, m_fsState.ui16Operand );
 		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA(
+				"\tIf D flag == 0:\r\n"
+				"\t\t  Result = ui16(A.L) - ui16(Operand) - (1 - C).\r\n"
+				"\t\t  V flag = ((ui16(A.L) ^ ui16(Operand)) & (ui16(A.L) ^ ui8(Result)) & $80) != 0.\r\n"
+				"\t\t  C flag = Result <= $FF.\r\n"
+				"\t\t  Result = ui8(Result). Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n"
+				"\t\tIf D flag == 1:\r\n"
+				"\t\t  Lo = int16(A.L & 0x0F) - int16(Operand & 0x0F) - (1 - C);\r\n"
+				"\t\t  if (Lo < 0) Lo -= 6.\r\n"
+				"\t\t  BorrowToHi = Lo < 0 ? 1 : 0.\r\n"
+				"\t\t  HiSum = int16(A.L >> 4) - int16(Operand >> 4) - BorrowToHi.\r\n"
+				"\t\t  V flag = (((A.L >> 4) ^ (Operand >> 4)) & ((A.L >> 4) ^ HiSum) & $08) != 0.\r\n"
+				"\t\t  if (HiSum < 0) HiSum -= 6.\r\n"
+				"\t\t  C flag = HiSum >= 0.\r\n"
+				"\t\t  Result = ui8(((HiSum & 0x0F) << 4) | (Lo & $0F)).\r\n"
+				"\t\t  Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n" );
+		}
+		else {
+			lsn::DebugA( 
+				"\tIf M flag == 1 (8-bit):\r\n"
+				"\t\t  If D flag == 0:\r\n"
+				"\t\t    Result = ui16(A.L) - ui16(Operand) - (1 - C).\r\n"
+				"\t\t    V flag = ((ui16(A.L) ^ ui16(Operand)) & (ui16(A.L) ^ ui8(Result)) & $80) != 0.\r\n"
+				"\t\t    C flag = Result <= $FF.\r\n"
+				"\t\t    Result = ui8(Result). Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n"
+				"\t\t  If D flag == 1:\r\n"
+				"\t\t    Lo = int16(A.L & 0x0F) - int16(Operand & 0x0F) - (1 - C);\r\n"
+				"\t\t    if (Lo < 0) Lo -= 6.\r\n"
+				"\t\t    BorrowToHi = Lo < 0 ? 1 : 0.\r\n"
+				"\t\t    HiSum = int16(A.L >> 4) - int16(Operand >> 4) - BorrowToHi.\r\n"
+				"\t\t    V flag = (((A.L >> 4) ^ (Operand >> 4)) & ((A.L >> 4) ^ HiSum) & $08) != 0.\r\n"
+				"\t\t    if (HiSum < 0) HiSum -= 6.\r\n"
+				"\t\t    C flag = HiSum >= 0.\r\n"
+				"\t\t    Result = ui8(((HiSum & 0x0F) << 4) | (Lo & $0F)).\r\n"
+				"\t\t    Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n"
+				"\t\tIf M flag == 0 (16-bit):\r\n"
+				"\t\t  If D flag == 0:\r\n"
+				"\t\t    Result = ui32(A) - ui32(Operand) - (1 - C).\r\n"
+				"\t\t    V flag = ((ui32(A) ^ ui32(Operand)) & (ui32(A) ^ ui16(Result)) & $8000) != 0.\r\n"
+				"\t\t    C flag = Result <= $FFFF.\r\n"
+				"\t\t    Result = ui16(Result).\r\n"
+				"\t\t    Z flag = Result == $0000. N flag = (Result & $8000) != 0.\r\n"
+				"\t\t  If D flag == 1:\r\n"
+				"\t\t    Result = ui16(0). Borrow = ui16(1 - C).\r\n"
+				"\t\t    for i = 0, 4, 8, 12:\r\n"
+				"\t\t      DigitSum = int16((A >> i) & $0F) - int16((Operand >> i) & $0F) - Borrow.\r\n"
+				"\t\t      if (i == 12) V flag = (((A >> 12) ^ (Operand >> 12)) & ((A >> 12) ^ DigitSum) & $08) != 0.\r\n"
+				"\t\t      if (DigitSum < 0) DigitSum -= 6.\r\n"
+				"\t\t      Borrow = (DigitSum < 0) ? 1 : 0.\r\n"
+				"\t\t      Result |= ui16((DigitSum & $0F) << i).\r\n"
+				"\t\t    C flag = Borrow == 0. Z flag = Result == $0000. N flag = (Result & $8000) != 0." );
+		}
+#endif // #ifdef LSN_CYCLES_DOC
 	}
 
 	/** Sets the carry bit. */
@@ -4759,6 +4923,171 @@ namespace lsn {
 		BeginInst<true, false, false>();
 	}
 
+	/**
+	 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Address or m_fsState.ui16Pointer.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_Operand_High_To_AddrOrPtr_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address + 1, m_fsState.ui8Operand[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address + 1\tWrite Operand.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Operand[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer + 1\tWrite Operand.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes m_fsState.ui8Operand[0] to m_fsState.ui16Address or m_fsState.ui16Pointer.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_Operand_Low_To_AddrOrPtr_SkipIfM_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address, m_fsState.ui8Operand[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address\tWrite Operand.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer, m_fsState.ui8Operand[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer\tWrite Operand.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+		if constexpr ( _bSkipIfM ) {
+			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If M flag is set, skip the next cycle." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			if constexpr ( _bEndInstr ) {
+				LSN_FINISH_INST( true );
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes 0 to m_fsState.ui16Address + 1 or m_fsState.ui16Pointer + 1.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_Zero_High_To_AddrOrPtr_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address + 1, 0, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address + 1\tWrite 0." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer + 1, 0, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer + 1\tWrite 0." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes 0 to m_fsState.ui16Address or m_fsState.ui16Pointer.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_Zero_Low_To_AddrOrPtr_SkipIfM_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address, 0, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address\tWrite 0." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer, 0, m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer\tWrite 0." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+		if constexpr ( _bSkipIfM ) {
+			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If M flag is set, skip the next cycle." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			if constexpr ( _bEndInstr ) {
+				LSN_FINISH_INST( true );
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
 
 	/**
 	 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Address or m_fsState.ui16Pointer with bank.
@@ -4847,89 +5176,6 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		LSN_NEXT_FUNCTION;
-
-		LSN_INSTR_END_PHI2;
-	}
-
-	/**
-	 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Address or m_fsState.ui16Pointer.
-	 * 
-	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
-	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
-	 **/
-	template <bool _bTo, bool _bEndInstr>
-	inline void CRicoh5A22::WriteBank0_Operand_High_To_AddrOrPtr_Phi2() {
-		if constexpr ( _bTo == LSN_TO_A ) {
-			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address + 1, m_fsState.ui8Operand[1], m_ui8Speed );
-#ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Write to Address + 1\tWrite Operand.H." );
-#endif	// #ifdef LSN_CYCLES_DOC
-		}
-		else {
-			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Operand[1], m_ui8Speed );
-#ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Write to Pointer + 1\tWrite Operand.H." );
-#endif	// #ifdef LSN_CYCLES_DOC
-		}
-		
-		if constexpr ( _bEndInstr ) {
-			LSN_FINISH_INST( true );
-		}
-		else {
-			LSN_NEXT_FUNCTION;
-		}
-
-		LSN_INSTR_END_PHI2;
-	}
-
-	/**
-	 * Writes m_fsState.ui8Operand[0] to m_fsState.ui16Address or m_fsState.ui16Pointer.
-	 * 
-	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
-	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
-	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
-	 **/
-	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr>
-	inline void CRicoh5A22::WriteBank0_Operand_Low_To_AddrOrPtr_SkipIfM_Phi2() {
-		if constexpr ( _bTo == LSN_TO_A ) {
-			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address, m_fsState.ui8Operand[0], m_ui8Speed );
-#ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Write to Address\tWrite Operand.L." );
-#endif	// #ifdef LSN_CYCLES_DOC
-		}
-		else {
-			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer, m_fsState.ui8Operand[0], m_ui8Speed );
-#ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Write to Pointer\tWrite Operand.L." );
-#endif	// #ifdef LSN_CYCLES_DOC
-		}
-
-		if constexpr ( _bSkipIfM ) {
-			if ( (m_fsState.rRegs.ui8Status & M()) ) {
-				LSN_NEXT_FUNCTION_BY( 2 );
-
-				if constexpr ( _bEndInstr ) {
-					LSN_FINISH_INST( true );
-				}
-				else {
-					LSN_NEXT_FUNCTION;
-				}
-			}
-			else {
-				LSN_NEXT_FUNCTION;
-			}
-#ifdef LSN_CYCLES_DOC
-			lsn::DebugA( " If M flag is set, skip the next cycle." );
-#endif	// #ifdef LSN_CYCLES_DOC
-		}
-		else {
-			if constexpr ( _bEndInstr ) {
-				LSN_FINISH_INST( true );
-			}
-			else {
-				LSN_NEXT_FUNCTION;
-			}
-		}
 
 		LSN_INSTR_END_PHI2;
 	}
@@ -5056,7 +5302,7 @@ namespace lsn {
 	 */
 	inline void CRicoh5A22::Adc_8( uint8_t &_ui8RegVal, uint8_t _ui8OpVal ) {
 		const uint8_t ui8A = _ui8RegVal;
-		const uint8_t ui8CarryIn = (m_fsState.rRegs.ui8Status & C()) ? 1 : 0;
+		const uint8_t ui8CarryIn = m_fsState.rRegs.ui8Status & C();
 
 		if ( (m_fsState.rRegs.ui8Status & D()) ) {
 			uint16_t ui16Lo = uint16_t( ui8A & 0x0F ) + uint16_t( _ui8OpVal & 0x0F ) + uint16_t( ui8CarryIn );
@@ -5101,7 +5347,7 @@ namespace lsn {
 	 */
 	inline void CRicoh5A22::Adc_16( uint16_t &_ui16RegVal, uint16_t _ui16OpVal ) {
 		const uint16_t ui16A = _ui16RegVal;
-		const uint16_t ui16CarryIn = (m_fsState.rRegs.ui8Status & C()) ? 1 : 0;
+		const uint16_t ui16CarryIn = m_fsState.rRegs.ui8Status & C();
 
 		if ( (m_fsState.rRegs.ui8Status & D()) ) {
 			uint16_t ui16Res = 0;

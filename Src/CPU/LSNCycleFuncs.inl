@@ -829,5 +829,51 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		// 61
 		LSN_INDIRECT_X_R( ADC, Adc_BeginInst )
 	},
+	{	// 62
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_Phi2<false, false>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_High_IncPc<false>,
+				&CRicoh5A22::Per_IncPc,														&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_High_Phi2<0>,
+				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
+				&CRicoh5A22::BeginInst<false, true>,
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_Phi2<false, false>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_High_IncPc<false>,
+				&CRicoh5A22::Per_IncPc,														&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_High_Phi2<0>,
+				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
+				&CRicoh5A22::BeginInst<false, true>,
+			},
+		},
+		6, 6, LSN_AM_IMPLIED, 3, 3, LSN_I_PER, "PER", "Implied"
+	},
+	{	// 63
+		LSN_STACK_RELATIVE_R( ADC, Adc_BeginInst )
+	},
+	{	// 64
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>,			&CRicoh5A22::WriteBank0_Zero_Low_To_AddrOrPtr_SkipIfM_Phi2<LSN_TO_A, true, true>,
+				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::WriteBank0_Zero_High_To_AddrOrPtr_Phi2<LSN_TO_A, true>,
+				&CRicoh5A22::BeginInst,
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>,			&CRicoh5A22::WriteBank0_Zero_Low_To_AddrOrPtr_SkipIfM_Phi2<LSN_TO_A, false, true>,
+				&CRicoh5A22::BeginInst,
+			},
+		},
+		3, 3, LSN_AM_DIRECT_PAGE, 2, 2, LSN_I_STZ, "STZ", "Direct (Write)"
+	},
 };
 
