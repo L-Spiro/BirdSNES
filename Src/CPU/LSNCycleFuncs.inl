@@ -10,7 +10,7 @@
 #define LSN_DIRECT_PAGE_WITH_X_R( NAME, FUNC )												{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<false>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_X_D_Operator_To_AddrOrPtr_IncPc_SkipOnDl<LSN_TO_A, false, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, true, true>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_Phi2<LSN_FROM_A, true>, &CRicoh5A22::FUNC }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<false>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_X_D_Operator_To_AddrOrPtr_IncPc_SkipOnDl<LSN_TO_A, false, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, false, true>, &CRicoh5A22::FUNC }, }, 4, 4, LSN_AM_DIRECT_PAGE_INDEXED_X, 2, 2, LSN_I_ ## NAME, #NAME, "Direct, X (Read)"
 #define LSN_DIRECT_PAGE_WITH_X_RMW( NAME, FUNC )											{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<false>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_X_D_Operator_To_AddrOrPtr_IncPc_SkipOnDl<LSN_TO_A, false, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, true, false>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_Phi2<LSN_FROM_A, false>, &CRicoh5A22::FUNC, &CRicoh5A22::Null_Phi2<true>, &CRicoh5A22::Null<LSN_W>, &CRicoh5A22::WriteBank0_Operand_High_To_AddrOrPtr_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_W>, &CRicoh5A22::WriteBank0_Operand_Low_To_AddrOrPtr_SkipIfM_Phi2<LSN_TO_A, false, true>, &CRicoh5A22::Null<LSN_R, false, false, true> }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<false>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_X_D_Operator_To_AddrOrPtr_IncPc_SkipOnDl<LSN_TO_A, false, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, false, false>, &CRicoh5A22::Null<LSN_W>, &CRicoh5A22::WriteBank0_Operand_Low_To_AddrOrPtr_SkipIfM_Phi2<LSN_TO_A, false, false>, &CRicoh5A22::FUNC, &CRicoh5A22::WriteBank0_Operand_Low_To_AddrOrPtr_SkipIfM_Phi2<LSN_TO_A, false, true>, &CRicoh5A22::Null<LSN_R, false, false, true> }, }, 6, 6, LSN_AM_DIRECT_PAGE_INDEXED_X, 2, 2, LSN_I_ ## NAME, #NAME, "Direct, X (Read/Modify/Write)"
 
-#define LSN_DIRECT_PAGE_INDIRECT_R( NAME, FUNC )											{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_TO_P, false>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2<LSN_TO_P>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_P, true, true>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_High_Phi2<LSN_FROM_P, true>, &CRicoh5A22::FUNC }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_TO_P, false>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2<LSN_TO_P>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_P, false, true>, &CRicoh5A22::FUNC }, }, 5, 5, LSN_AM_DIRECT_PAGE_INDIRECT, 2, 2, LSN_I_ ## NAME, #NAME, "Direct Indirect (Read)"
+#define LSN_DIRECT_PAGE_INDIRECT_R( NAME, FUNC )											{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_TO_P, false>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2<LSN_TO_P>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_P, true, true>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_High_Phi2<LSN_FROM_P, true>, &CRicoh5A22::FUNC }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_TO_P, false>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2<LSN_TO_P>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_P, false, true>, &CRicoh5A22::FUNC }, }, 5, 5, LSN_AM_DIRECT_PAGE_INDIRECT, 2, 2, LSN_I_ ## NAME, #NAME, "Direct Indirect (Read)"
 
 #define LSN_DIRECT_PAGE_INDIRECT_LONG_R( NAME, FUNC )										{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_TO_P>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2<LSN_TO_P>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_Phi2<LSN_FROM_A>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_P, true, true>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_High_Phi2<LSN_FROM_P, true>, &CRicoh5A22::FUNC }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Null_Phi2, &CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_TO_P>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2<LSN_TO_P>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_Phi2<LSN_FROM_A>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_P, false, true>, &CRicoh5A22::FUNC }, }, 6, 6, LSN_AM_DIRECT_PAGE_INDIRECT_LONG, 2, 2, LSN_I_ ## NAME, #NAME, "Direct Indirect Long (Read)"
 
@@ -23,7 +23,7 @@
 #define LSN_ABSOLUTE_R( NAME, FUNC )														{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, true, true>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_High_Phi2<LSN_FROM_A, true>, &CRicoh5A22::FUNC }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, false, true>, &CRicoh5A22::FUNC }, }, 4, 4, LSN_AM_ABSOLUTE, 3, 3, LSN_I_ ## NAME, #NAME, "Absolute (Read)"
 #define LSN_ABSOLUTE_RMW( NAME, FUNC )														{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, true, false>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_High_Phi2<LSN_FROM_A>, &CRicoh5A22::FUNC, &CRicoh5A22::Null_Phi2<true>, &CRicoh5A22::Null<LSN_W>, &CRicoh5A22::Write_Operand_High_To_AddrOrPtr_And_DB_Phi2<LSN_TO_A>, &CRicoh5A22::Null<LSN_W>, &CRicoh5A22::Write_Operand_Low_To_AddrOrPtr_And_DB_SkipIfM_Phi2<LSN_TO_A, false, true>, &CRicoh5A22::BeginInst<false, false, true> }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, false, false>, &CRicoh5A22::Null<LSN_W>, &CRicoh5A22::Write_Operand_Low_To_AddrOrPtr_And_DB_SkipIfM_Phi2<LSN_TO_A, false, false>, &CRicoh5A22::FUNC, &CRicoh5A22::Write_Operand_Low_To_AddrOrPtr_And_DB_SkipIfM_Phi2<LSN_TO_A, false, true>, &CRicoh5A22::BeginInst<false, false, true> }, }, 6, 6, LSN_AM_ABSOLUTE, 3, 3, LSN_I_ ## NAME, #NAME, "Absolute (Read/Modify/Write)"
 
-#define LSN_ABSOLUTE_LONG_R( NAME, FUNC )													{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Bank_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, true, true>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_High_Phi2<LSN_FROM_A, true>, &CRicoh5A22::FUNC }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Bank_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, false, true>, &CRicoh5A22::FUNC }, }, 5, 5, LSN_AM_ABSOLUTE_LONG, 4, 4, LSN_I_ ## NAME, #NAME, "Absolute Long (Read)"
+#define LSN_ABSOLUTE_LONG_R( NAME, FUNC )													{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Bank_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, true, true>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_High_Phi2<LSN_FROM_A, true>, &CRicoh5A22::FUNC }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_N, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Bank_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_A, false, true>, &CRicoh5A22::FUNC }, }, 5, 5, LSN_AM_ABSOLUTE_LONG, 4, 4, LSN_I_ ## NAME, #NAME, "Absolute Long (Read)"
 
 #define LSN_ABSOLUTE_LONG_X_R( NAME, FUNC )													{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Bank_IncPc_Phi2, &CRicoh5A22::Add_X_PtrOrAddr_BankOverflow_PageSkip<LSN_TO_P, true, true, false, false>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_P, true, true>, &CRicoh5A22::Null<LSN_R>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_High_Phi2<LSN_FROM_P, true>, &CRicoh5A22::FUNC, }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P, false>, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Bank_IncPc_Phi2, &CRicoh5A22::Add_X_PtrOrAddr_BankOverflow_PageSkip<LSN_TO_P, true, true, false, false>, &CRicoh5A22::Read_PtrOrAddr_And_Bank_To_Operand_Low_SkipIfM_Phi2<LSN_FROM_P, false, true>, &CRicoh5A22::FUNC, }, }, 5, 5, LSN_AM_ABSOLUTE_LONG_X, 4, 4, LSN_I_ ## NAME, #NAME, "Absolute Long, X (Read)"
 
@@ -347,14 +347,14 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
 				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
-				&CRicoh5A22::Null<LSN_N, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<0, true>,
+				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<0, true>,
 				&CRicoh5A22::Plp_BeginInst,
 			},
 			{
 				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
 				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
-				&CRicoh5A22::Null<LSN_N, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<0, true, true>,
+				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<0, true, true>,
 				&CRicoh5A22::Plp_BeginInst,
 			},
 		},
@@ -384,7 +384,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
 				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<1, false>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<1, false>,
 				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<2, true>,
 				&CRicoh5A22::Pld_BeginInst,
 			},
@@ -392,7 +392,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
 				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<1, false, true>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<1, false, true>,
 				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<2, true, true>,
 				&CRicoh5A22::Pld_BeginInst,
 			},
@@ -510,8 +510,8 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
 				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
-				&CRicoh5A22::Null<LSN_N, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<0, false>,
-				&CRicoh5A22::Copy_Operand_To_Status_Mask<0>,								&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<1, false>,
+				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<0, false>,
+				&CRicoh5A22::Copy_Operand_To_Status_Mask<0>,								&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<1, false>,
 				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<2, false>,
 				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Bank_Phi2<3, true>,
 				&CRicoh5A22::Rti_BeginInst,
@@ -520,8 +520,8 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
 				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
-				&CRicoh5A22::Null<LSN_N, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<0, false>,
-				&CRicoh5A22::Copy_Operand_To_Status_Mask<M() | X()>,						&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<1, false>,
+				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<0, false>,
+				&CRicoh5A22::Copy_Operand_To_Status_Mask<M() | X()>,						&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<1, false>,
 				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<2, true>,
 				&CRicoh5A22::Rti_BeginInst,
 			},
@@ -530,7 +530,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 	},
 	{
 		// 41
-		LSN_INDIRECT_X_R( EOR, Eor )
+		LSN_INDIRECT_X_R( EOR, Eor_BeginInst )
 	},
 	{	// 42
 		{
@@ -550,7 +550,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		2, 2, LSN_AM_IMMEDIATE, 2, 2, LSN_I_WDM, "WDM", "Immediate"
 	},
 	{	// 43
-		LSN_STACK_RELATIVE_R( EOR, Eor )
+		LSN_STACK_RELATIVE_R( EOR, Eor_BeginInst )
 	},
 	{	// 44
 		{
@@ -578,13 +578,13 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		7, 7, LSN_AM_BLOCK_MOVE, 3, 3, LSN_I_MVP, "MVP", "Block Move (Positive)"
 	},
 	{	// 45
-		LSN_DIRECT_PAGE_R( EOR, Eor )
+		LSN_DIRECT_PAGE_R( EOR, Eor_BeginInst )
 	},
 	{	// 46
 		LSN_DIRECT_PAGE_RMW( LSR, Lsr )
 	},
 	{	// 47
-		LSN_DIRECT_PAGE_INDIRECT_LONG_R( EOR, Eor )
+		LSN_DIRECT_PAGE_INDIRECT_LONG_R( EOR, Eor_BeginInst )
 	},
 
 
@@ -608,7 +608,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		3, 3, LSN_AM_IMPLIED, 1, 1, LSN_I_PHA, "PHA", "Implied"
 	},
 	{	// 49
-		LSN_IMMEDIATE( EOR, Eor<true> )
+		LSN_IMMEDIATE( EOR, Eor_BeginInst<true> )
 	},
 	{	// 4A
 		{
@@ -660,13 +660,13 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		3, 3, LSN_AM_ABSOLUTE, 3, 3, LSN_I_JMP, "JMP", "Absolute"
 	},
 	{	// 4D
-		LSN_ABSOLUTE_R( EOR, Eor )
+		LSN_ABSOLUTE_R( EOR, Eor_BeginInst )
 	},
 	{	// 4E
 		LSN_ABSOLUTE_RMW( LSR, Lsr )
 	},
 	{	// 4F
-		LSN_ABSOLUTE_LONG_R( EOR, Eor )
+		LSN_ABSOLUTE_LONG_R( EOR, Eor_BeginInst )
 	},
 
 
@@ -675,13 +675,13 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		LSN_BRANCH( BVC, V(), 0 )
 	},
 	{	// 51
-		LSN_DIRECT_PAGE_INDIRECT_INDEXED_Y_R( EOR, Eor )
+		LSN_DIRECT_PAGE_INDIRECT_INDEXED_Y_R( EOR, Eor_BeginInst )
 	},
 	{	// 52
-		LSN_DIRECT_PAGE_INDIRECT_R( EOR, Eor )
+		LSN_DIRECT_PAGE_INDIRECT_R( EOR, Eor_BeginInst )
 	},
 	{	// 53
-		LSN_STACK_RELATIVE_INDIRECT_INDEXED_Y_R( EOR, Eor )
+		LSN_STACK_RELATIVE_INDIRECT_INDEXED_Y_R( EOR, Eor_BeginInst )
 	},
 	{	// 54
 		{
@@ -709,13 +709,13 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		7, 7, LSN_AM_BLOCK_MOVE, 3, 3, LSN_I_MVN, "MVN", "Block Move (Negative)"
 	},
 	{	// 55
-		LSN_DIRECT_PAGE_WITH_X_R( EOR, Eor )
+		LSN_DIRECT_PAGE_WITH_X_R( EOR, Eor_BeginInst )
 	},
 	{	// 56
 		LSN_DIRECT_PAGE_WITH_X_RMW( LSR, Lsr )
 	},
 	{	// 57
-		LSN_DIRECT_PAGE_INDIRECT_LONG_INDEXED_Y_R( EOR, Eor )
+		LSN_DIRECT_PAGE_INDIRECT_LONG_INDEXED_Y_R( EOR, Eor_BeginInst )
 	},
 
 
@@ -736,7 +736,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		2, 2, LSN_AM_IMPLIED, 1, 1, LSN_I_CLI, "CLI", "Implied"
 	},
 	{	// 59
-		LSN_ABSOLUTE_INDEXED_Y_R( EOR, Eor )
+		LSN_ABSOLUTE_INDEXED_Y_R( EOR, Eor_BeginInst )
 	},
 	{	// 5A
 		{
@@ -791,13 +791,13 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 		4, 4, LSN_AM_ABSOLUTE_LONG, 4, 4, LSN_I_JML, "JML", "Absolute Long"
 	},
 	{	// 5D
-		LSN_ABSOLUTE_INDEXED_X_R( EOR, Eor )
+		LSN_ABSOLUTE_INDEXED_X_R( EOR, Eor_BeginInst )
 	},
 	{	// 5E
 		LSN_ABSOLUTE_INDEXED_X_RMW( LSR, Lsr )
 	},
 	{	// 5F
-		LSN_ABSOLUTE_LONG_X_R( EOR, Eor )
+		LSN_ABSOLUTE_LONG_X_R( EOR, Eor_BeginInst )
 	},
 
 
@@ -808,7 +808,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
 				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
-				&CRicoh5A22::Null<LSN_N, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<0, false>,
+				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<0, false>,
 				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<1, false>,
 				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
 				&CRicoh5A22::Rts_BeginInst,
@@ -817,7 +817,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
 				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
-				&CRicoh5A22::Null<LSN_N, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_Phi2<0, false>,
+				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<0, false>,
 				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<1, false>,
 				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
 				&CRicoh5A22::Rts_BeginInst,
@@ -874,6 +874,109 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 			},
 		},
 		3, 3, LSN_AM_DIRECT_PAGE, 2, 2, LSN_I_STZ, "STZ", "Direct (Write)"
+	},
+	{	// 65
+		LSN_DIRECT_PAGE_R( ADC, Adc_BeginInst )
+	},
+	{	// 66
+		LSN_DIRECT_PAGE_RMW( ROR, Ror )
+	},
+	{	// 67
+		LSN_DIRECT_PAGE_INDIRECT_LONG_R( ADC, Adc_BeginInst )
+	},
+
+
+	/** 68-6F */
+	{	// 68
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
+				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<0, true, false, true>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<1, true>,
+				&CRicoh5A22::Pla_BeginInst,
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
+				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<0, true, true>,
+				&CRicoh5A22::Pla_BeginInst,
+			},
+		},
+		4, 4, LSN_AM_IMPLIED, 1, 1, LSN_I_PLA, "PLA", "Implied"
+	},
+	{	// 69
+		LSN_IMMEDIATE( ADC, Adc_BeginInst<true> )
+	},
+	{	// 6A
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
+				&CRicoh5A22::RorOnA_BeginInst<false>
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
+				&CRicoh5A22::RorOnA_BeginInst<false>
+			},
+		},
+		2, 2, LSN_AM_IMPLIED, 1, 1, LSN_I_ROR, "ROR", "Implied"
+	},
+	{	// 6B
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<1, false>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<2, false>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Bank_Phi2<3, true>,
+				&CRicoh5A22::Rtl_BeginInst,
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2<1, false, true>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<2, false, true>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Bank_Phi2<3, true>,
+				&CRicoh5A22::Rtl_BeginInst,
+			},
+		},
+		6, 6, LSN_AM_IMPLIED, 1, 1, LSN_I_RTL, "RTL", "Implied"
+	},
+	{	// 6C
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_TO_A, false>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2<LSN_TO_A, false, true>,
+				&CRicoh5A22::Jmp_Absolute_BeginInst,
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_TO_A, false>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2<LSN_TO_A, false, true>,
+				&CRicoh5A22::Jmp_Absolute_BeginInst,
+			},
+		},
+		5, 5, LSN_AM_ABSOLUTE_INDIRECT, 3, 3, LSN_I_JMP, "JMP", "Absolute Indirect"
+	},
+	{	// 6D
+		LSN_ABSOLUTE_R( ADC, Adc_BeginInst )
+	},
+	{	// 6E
+		LSN_ABSOLUTE_RMW( ROR, Ror )
+	},
+	{	// 6F
+		LSN_ABSOLUTE_LONG_R( ADC, Adc_BeginInst )
 	},
 };
 

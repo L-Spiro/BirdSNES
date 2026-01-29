@@ -52,7 +52,7 @@
 #define LSN_FROM_P														false
 
 #ifdef LSN_CPU_VERIFY
-//#define LSN_CYCLES_DOC													1
+#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY
 
 
@@ -543,7 +543,7 @@ namespace lsn {
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
 		template <bool _bIncPc = false>
-		void															Eor();
+		void															Eor_BeginInst();
 
 		/**
 		 * Fetches m_fsState.ui8Bank and increments PC.
@@ -724,11 +724,14 @@ namespace lsn {
 		/** Sets m_fsState.ui8Operand[0] to the status byte with Break (X) and Reserved (M) set. */
 		void															Php();
 
+		/** Pull to A.  Sets N and Z based on A. */
+		void															Pla_BeginInst();
+
+		/** Pull to D.  Sets N and Z based on D. */
+		void															Pld_BeginInst();
+
 		/** Performs PLP and begins the next instruction. */
 		void															Plp_BeginInst();
-
-		/** Pull Direct Page.  Sets N and Z based on D. */
-		void															Pld_BeginInst();
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8A[1].
@@ -951,17 +954,19 @@ namespace lsn {
 		 * \tparam _i8SOff Offset from S to read.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
+		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 		 **/
-		template <int8_t _i8SOff = 0, bool _bEndInstr = false, bool _bSpecial = false>
-		void															Read_Stack_To_Operand_Low_Phi2();
+		template <int8_t _i8SOff = 0, bool _bEndInstr = false, bool _bSpecial = false, bool _bSkipIfM = false>
+		void															Read_Stack_To_Operand_Low_SkipIfM_Phi2();
 
 		/**
 		 * Reads the stack, stores in m_fsState.ui8Bank.
 		 * 
 		 * \tparam _i8SOff Offset from S to read.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
 		 **/
-		template <int8_t _i8SOff = 0, bool _bEndInstr = false>
+		template <int8_t _i8SOff = 0, bool _bEndInstr = false, bool _bSpecial = true>
 		void															Read_Stack_To_Bank_Phi2();
 
 		/**
@@ -974,8 +979,9 @@ namespace lsn {
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
 		 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 **/
-		template <bool _bTo = LSN_TO_A, bool _bLowByteWrap = false>
+		template <bool _bTo = LSN_TO_A, bool _bLowByteWrap = false, bool _bEndInstr = false>
 		void															ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2();
 
 		/**
@@ -1039,8 +1045,25 @@ namespace lsn {
 		template <bool _bIncPc = false>
 		void															RolOnA_BeginInst();
 
+		/**
+		 * Performs Operand = (Operand >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
+		 * * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Ror();
+
+		/**
+		 * Performs A = (A >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
+		 * * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															RorOnA_BeginInst();
+
 		/** Performs RTI (sets PC/PB from pulled bytes) and begins the next instruction. */
 		void															Rti_BeginInst();
+
+		/** Pulls the PBR and PC from the stack for RTL. */
+		void															Rtl_BeginInst();
 
 		/** Returns from subroutine.  Pulls PC from stack, adds 1, begins next instruction. */
 		void															Rts_BeginInst();
@@ -1280,7 +1303,7 @@ namespace lsn {
 				"\t\t  if (HiSum > 9) HiSum += 6.\r\n"
 				"\t\t  C flag = HiSum > $0F.\r\n"
 				"\t\t  Result = ui8(((HiSum & 0x0F) << 4) | (Lo & $0F)).\r\n"
-				"\t\t  Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n" );
+				"\t\t  Z flag = Result == $00. N flag = (Result & $80) != 0." );
 		}
 		else {
 			lsn::DebugA( 
@@ -2329,7 +2352,7 @@ namespace lsn {
 	 * \tparam _bIncPc If true, PC is updated.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Eor() {
+	inline void CRicoh5A22::Eor_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
 		if ( (m_fsState.rRegs.ui8Status & M()) ) {
@@ -3160,6 +3183,52 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
+	/** Pull to A.  Sets N and Z based on A. */
+	inline void CRicoh5A22::Pla_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			// 8-bit pull.
+			m_fsState.rRegs.ui8A[0] = m_fsState.ui8Operand[0];
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] == 0 );
+		}
+		else {
+			// 16-bit pull.
+			m_fsState.rRegs.ui16A = m_fsState.ui16Operand;
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & 0x8000) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16A == 0 );
+		}
+
+		BeginInst<false, true, false>();
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "\tSet A.L to Operand.L. Set N based off (A.L & $80) and Z based off A.L." );
+		}
+		else {
+			lsn::DebugA( " If M flag is set, set A.L to Operand.L and set N based off (A.L & $80) and Z based off A.L, otherwise set A to Operand and set N based off (A.H & $80) and Z based off A." );
+		}
+		lsn::DebugA( " Set D to Operand. Set N based off (D.H & $80). Set Z based off D." );
+#endif	// LSN_CYCLES_DOC
+	}
+
+	/** Pull D.  Sets N and Z based on D. */
+	inline void CRicoh5A22::Pld_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		m_fsState.rRegs.ui16D = m_fsState.ui16Operand;
+
+		SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8D[1] & 0x80) != 0 );
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16D == 0 );
+
+		BeginInst<false, true, false>();
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( " Set D to Operand. Set N based off (D.H & $80). Set Z based off D." );
+#endif	// LSN_CYCLES_DOC
+	}
+
 	/** Performs PLP and begins the next instruction. */
 	inline void CRicoh5A22::Plp_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
@@ -3186,22 +3255,6 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
-	}
-
-	/** Pull Direct Page.  Sets N and Z based on D. */
-	inline void CRicoh5A22::Pld_BeginInst() {
-		LSN_INSTR_START_PHI1( true );
-
-		m_fsState.rRegs.ui16D = m_fsState.ui16Operand;
-
-		SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8D[1] & 0x80) != 0 );
-		SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16D == 0 );
-
-		BeginInst<false, true, false>();
-
-#ifdef LSN_CYCLES_DOC
-		lsn::DebugA( " Set D to Operand. Set N based off (D.H & $80). Set Z based off D." );
-#endif	// LSN_CYCLES_DOC
 	}
 
 	/**
@@ -4056,9 +4109,10 @@ namespace lsn {
 	 * \tparam _i8SOff Offset from S to read.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
+	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 	 **/
-	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial>
-	inline void CRicoh5A22::Read_Stack_To_Operand_Low_Phi2() {
+	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial, bool _bSkipIfM>
+	inline void CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2() {
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 			if constexpr ( _bSpecial ) {
 				LSN_POP_SPECIAL( m_fsState.ui8Operand[0], m_ui8Speed );
@@ -4085,27 +4139,33 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 		
-		if constexpr ( _bEndInstr ) {
-			LSN_FINISH_INST( true );
+		if constexpr ( _bSkipIfM ) {
+			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If M flag is set, skip the next cycle." );
+#endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
-			LSN_NEXT_FUNCTION;
+			if constexpr ( _bEndInstr ) {
+				LSN_FINISH_INST( true );
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
 		}
-
-		LSN_INSTR_END_PHI2;
-	}
-
-	/**
-	 * Reads from [m_fsState.rRegs.ui16X:m_fsState.ui8Bank] into m_fsState.ui8Operand[0] for MVP.
-	 */
-	inline void CRicoh5A22::Read_X_And_Bank_To_Operand_Low_Phi2() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16X, m_fsState.ui8Bank, m_fsState.ui8Operand[0], m_ui8Speed );
-
-#ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Read X:Bank\tStore as Operand.L." );
-#endif	// #ifdef LSN_CYCLES_DOC
-
-		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI2;
 	}
@@ -4115,8 +4175,9 @@ namespace lsn {
 	 * 
 	 * \tparam _i8SOff Offset from S to read.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
 	 **/
-	template <int8_t _i8SOff, bool _bEndInstr>
+	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial>
 	inline void CRicoh5A22::Read_Stack_To_Bank_Phi2() {
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 			LSN_POP_SPECIAL( m_fsState.ui8Bank, m_ui8Speed );
@@ -4146,12 +4207,28 @@ namespace lsn {
 	}
 
 	/**
+	 * Reads from [m_fsState.rRegs.ui16X:m_fsState.ui8Bank] into m_fsState.ui8Operand[0] for MVP.
+	 */
+	inline void CRicoh5A22::Read_X_And_Bank_To_Operand_Low_Phi2() {
+		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16X, m_fsState.ui8Bank, m_fsState.ui8Operand[0], m_ui8Speed );
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "Read X:Bank\tStore as Operand.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
 	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
 	 * 
 	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
 	 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 **/
-	template <bool _bTo, bool _bLowByteWrap>	
+	template <bool _bTo, bool _bLowByteWrap, bool _bEndInstr>	
 	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2() {
 #ifdef LSN_CYCLES_DOC
 		std::string sDebug;
@@ -4191,7 +4268,12 @@ namespace lsn {
 		lsn::DebugA( sDebug.c_str() );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		LSN_NEXT_FUNCTION;
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
 
 		LSN_INSTR_END_PHI2;
 	}
@@ -4459,6 +4541,114 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
+	/**
+	 * Performs Operand = (Operand >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
+	 * * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Ror() {
+		LSN_INSTR_START_PHI1( true );
+
+		const bool bOldC = (m_fsState.rRegs.ui8Status & C()) != 0;
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x01) != 0 );
+
+			m_fsState.ui8Operand[0] >>= 1;
+			if ( bOldC ) { m_fsState.ui8Operand[0] |= 0x80; }
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand[0] );
+		}
+		else {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.ui16Operand & 0x0001) != 0 );
+
+			m_fsState.ui16Operand >>= 1;
+			if ( bOldC ) { m_fsState.ui16Operand |= 0x8000; }
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui16Operand & 0x8000) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui16Operand );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\t" );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		if constexpr ( _bIncPc ) {
+			LSN_UPDATE_PC;
+
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Inc. PC. " );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "Set C based off (Operand.L & $01). Perform Operand.L = (Operand.L >> 1) | (C << 7). Set N based off (Operand.L & $80) and Z based off Operand.L." );
+		}
+		else {
+			lsn::DebugA( "If M flag is set, set C based off (Operand.L & $01), perform Operand.L = (Operand.L >> 1) | (C << 7), and set N based off (Operand.L & $80) and Z based off Operand.L, otherwise set C based off (Operand.L & $01), perform Operand = (Operand >> 1) | (C << 15), and set N based off (Operand.H & $80) and Z based off Operand." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Performs A = (A >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
+	 * * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::RorOnA_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		const uint16_t ui16OldC = m_fsState.rRegs.ui8Status & C();
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & 0x01) != 0 );
+
+			m_fsState.rRegs.ui8A[0] >>= 1;
+			m_fsState.rRegs.ui8A[0] |= ui16OldC << 7;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+		}
+		else {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & 0x0001) != 0 );
+
+			m_fsState.rRegs.ui16A >>= 1;
+			m_fsState.rRegs.ui16A |= ui16OldC << 15;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & 0x8000) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\t" );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		if constexpr ( _bIncPc ) {
+			LSN_UPDATE_PC;
+
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Inc. PC. " );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "Set C based off (A.L & $01). Perform A.L = (A.L >> 1) | (C << 7). Set N based off (A.L & $80) and Z based off A.L." );
+		}
+		else {
+			lsn::DebugA( "If M flag is set, set C based off (A.L & $01), perform A.L = (A.L >> 1) | (C << 7), and set N based off (A.L & $80) and Z based off A.L, otherwise set C based off (A.L & $01), perform A = (A >> 1) | (C << 15), and set N based off (A.H & $80) and Z based off A." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
 	/** Performs RTI (sets PC/PB from pulled bytes) and begins the next instruction. */
 	inline void CRicoh5A22::Rti_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
@@ -4483,6 +4673,21 @@ namespace lsn {
 		else {
 			lsn::DebugA( " Set PB to Bank. Set PC to Operand. If X flag is set, set X to X.L and Y to Y.L." );
 		}
+#endif	// #ifdef LSN_CYCLES_DOC
+	}
+
+	/** Pulls the PBR and PC from the stack for RTL. */
+	inline void CRicoh5A22::Rtl_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		m_fsState.rRegs.ui8Pb = m_fsState.ui8Bank;
+		m_fsState.rRegs.ui16Pc = m_fsState.ui16Operand + 1;
+		m_fsState.ui16PcModify = 0;
+
+		BeginInst<false, true, false>();
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( " Set PC to (Operand + 1). Set PB to Bank." );
 #endif	// #ifdef LSN_CYCLES_DOC
 	}
 

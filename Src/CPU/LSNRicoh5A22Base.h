@@ -45,6 +45,7 @@ namespace lsn {
 			LSN_AM_STACK_RELATIVE,															/**< Relative jumping on stackr. */
 			LSN_AM_STACK_RELATIVE_INDIRECT_INDEXED_Y,										/**< Stack relative indirect indexed Y. */
 			LSN_AM_ABSOLUTE,																/**< Absolute addressing = 3 extra cycles. */
+			LSN_AM_ABSOLUTE_INDIRECT,														/**< Absolute indirect. */
 			LSN_AM_ABSOLUTE_LONG,															/**< Absolute long, X. */
 			LSN_AM_ABSOLUTE_LONG_X,															/**< Absolute long. */
 			LSN_AM_ABSOLUTE_X,																/**< Absolute X addressing = 3 extra cycles + optional cycle. */
