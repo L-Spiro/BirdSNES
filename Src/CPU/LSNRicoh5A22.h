@@ -52,7 +52,7 @@
 #define LSN_FROM_P														false
 
 #ifdef LSN_CPU_VERIFY
-#define LSN_CYCLES_DOC													1
+//#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY
 
 
@@ -733,6 +733,9 @@ namespace lsn {
 		/** Performs PLP and begins the next instruction. */
 		void															Plp_BeginInst();
 
+		/** Pulls Y from the stack. **/
+		void															Ply_BeginInst();
+
 		/**
 		 * Pushes m_fsState.rRegs.ui8A[1].
 		 * 
@@ -955,9 +958,10 @@ namespace lsn {
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
 		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 		 **/
-		template <int8_t _i8SOff = 0, bool _bEndInstr = false, bool _bSpecial = false, bool _bSkipIfM = false>
-		void															Read_Stack_To_Operand_Low_SkipIfM_Phi2();
+		template <int8_t _i8SOff = 0, bool _bEndInstr = false, bool _bSpecial = false, bool _bSkipIfM = false, bool _bSkipIfX = false>
+		void															Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2();
 
 		/**
 		 * Reads the stack, stores in m_fsState.ui8Bank.
@@ -1079,6 +1083,9 @@ namespace lsn {
 		/** Sets the carry bit. */
 		void															Sec_BeginInst();
 
+		/** Sets the IRQ flag. */
+		void															Sei_BeginInst();
+
 		/**
 		 * Selects the BRK vector etc.
 		 * 
@@ -1109,6 +1116,9 @@ namespace lsn {
 
 		/** Transfer 16 bit A to S.  Sets N and Z. */
 		void															Tcs_BeginInst();
+
+		/** Transfer 16-bit D to A.  Sets N and Z. */
+		void															Tdc_BeginInst();
 
 		/** Performs m_ui16Operand &= ~A.  Sets Z. */
 		void															Trb();
@@ -3209,7 +3219,6 @@ namespace lsn {
 		else {
 			lsn::DebugA( " If M flag is set, set A.L to Operand.L and set N based off (A.L & $80) and Z based off A.L, otherwise set A to Operand and set N based off (A.H & $80) and Z based off A." );
 		}
-		lsn::DebugA( " Set D to Operand. Set N based off (D.H & $80). Set Z based off D." );
 #endif	// LSN_CYCLES_DOC
 	}
 
@@ -3255,6 +3264,35 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
+	}
+
+	/** Pulls Y from the stack. **/
+	inline void CRicoh5A22::Ply_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if ( (m_fsState.rRegs.ui8Status & X()) ) {
+			m_fsState.rRegs.ui8Y[0] = m_fsState.ui8Operand[0];
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8Y[0] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[0] == 0 );
+		}
+		else {
+			m_fsState.rRegs.ui16Y = m_fsState.ui16Operand;
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16Y & 0x8000) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16Y == 0 );
+		}
+
+		BeginInst<false, true, false>();
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( " Set Y.L to Operand.L. Set N based off (Y.L & $80). Set Z based off Y.L." );
+		}
+		else {
+			lsn::DebugA( " If X flag is set, set Y.L to Operand.L, set N based off (Y.L & $80), and Z based off Y.L, otherwise set Y to Operand, set N based off (Y.H & $80), and Z based off Y." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		LSN_INSTR_END_PHI1;
 	}
 
 	/**
@@ -4110,9 +4148,10 @@ namespace lsn {
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
 	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 	 **/
-	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial, bool _bSkipIfM>
-	inline void CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_Phi2() {
+	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial, bool _bSkipIfM, bool _bSkipIfX>
+	inline void CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2() {
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 			if constexpr ( _bSpecial ) {
 				LSN_POP_SPECIAL( m_fsState.ui8Operand[0], m_ui8Speed );
@@ -4156,6 +4195,25 @@ namespace lsn {
 			}
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( " If M flag is set, skip the next cycle." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else if constexpr ( _bSkipIfX ) {
+			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If X flag is set, skip the next cycle." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
@@ -4790,6 +4848,19 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
+	/** Sets the IRQ flag. */
+	inline void CRicoh5A22::Sei_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+		
+		SetBit<I(), true>( m_fsState.rRegs.ui8Status );
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tSets the I flag to 1." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
 	/**
 	 * Performs Operand = (Operand << 1) | C.  Sets C, N, and Z, optionally increases PC.
 	 * 
@@ -5030,6 +5101,23 @@ namespace lsn {
 			lsn::DebugA( "\tSets S to A." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
+
+		BeginInst<false, false, false>();
+	}
+
+	/** Transfer 16-bit D to A.  Sets N and Z. */
+	inline void CRicoh5A22::Tdc_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		// TDC transfers the full 16-bit D into C (A) regardless of M.
+		m_fsState.rRegs.ui16A = m_fsState.rRegs.ui16D;
+
+		SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[1] & 0x80) != 0 );
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tSet A to D. Set N based off (A.H & $80) and Z based off A." );
+#endif	// LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
 	}
