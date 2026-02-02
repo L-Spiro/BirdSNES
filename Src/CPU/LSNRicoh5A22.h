@@ -434,8 +434,9 @@ namespace lsn {
 		 * \tparam _bBankOverflow If true, m_fsState.ui8Bank accepts the carry from the X+? operation.
 		 * \tparam _bPageSkip If true, if a page boundary has not been crossed then the next cycle (assumed to be a fix-up) is skipped.
 		 * \tparam _bCopyDbToBank If true, m_fsState.ui8Bank is copied from m_fsState.rRegs.ui8Db, otherwise m_fsState.ui8Bank is unmodified except in the case that overflow is applied to it.
+		 * \tparam _bUsePbInsteadOfDb If true, all copies of m_fsState.rRegs.ui8Db are replaced with copies of m_fsState.rRegs.ui8Pb.
 		 **/
-		template <bool _bTo = LSN_TO_A, bool _bIncPc = true, bool _bBankOverflow = true, bool _bPageSkip = true, bool _bCopyDbToBank = true>
+		template <bool _bTo = LSN_TO_A, bool _bIncPc = true, bool _bBankOverflow = true, bool _bPageSkip = true, bool _bCopyDbToBank = true, bool _bUsePbInsteadOfDb = false>
 		void															Add_X_PtrOrAddr_BankOverflow_PageSkip();
 
 		/**
@@ -894,6 +895,26 @@ namespace lsn {
 		 **/
 		template <int8_t _i8SOff = -1, bool _bEndInstr = true>
 		void															Push_Y_Low_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Address[1] or m_fsState.ui8Pointer[1].
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \tparam _bBankWrap If true, the bank wraps (instead of carries) on addresses where + 1 crosses into a new bank.
+		 **/
+		template <bool _bFrom = LSN_FROM_A, bool _bEndInstr = false, bool _bBankWrap = false>
+		void															Read_PtrOrAddr_And_Bank_To_AddrOrPtr_High_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Address[0] or m_fsState.ui8Pointer[0].
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bFrom = LSN_FROM_A, bool _bSkipIfM = true, bool _bEndInstr = false>
+		void															Read_PtrOrAddr_And_Bank_To_AddrOrPtr_Low_SkipIfM_Phi2();
 
 		/**
 		 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Operand[1].
@@ -1593,8 +1614,9 @@ namespace lsn {
 	 * \tparam _bBankOverflow If true, m_fsState.ui8Bank accepts the carry from the X+? operation.
 	 * \tparam _bPageSkip If true, if a page boundary has not been crossed then the next cycle (assumed to be a fix-up) is skipped.
 	 * \tparam _bCopyDbToBank If true, m_fsState.ui8Bank is copied from m_fsState.rRegs.ui8Db, otherwise m_fsState.ui8Bank is unmodified except in the case that overflow is applied to it.
+	 * \tparam _bUsePbInsteadOfDb If true, all copies of m_fsState.rRegs.ui8Db are replaced with copies of m_fsState.rRegs.ui8P
 	 **/
-	template <bool _bTo, bool _bIncPc, bool _bBankOverflow, bool _bPageSkip, bool _bCopyDbToBank>
+	template <bool _bTo, bool _bIncPc, bool _bBankOverflow, bool _bPageSkip, bool _bCopyDbToBank, bool _bUsePbInsteadOfDb>
 	inline void CRicoh5A22::Add_X_PtrOrAddr_BankOverflow_PageSkip() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -1686,16 +1708,32 @@ namespace lsn {
 
 		if constexpr ( _bCopyDbToBank ) {
 			if constexpr ( _bBankOverflow ) {
-				m_fsState.ui8Bank = uint8_t( m_fsState.rRegs.ui8Db + (ui32Tmp >> 16) );
+				if constexpr ( _bUsePbInsteadOfDb ) {
+					m_fsState.ui8Bank = uint8_t( m_fsState.rRegs.ui8Pb + (ui32Tmp >> 16) );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "Bank = DB + (Tmp >> 16)." );
+					lsn::DebugA( "Bank = PB + (Tmp >> 16)." );
 #endif	// #ifdef LSN_CYCLES_DOC
+				}
+				else {
+					m_fsState.ui8Bank = uint8_t( m_fsState.rRegs.ui8Db + (ui32Tmp >> 16) );
+#ifdef LSN_CYCLES_DOC
+					lsn::DebugA( "Bank = DB + (Tmp >> 16)." );
+#endif	// #ifdef LSN_CYCLES_DOC
+				}
 			}
 			else {
-				m_fsState.ui8Bank = m_fsState.rRegs.ui8Db;
+				if constexpr ( _bUsePbInsteadOfDb ) {
+					m_fsState.ui8Bank = m_fsState.rRegs.ui8Pb;
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "Bank = DB." );
+					lsn::DebugA( "Bank = PB." );
 #endif	// #ifdef LSN_CYCLES_DOC
+				}
+				else {
+					m_fsState.ui8Bank = m_fsState.rRegs.ui8Db;
+#ifdef LSN_CYCLES_DOC
+					lsn::DebugA( "Bank = DB." );
+#endif	// #ifdef LSN_CYCLES_DOC
+				}
 			}
 		}
 		else {
@@ -3886,6 +3924,115 @@ namespace lsn {
 	}
 
 	/**
+	 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Address[1] or m_fsState.ui8Pointer[1].
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \tparam _bBankWrap If true, the bank wraps (instead of carries) on addresses where + 1 crosses into a new bank.
+	 **/
+	template <bool _bFrom, bool _bEndInstr, bool _bBankWrap>
+	inline void CRicoh5A22::Read_PtrOrAddr_And_Bank_To_AddrOrPtr_High_Phi2() {
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			if constexpr ( _bBankWrap ) {
+				LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address + 1, m_fsState.ui8Bank, m_fsState.ui8Pointer[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "* Read Address + 1:Bank\tStore as Address.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+			}
+			else {
+				uint32_t ui32Offset = m_fsState.ui16Address + 1;
+				LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Pointer[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "* Read Address + 1:Bank (With Carry)\tStore as Address.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+			}
+		}
+		else {
+			if constexpr ( _bBankWrap ) {
+				LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Bank, m_fsState.ui8Address[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "* Read Pointer + 1:Bank\tStore as Address.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+			}
+			else {
+				uint32_t ui32Offset = m_fsState.ui16Pointer + 1;
+				LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Address[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "* Read Pointer + 1:Bank (With Carry)\tStore as Address.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+			}
+		}
+
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Address[0] or m_fsState.ui8Pointer[0].
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bFrom, bool _bSkipIfM, bool _bEndInstr>
+	inline void CRicoh5A22::Read_PtrOrAddr_And_Bank_To_AddrOrPtr_Low_SkipIfM_Phi2() {
+#ifdef LSN_CYCLES_DOC
+		std::string sDebug;
+#endif	// #ifdef LSN_CYCLES_DOC
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address, m_fsState.ui8Bank, m_fsState.ui8Pointer[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			sDebug += "Read Address:Bank\tStore as Address.L.";
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer, m_fsState.ui8Bank, m_fsState.ui8Address[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			sDebug += "Read Pointer:Bank\tStore as Address.L.";
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+		if constexpr ( _bSkipIfM ) {
+			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			sDebug += " If M flag is set, skip the next cycle.";
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			if constexpr ( _bEndInstr ) {
+				LSN_FINISH_INST( true );
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+		}
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( sDebug.c_str() );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
 	 * Reads from m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank and stores the result in m_fsState.ui8Operand[1].
 	 * 
 	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
@@ -3897,14 +4044,14 @@ namespace lsn {
 			uint32_t ui32Offset = m_fsState.ui16Address + 1;
 			LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "* Read Address + 1:Bank\tStore as Operand.H." );
+			lsn::DebugA( "* Read Address + 1:Bank (With Carry)\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
 			uint32_t ui32Offset = m_fsState.ui16Pointer + 1;
 			LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "* Read Pointer + 1:Bank\tStore as Operand.H." );
+			lsn::DebugA( "* Read Pointer + 1:Bank (With Carry)\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 

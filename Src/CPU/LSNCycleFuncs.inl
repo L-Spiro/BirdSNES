@@ -967,7 +967,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				&CRicoh5A22::Jmp_Absolute_BeginInst,
 			},
 		},
-		5, 5, LSN_AM_ABSOLUTE_INDIRECT, 3, 3, LSN_I_JMP, "JMP", "Absolute Indirect"
+		5, 5, LSN_AM_ABSOLUTE_INDIRECT, 3, 3, LSN_I_JMP, "JMP", "Absolute Indirect (Jump)"
 	},
 	{	// 6D
 		LSN_ABSOLUTE_R( ADC, Adc_BeginInst )
@@ -980,7 +980,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 	},
 
 
-	/** 50-57 */
+	/** 70-77 */
 	{	// 70
 		LSN_BRANCH( BVS, V(), 1 )
 	},
@@ -1078,7 +1078,45 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				&CRicoh5A22::Tdc_BeginInst,
 			},
 		},
-		2, 2, LSN_AM_IMPLIED, 1, 1, LSN_I_TCD, "TCD", "Implied"
+		2, 2, LSN_AM_IMPLIED, 1, 1, LSN_I_TDC, "TDC", "Implied"
+	},
+	{	// 7C
+		{
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Add_X_PtrOrAddr_BankOverflow_PageSkip<LSN_TO_P, false, false, false, true, true>,	&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_PtrOrAddr_And_Bank_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_FROM_P, false>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_PtrOrAddr_And_Bank_To_AddrOrPtr_High_Phi2<LSN_FROM_P, true, true>,
+				&CRicoh5A22::Jmp_Absolute_BeginInst,
+			},
+			{
+				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Add_X_PtrOrAddr_BankOverflow_PageSkip<LSN_TO_P, false, false, false, true, true>,	&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_PtrOrAddr_And_Bank_To_AddrOrPtr_Low_SkipIfM_Phi2<LSN_FROM_P, false>,
+				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_PtrOrAddr_And_Bank_To_AddrOrPtr_High_Phi2<LSN_FROM_P, true, true>,
+				&CRicoh5A22::Jmp_Absolute_BeginInst,
+			},
+		},
+		6, 6, LSN_AM_ABSOLUTE_INDEXED_INDIRECT, 3, 3, LSN_I_JMP, "JMP", "Absolute Indexed Indirect (Jump)"
+	},
+	{	// 7D
+		LSN_ABSOLUTE_INDEXED_X_R( ADC, Adc_BeginInst )
+	},
+	{	// 7E
+		LSN_ABSOLUTE_INDEXED_X_RMW( ROR, Ror )
+	},
+	{	// 7F
+		LSN_ABSOLUTE_LONG_X_R( ADC, Adc_BeginInst )
+	},
+
+
+	/** 80-87 */
+	{	// 80
+		LSN_BRANCH( BRA, 0, 0 )
 	},
 };
 
