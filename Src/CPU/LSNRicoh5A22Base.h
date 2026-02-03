@@ -39,6 +39,7 @@ namespace lsn {
 			LSN_AM_DIRECT_PAGE_INDEXED_X,													/**< Direct page indexed X. */
 			LSN_AM_DIRECT_PAGE_INDIRECT,													/**< Direct page indirect. */
 			LSN_AM_DIRECT_PAGE_INDIRECT_LONG,												/**< Direct page, up to 2 extra cycles. */
+			LSN_AM_DIRECT_PAGE_INDEXED_INDIRECT_X,											/**< Direct Indexed Indirect (d,x). */
 			LSN_AM_DIRECT_PAGE_INDIRECT_INDEXED_Y,											/**< DP Indirect Indexed, Y. */
 			LSN_AM_DIRECT_PAGE_INDIRECT_LONG_INDEXED_Y,										/**< DP Indirect Long Indexed, Y. */
 			LSN_AM_RELATIVE,																/**< Relative jumping = 2 extra cycles. */
@@ -52,7 +53,7 @@ namespace lsn {
 			LSN_AM_ABSOLUTE_X,																/**< Absolute X addressing = 3 extra cycles + optional cycle. */
 			LSN_AM_ABSOLUTE_Y,																/**< Absolute Y addressing = 3 extra cycles + optional cycle. */
 			LSN_AM_ABSOLUTE_INDEXED_Y,														/**< Absolute Indexed, Y. */
-			LSN_AM_INDIRECT_X,																/**< Indirect X addressing = 5 extra cycles. */
+			//LSN_AM_INDIRECT_X,																/**< Indirect X addressing = 5 extra cycles. */
 			LSN_AM_INDIRECT_Y,																/**< Indirect Y addressing = 4 extra cycles + optional cycle. */
 			LSN_AM_INDIRECT,																/**< Absolute indirect addressing (JMP) = 4 extra cycles. */
 			LSN_AM_BLOCK_MOVE,																/**< Block Move (xyc) addressing used by the Block Move instructions. */
