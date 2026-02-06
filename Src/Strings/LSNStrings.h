@@ -13,6 +13,8 @@
 
 namespace lsn {
 
+#define LSN_1_STR( ENUM, TXT )										LSN_STR( ENUM, TXT, TXT, TXT, TXT, TXT )
+
 	// == Types.
 	/** Error codes. */
 	enum LSN_STRINGS : uint32_t {
@@ -122,5 +124,7 @@ namespace lsn {
 			default : { return u8""; }
 		}
 	}
+
+#undef LSN_1_STR
 
 }	// namespace lsn

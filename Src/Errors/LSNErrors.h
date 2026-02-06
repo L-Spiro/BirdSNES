@@ -625,7 +625,7 @@ namespace lsn {
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
-		return Str( LSN_STR_INVALID_ERROR_CODE );
+		return Str( LSN_STR_INVALID_ERROR_CODE_ );
 	}
 
 	/**
@@ -650,7 +650,7 @@ namespace lsn {
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
-		return StrU8( LSN_STR_INVALID_ERROR_CODE );
+		return StrU8( LSN_STR_INVALID_ERROR_CODE_ );
 	}
 
 	/**
@@ -695,7 +695,7 @@ namespace lsn {
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
-		return StrL( LSN_STR_INVALID_ERROR_CODE );
+		return StrL( LSN_STR_INVALID_ERROR_CODE_ );
 	}
 
 	/**
@@ -720,7 +720,7 @@ namespace lsn {
 #include "LSNErrorEnum.inl"
 #undef LSN_E_ENUM
 		}
-		return StrU( LSN_STR_INVALID_ERROR_CODE );
+		return StrU( LSN_STR_INVALID_ERROR_CODE_ );
 	}
 
 	/**

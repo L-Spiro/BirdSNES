@@ -511,6 +511,9 @@ namespace lsn {
 		/** Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
 		void															Brk_BeginInst();
 
+		/** Performs BRL (Branch Long). Adds 16-bit m_fsState.ui16Operand to m_fsState.rRegs.ui16Pc. **/
+		void															Brl_BeginInst();
+
 		/** Clears the carry bit. */
 		void															Clc_BeginInst();
 
@@ -1565,38 +1568,38 @@ namespace lsn {
 		if constexpr ( _bTo == LSN_TO_A ) {
 			m_fsState.ui16Pointer = m_fsState.ui16Pointer + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D;
 #ifdef LSN_CYCLES_DOC
-			sTmp += "Set Pointer to Pointer + X + D. ";
+			sTmp += "Set Pointer to Pointer + X + D.";
 #endif	// #ifdef LSN_CYCLES_DOC
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 				m_fsState.ui8Address[0] = m_fsState.ui8Pointer[0];
 				m_fsState.ui8Address[1] = uint8_t( m_fsState.rRegs.ui8D[1] );
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Address.L = Pointer.L.  Address.H = D.H. ";
+				sTmp += "\r\n\t\tAddress.L = Pointer.L.\r\n\t\tAddress.H = D.H.";
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
 				m_fsState.ui16Address = m_fsState.ui16Pointer;
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Address = Pointer. ";
+				sTmp += "\r\n\t\tAddress = Pointer.";
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 		}
 		else {
 			m_fsState.ui16Address = m_fsState.ui16Address + m_fsState.rRegs.ui16X + m_fsState.rRegs.ui16D;
 #ifdef LSN_CYCLES_DOC
-			sTmp += "Set Address to Address + X + D. ";
+			sTmp += "Set Address to Address + X + D.";
 #endif	// #ifdef LSN_CYCLES_DOC
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 				m_fsState.ui8Pointer[0] = m_fsState.ui8Address[0];
 				m_fsState.ui8Pointer[1] = uint8_t( m_fsState.rRegs.ui8D[1] );
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Pointer.L = Address.L.  Pointer.H = D.H. ";
+				sTmp += "\r\n\t\tPointer.L = Address.L.\r\n\t\tPointer.H = D.H.";
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
 				m_fsState.ui16Pointer = m_fsState.ui16Address;
 #ifdef LSN_CYCLES_DOC
-				sTmp += "Pointer = Address. ";
+				sTmp += "\r\n\t\tPointer = Address.";
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 		}
@@ -1643,18 +1646,18 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 			if constexpr ( _bBankOverflow ) {
 				if constexpr ( _bPageSkip ) {
-					lsn::DebugA( "Perform Orig = Address. Tmp = ui32(Address + X). Address = ui16(Tmp). " );
+					lsn::DebugA( "Perform Orig = Address.\r\n\t\tTmp = ui32(Address + X).\r\n\t\tAddress = ui16(Tmp)." );
 				}
 				else {
-					lsn::DebugA( "Perform Tmp = ui32(Address + X). Address = ui16(Tmp). " );
+					lsn::DebugA( "Perform Tmp = ui32(Address + X).\r\n\t\tAddress = ui16(Tmp)." );
 				}
 			}
 			else {
 				if constexpr ( _bPageSkip ) {
-					lsn::DebugA( "Perform Orig = Address. Address += X. " );
+					lsn::DebugA( "Perform Orig = Address.\r\n\t\tAddress += X." );
 				}
 				else {
-					lsn::DebugA( "Perform Address += X. " );
+					lsn::DebugA( "Perform Address += X." );
 				}
 			}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -1665,10 +1668,10 @@ namespace lsn {
 				}
 #ifdef LSN_CYCLES_DOC
 				if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-					lsn::DebugA( "If Orig.H == Address.H, skip the next cycle. " );
+					lsn::DebugA( "\r\n\t\tIf Orig.H == Address.H, skip the next cycle." );
 				}
 				else {
-					lsn::DebugA( "If Orig.H == Address.H and the X flag is set, skip the next cycle. " );
+					lsn::DebugA( "\r\n\t\tIf Orig.H == Address.H and the X flag is set, skip the next cycle." );
 				}
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
@@ -1680,18 +1683,18 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 			if constexpr ( _bBankOverflow ) {
 				if constexpr ( _bPageSkip ) {
-					lsn::DebugA( "Perform Orig = Pointer. Tmp = ui32(Pointer + X). Pointer = ui16(Tmp). " );
+					lsn::DebugA( "Perform Orig = Pointer.\r\n\t\tTmp = ui32(Pointer + X).\r\n\t\tPointer = ui16(Tmp)." );
 				}
 				else {
-					lsn::DebugA( "Perform Tmp = ui32(Pointer + X). Pointer = ui16(Tmp). " );
+					lsn::DebugA( "Perform Tmp = ui32(Pointer + X).\r\n\t\tPointer = ui16(Tmp)." );
 				}
 			}
 			else {
 				if constexpr ( _bPageSkip ) {
-					lsn::DebugA( "Perform Orig = Pointer. Pointer += X. " );
+					lsn::DebugA( "Perform Orig = Pointer.\r\n\t\tPointer += X." );
 				}
 				else {
-					lsn::DebugA( "Perform Pointer += X. " );
+					lsn::DebugA( "Perform Pointer += X." );
 				}
 			}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -1701,10 +1704,10 @@ namespace lsn {
 				}
 #ifdef LSN_CYCLES_DOC
 				if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-					lsn::DebugA( "If Orig.H == Pointer.H, skip 2 half-cycles. " );
+					lsn::DebugA( "\r\n\t\tIf Orig.H == Pointer.H, skip 2 half-cycles." );
 				}
 				else {
-					lsn::DebugA( "If Orig.H == Pointer.H and the X flag is set, skip 2 half-cycles. " );
+					lsn::DebugA( "\r\n\t\tIf Orig.H == Pointer.H and the X flag is set, skip 2 half-cycles." );
 				}
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
@@ -1715,13 +1718,13 @@ namespace lsn {
 				if constexpr ( _bUsePbInsteadOfDb ) {
 					m_fsState.ui8Bank = uint8_t( m_fsState.rRegs.ui8Pb + (ui32Tmp >> 16) );
 #ifdef LSN_CYCLES_DOC
-					lsn::DebugA( "Bank = PB + (Tmp >> 16)." );
+					lsn::DebugA( "\r\n\t\tBank = PB + (Tmp >> 16)." );
 #endif	// #ifdef LSN_CYCLES_DOC
 				}
 				else {
 					m_fsState.ui8Bank = uint8_t( m_fsState.rRegs.ui8Db + (ui32Tmp >> 16) );
 #ifdef LSN_CYCLES_DOC
-					lsn::DebugA( "Bank = DB + (Tmp >> 16)." );
+					lsn::DebugA( "\r\n\t\tBank = DB + (Tmp >> 16)." );
 #endif	// #ifdef LSN_CYCLES_DOC
 				}
 			}
@@ -1729,13 +1732,13 @@ namespace lsn {
 				if constexpr ( _bUsePbInsteadOfDb ) {
 					m_fsState.ui8Bank = m_fsState.rRegs.ui8Pb;
 #ifdef LSN_CYCLES_DOC
-					lsn::DebugA( "Bank = PB." );
+					lsn::DebugA( "\r\n\t\tBank = PB." );
 #endif	// #ifdef LSN_CYCLES_DOC
 				}
 				else {
 					m_fsState.ui8Bank = m_fsState.rRegs.ui8Db;
 #ifdef LSN_CYCLES_DOC
-					lsn::DebugA( "Bank = DB." );
+					lsn::DebugA( "\r\n\t\tBank = DB." );
 #endif	// #ifdef LSN_CYCLES_DOC
 				}
 			}
@@ -1744,7 +1747,7 @@ namespace lsn {
 			if constexpr ( _bBankOverflow ) {
 				m_fsState.ui8Bank += uint8_t( ui32Tmp >> 16 );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "Bank += (Tmp >> 16)." );
+				lsn::DebugA( "\r\n\t\tBank += (Tmp >> 16)." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 		}
@@ -1786,18 +1789,18 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 			if constexpr ( _bBankOverflow ) {
 				if constexpr ( _bPageSkip ) {
-					lsn::DebugA( "Perform Orig = Address. Tmp = ui32(Address + Y). Address = ui16(Tmp). " );
+					lsn::DebugA( "Perform Orig = Address.\r\n\t\tTmp = ui32(Address + Y).\r\n\t\tAddress = ui16(Tmp)." );
 				}
 				else {
-					lsn::DebugA( "Perform Tmp = ui32(Address + Y). Address = ui16(Tmp). " );
+					lsn::DebugA( "Perform Tmp = ui32(Address + Y).\r\n\t\tAddress = ui16(Tmp)." );
 				}
 			}
 			else {
 				if constexpr ( _bPageSkip ) {
-					lsn::DebugA( "Perform Orig = Address. Address += Y. " );
+					lsn::DebugA( "Perform Orig = Address.\r\n\t\tAddress += Y." );
 				}
 				else {
-					lsn::DebugA( "Perform Address += Y. " );
+					lsn::DebugA( "Perform Address += Y." );
 				}
 			}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -1807,10 +1810,10 @@ namespace lsn {
 				}
 #ifdef LSN_CYCLES_DOC
 				if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-					lsn::DebugA( "If Orig.H == Address.H, skip 2 half-cycles. " );
+					lsn::DebugA( "\r\n\t\tIf Orig.H == Address.H, skip 2 half-cycles." );
 				}
 				else {
-					lsn::DebugA( "If Orig.H == Address.H and the X flag is set, skip 2 half-cycles. " );
+					lsn::DebugA( "\r\n\t\tIf Orig.H == Address.H and the X flag is set, skip 2 half-cycles." );
 				}
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
@@ -1822,18 +1825,18 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 			if constexpr ( _bBankOverflow ) {
 				if constexpr ( _bPageSkip ) {
-					lsn::DebugA( "Perform Orig = Pointer. Tmp = ui32(Pointer + Y). Pointer = ui16(Tmp). " );
+					lsn::DebugA( "Perform Orig = Pointer.\r\n\t\tTmp = ui32(Pointer + Y).\r\n\t\tPointer = ui16(Tmp)." );
 				}
 				else {
-					lsn::DebugA( "Perform Tmp = ui32(Pointer + Y). Pointer = ui16(Tmp). " );
+					lsn::DebugA( "Perform Tmp = ui32(Pointer + Y).\r\n\t\tPointer = ui16(Tmp)." );
 				}
 			}
 			else {
 				if constexpr ( _bPageSkip ) {
-					lsn::DebugA( "Perform Orig = Pointer. Pointer += Y. " );
+					lsn::DebugA( "Perform Orig = Pointer.\r\n\t\tPointer += Y." );
 				}
 				else {
-					lsn::DebugA( "Perform Pointer += Y. " );
+					lsn::DebugA( "Perform Pointer += Y." );
 				}
 			}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -1843,10 +1846,10 @@ namespace lsn {
 				}
 #ifdef LSN_CYCLES_DOC
 				if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-					lsn::DebugA( "If Orig.H == Pointer.H, skip 2 half-cycles. " );
+					lsn::DebugA( "\r\n\t\tIf Orig.H == Pointer.H, skip 2 half-cycles." );
 				}
 				else {
-					lsn::DebugA( "If Orig.H == Pointer.H and the X flag is set, skip 2 half-cycles. " );
+					lsn::DebugA( "\r\n\t\tIf Orig.H == Pointer.H and the X flag is set, skip 2 half-cycles." );
 				}
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
@@ -1856,13 +1859,13 @@ namespace lsn {
 			if constexpr ( _bBankOverflow ) {
 				m_fsState.ui8Bank = uint8_t( m_fsState.rRegs.ui8Db + (ui32Tmp >> 16) );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "Bank = DB + (Tmp >> 16)." );
+				lsn::DebugA( "\r\n\t\tBank = DB + (Tmp >> 16)." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
 				m_fsState.ui8Bank = m_fsState.rRegs.ui8Db;
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "Bank = DB." );
+				lsn::DebugA( "\r\n\t\tBank = DB." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 		}
@@ -1870,19 +1873,10 @@ namespace lsn {
 			if constexpr ( _bBankOverflow ) {
 				m_fsState.ui8Bank += uint8_t( ui32Tmp >> 16 );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "Bank += (Tmp >> 16)." );
+				lsn::DebugA( "\r\n\t\tBank += (Tmp >> 16)." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 		}
-
-		
-		/*if ( m_bEmulationMode ) {
-			m_ui8Address[0] = uint8_t( m_ui16Pointer + m_rRegs.ui16X + m_rRegs.ui16D );
-			m_ui8Address[1] = uint8_t( m_rRegs.ui16D >> 8 );
-		}
-		else {
-			m_ui16Address = m_ui16Pointer + m_rRegs.ui16X + m_rRegs.ui16D;
-		}*/
 
 		LSN_NEXT_FUNCTION;
 
@@ -2286,6 +2280,19 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tEnable writes to PC (disabled by NMI/IRQ).  Copy Address to PC.  Set PB to 0." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
+	/** Performs BRL (Branch Long). Adds 16-bit m_fsState.ui16Operand to m_fsState.rRegs.ui16Pc. **/
+	inline void CRicoh5A22::Brl_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		m_fsState.rRegs.ui16Pc += m_fsState.ui16Operand;
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tPerform PC += Operand." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
