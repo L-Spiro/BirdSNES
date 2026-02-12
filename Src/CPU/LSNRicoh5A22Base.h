@@ -43,8 +43,9 @@ namespace lsn {
 			LSN_AM_DIRECT_PAGE_INDIRECT_INDEXED_Y,											/**< DP Indirect Indexed, Y. */
 			LSN_AM_DIRECT_PAGE_INDIRECT_LONG_INDEXED_Y,										/**< DP Indirect Long Indexed, Y. */
 			LSN_AM_RELATIVE,																/**< Relative jumping = 2 extra cycles. */
-			LSN_AM_STACK_RELATIVE,															/**< Relative jumping on stackr. */
+			LSN_AM_STACK_RELATIVE,															/**< Relative jumping on stack. */
 			LSN_AM_STACK_RELATIVE_INDIRECT_INDEXED_Y,										/**< Stack relative indirect indexed Y. */
+			LSN_AM_PROGRAM_COUNTER_RELATIVE_LONG,											/**< Program counter relative long (rl). */
 			LSN_AM_ABSOLUTE,																/**< Absolute addressing = 3 extra cycles. */
 			LSN_AM_ABSOLUTE_INDIRECT,														/**< Absolute indirect. */
 			LSN_AM_ABSOLUTE_INDEXED_INDIRECT,												/**< Absolute indexed indirect (Jump). */

@@ -52,7 +52,7 @@
 #define LSN_FROM_P														false
 
 #ifdef LSN_CPU_VERIFY
-#define LSN_CYCLES_DOC													1
+//#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY
 
 
@@ -475,8 +475,13 @@ namespace lsn {
 		template <bool _bIncPc = false>
 		void															AslOnA_BeginInst();
 
-		/** Performs BIT between A and Operand.  Sets Z, N, and V. */
-		void															Bit();
+		/** 
+		 * Performs BIT between A and Operand.  Sets Z, N, and V.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Bit_BeginInst();
 
 		/**
 		 * 1st cycle of branch instructions. Decides whether branch condition is met.
@@ -540,6 +545,9 @@ namespace lsn {
 
 		/** Performs A--. Sets N and Z. */
 		void															DecOnA_BeginInst();
+
+		/** Performs Y--. Sets N and Z. */
+		void															Dey_BeginInst();
 
 		/**
 		 * Performs EOR with m_fsState.ui8Operand[0].
@@ -773,6 +781,16 @@ namespace lsn {
 		 **/
 		template <int8_t _i8SOff = -1, bool _bEndInstr = true>
 		void															Push_D_Low_Phi2();
+
+		/**
+		 * Pushes m_fsState.rRegs.ui8Db.
+		 * 
+		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+		 **/
+		template <int8_t _i8SOff = 0, bool _bEndInstr = true, bool _bSpecial = true>
+		void															Push_Db_Phi2();
 
 		/**
 		 * Pushes m_fsState.ui8Operand[1].
@@ -1135,8 +1153,29 @@ namespace lsn {
 		/** Skips the next instruction if the low byte of D is 0. */
 		void															SkipOnDL_Phi2();
 
-		/** Copies A to m_fsState.ui16Operand. **/
+		/**
+		 * Copies A to m_fsState.ui16Operand.
+		 *
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
 		void															Sta();
+
+		/**
+		 * Copies X to m_fsState.ui16Operand.
+		 *
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Stx();
+
+		/**
+		 * Copies Y to m_fsState.ui16Operand.
+		 *
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Sty();
 
 		/** Transfer 16 bit A to D.  Sets N and Z. */
 		void															Tcd_BeginInst();
@@ -1155,6 +1194,9 @@ namespace lsn {
 
 		/** Transfer 16-bit S to A.  Sets N and Z. */
 		void															Tsc_BeginInst();
+
+		/** Performs A = X. Sets N and Z. */
+		void															Txa_BeginInst();
 
 		/** Executes WDM (reserved).  Consumes the immediate byte; no architecturally visible effects. */
 		void															Wdm_BeginInst();
@@ -1177,6 +1219,63 @@ namespace lsn {
 		 **/
 		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
 		void															WriteBank0_Operand_Low_To_AddrOrPtr_SkipIfM_Phi2();
+
+		/**
+		 * Writes A to m_fsState.ui16Address + 1 or m_fsState.ui16Pointer + 1.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
+		void															WriteBank0_A_High_To_AddrOrPtr_Phi2();
+
+		/**
+		 * Writes A to m_fsState.ui16Address or m_fsState.ui16Pointer.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
+		void															WriteBank0_A_Low_To_AddrOrPtr_SkipIfM_Phi2();
+
+		/**
+		 * Writes X to m_fsState.ui16Address + 1 or m_fsState.ui16Pointer + 1.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
+		void															WriteBank0_X_High_To_AddrOrPtr_Phi2();
+
+		/**
+		 * Writes X to m_fsState.ui16Address or m_fsState.ui16Pointer.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
+		void															WriteBank0_X_Low_To_AddrOrPtr_SkipIfX_Phi2();
+
+		/**
+		 * Writes Y to m_fsState.ui16Address + 1 or m_fsState.ui16Pointer + 1.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
+		void															WriteBank0_Y_High_To_AddrOrPtr_Phi2();
+
+		/**
+		 * Writes Y to m_fsState.ui16Address or m_fsState.ui16Pointer.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
+		void															WriteBank0_Y_Low_To_AddrOrPtr_SkipIfX_Phi2();
 
 		/**
 		 * Writes 0 to m_fsState.ui16Address + 1 or m_fsState.ui16Pointer + 1.
@@ -1209,11 +1308,13 @@ namespace lsn {
 		/**
 		 * Writes m_fsState.ui8Operand[0] to m_fsState.ui16Address or m_fsState.ui16Pointer with bank.
 		 * 
+		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 		 **/
-		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
-		void															Write_Operand_Low_To_AddrOrPtr_And_DB_SkipIfM_Phi2();
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false, bool _bSkipIfX = false>
+		void															Write_Operand_Low_To_AddrOrPtr_And_DB_SkipIfM_SkipIfX_Phi2();
 
 		/**
 		 * Writes m_fsState.ui8Operand[0] to [m_fsState.rRegs.ui16Y:m_fsState.ui8Pointer[0]] for MVP.
@@ -1224,8 +1325,9 @@ namespace lsn {
 		 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank.
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 **/
-		template <bool _bTo = LSN_TO_A>
+		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
 		void															Write_Operand_High_To_AddrOrPtr_And_Bank_Phi2();
 
 		/**
@@ -1234,9 +1336,10 @@ namespace lsn {
 		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 		 **/
-		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = true, bool _bEndInstr = false>
-		void															Write_Operand_Low_To_AddrOrPtr_And_Bank_SkipIfM_Phi2();
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = true, bool _bEndInstr = false, bool _bSkipIfX = false>
+		void															Write_Operand_Low_To_AddrOrPtr_And_Bank_SkipIfM_SkipIfX_Phi2();
 
 
 		/**
@@ -2031,33 +2134,59 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
-	/** Performs BIT between A and Operand.  Sets Z, N, and V. */
-	inline void CRicoh5A22::Bit() {
+	/** 
+	 * Performs BIT between A and Operand.  Sets Z, N, and V.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Bit_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
 		if ( (m_fsState.rRegs.ui8Status & M()) ) {
 			SetBit<Z()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & m_fsState.ui8Operand[0]) == 0 );
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
-			SetBit<V()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x40) != 0 );
+			if constexpr ( !_bIncPc ) {
+				SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
+				SetBit<V()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x40) != 0 );
+			}
 		}
 		else {
 			SetBit<Z()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & m_fsState.ui16Operand) == 0 );
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui16Operand & 0x8000) != 0 );
-			SetBit<V()>( m_fsState.rRegs.ui8Status, (m_fsState.ui16Operand & 0x4000) != 0 );
+			if constexpr ( !_bIncPc ) {
+				SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[1] & 0x80) != 0 );
+				SetBit<V()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[1] & 0x40) != 0 );
+			}
 		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\t" );
+
+		if constexpr ( _bIncPc ) {
+			lsn::DebugA( "Inc. PC. " );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
 		
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( "\tSet Z based off (A.L & Operand.L), set N based off (Operand.L & $80), and set V based off (Operand.L & $40)." );
+		if constexpr ( _bIncPc ) {
+			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+				lsn::DebugA( "Set Z based off (A.L & Operand.L)." );
+			}
+			else {
+				lsn::DebugA( "If M flag is set, set Z based off (A.L & Operand.L), otherwise set Z based off (A & Operand)." );
+			}
 		}
 		else {
-			lsn::DebugA( "\tIf M flag is set, set Z based off (A.L & Operand.L), set N based off (Operand.L & $80), and set V based off (Operand.L & $40), otherwise set Z based off (A & Operand), set N based off (Operand.H & $80), and set V based off (Operand.H & $40)." );
+			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+				lsn::DebugA( "Set Z based off (A.L & Operand.L), set N based off (Operand.L & $80), and set V based off (Operand.L & $40)." );
+			}
+			else {
+				lsn::DebugA( "If M flag is set, set Z based off (A.L & Operand.L), set N based off (Operand.L & $80), and set V based off (Operand.L & $40), otherwise set Z based off (A & Operand), set N based off (Operand.H & $80), and set V based off (Operand.H & $40)." );
+			}
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<_bIncPc, false, false>();
 	}
-
 
 	/**
 	 * 1st cycle of branch instructions. Decides whether branch condition is met.
@@ -2419,6 +2548,33 @@ namespace lsn {
 		}
 		else {
 			lsn::DebugA( "\tIf M flag is set, perform A.L -= 1, set N based off (A.L & $80), and set Z based off A.L, otherwise perform A -= 1, set N based off (A.H & $80), and set Z based off A." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
+	/** Performs Y--. Sets N and Z. */
+	inline void CRicoh5A22::Dey_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if ( (m_fsState.rRegs.ui8Status & X()) ) {
+			--m_fsState.rRegs.ui8Y[0];
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[0] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8Y[0] );
+		}
+		else {
+			--m_fsState.rRegs.ui16Y;
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[1] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16Y );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "\tPerform Y.L -= 1, set N based off (Y.L & $80), set Z based off Y.L." );
+		}
+		else {
+			lsn::DebugA( "\tIf X flag is set, perform Y.L -= 1, set N based off (Y.L & $80), and set Z based off Y.L, otherwise perform Y -= 1, set N based off (Y.H & $80), and set Z based off Y." );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -3463,6 +3619,51 @@ namespace lsn {
 		}
 		else {
 			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush D.L onto stack.").c_str() );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Pushes m_fsState.rRegs.ui8Db.
+	 * 
+	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+	 **/
+	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial>
+	inline void CRicoh5A22::Push_Db_Phi2() {
+		if constexpr ( _bSpecial ) {
+			LSN_PUSH_SPECIAL( m_fsState.rRegs.ui8Db, m_ui8Speed );
+		}
+		else {
+			LSN_PUSH( m_fsState.rRegs.ui8Db, m_ui8Speed );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if constexpr ( _bSpecial ) {
+			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush DB onto stack.").c_str() );
+			}
+			else {
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush DB onto stack.").c_str() );
+			}
+		}
+		else {
+			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush DB onto stack.").c_str() );
+			}
+			else {
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush DB onto stack.").c_str() );
+			}
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -5246,16 +5447,92 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 
-	/** Copies A to m_fsState.ui16Operand. **/
+	/**
+	 * Copies A to m_fsState.ui16Operand.
+	 *
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
 	inline void CRicoh5A22::Sta() {
 		LSN_INSTR_START_PHI1( false );
 
 		m_fsState.ui16Operand = m_fsState.rRegs.ui16A;
+
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSets Operand to A." );
+		lsn::DebugA( "\t" );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		if constexpr ( _bIncPc ) {
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Inc PC. " );
+#endif	// #ifdef LSN_CYCLES_DOC
+			LSN_UPDATE_PC;
+		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "Sets Operand to A." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Copies X to m_fsState.ui16Operand.
+	 *
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Stx() {
+		LSN_INSTR_START_PHI1( false );
+
+		m_fsState.ui16Operand = m_fsState.rRegs.ui16X;
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\t" );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		if constexpr ( _bIncPc ) {
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Inc PC. " );
+#endif	// #ifdef LSN_CYCLES_DOC
+			LSN_UPDATE_PC;
+		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "Sets Operand to X." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
+	}
+
+	/** Copies Y to m_fsState.ui16Operand. **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Sty() {
+		LSN_INSTR_START_PHI1( false );
+
+		m_fsState.ui16Operand = m_fsState.rRegs.ui16Y;
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\t" );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		if constexpr ( _bIncPc ) {
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Inc PC. " );
+#endif	// #ifdef LSN_CYCLES_DOC
+			LSN_UPDATE_PC;
+		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "Sets Operand to Y." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
 		LSN_INSTR_END_PHI1;
 	}
 
@@ -5396,6 +5673,33 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
+	/** Performs A = X. Sets N and Z. */
+	inline void CRicoh5A22::Txa_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			m_fsState.rRegs.ui8A[0] = m_fsState.rRegs.ui8X[0];
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+		}
+		else {
+			m_fsState.rRegs.ui16A = m_fsState.rRegs.ui16X;
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[1] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "\tPerform A.L = X.L, set N based off (A.L & $80), set Z based off A.L." );
+		}
+		else {
+			lsn::DebugA( "\tIf M flag is set, perform A.L = X.L, set N based off (A.L & $80), and set Z based off A.L, otherwise perform A = X, set N based off (A.H & $80), and set Z based off A." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
 	/** Executes WDM (reserved).  Consumes the immediate byte; no architecturally visible effects. */
 	inline void CRicoh5A22::Wdm_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
@@ -5476,6 +5780,255 @@ namespace lsn {
 			}
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( " If M flag is set, skip the next cycle." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			if constexpr ( _bEndInstr ) {
+				LSN_FINISH_INST( true );
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes A to m_fsState.ui16Address + 1 or m_fsState.ui16Pointer + 1.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_A_High_To_AddrOrPtr_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8A[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address + 1\tWrite A.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8A[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer + 1\tWrite A.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes A to m_fsState.ui16Address or m_fsState.ui16Pointer.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_A_Low_To_AddrOrPtr_SkipIfM_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address, m_fsState.rRegs.ui8A[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address\tWrite A.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer, m_fsState.rRegs.ui8A[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer\tWrite A.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+		if constexpr ( _bSkipIfM ) {
+			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If M flag is set, skip the next cycle." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			if constexpr ( _bEndInstr ) {
+				LSN_FINISH_INST( true );
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes X to m_fsState.ui16Address + 1 or m_fsState.ui16Pointer + 1.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_X_High_To_AddrOrPtr_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8X[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address + 1\tWrite X.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8X[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer + 1\tWrite X.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes X to m_fsState.ui16Address or m_fsState.ui16Pointer.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bSkipIfX, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_X_Low_To_AddrOrPtr_SkipIfX_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address, m_fsState.rRegs.ui8X[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address\tWrite X.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer, m_fsState.rRegs.ui8X[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer\tWrite X.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+		if constexpr ( _bSkipIfX ) {
+			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If X flag is set, skip the next cycle." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			if constexpr ( _bEndInstr ) {
+				LSN_FINISH_INST( true );
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes Y to m_fsState.ui16Address + 1 or m_fsState.ui16Pointer + 1.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_Y_High_To_AddrOrPtr_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Y[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address + 1\tWrite Y.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Y[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer + 1\tWrite Y.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes Y to m_fsState.ui16Address or m_fsState.ui16Pointer.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bTo, bool _bSkipIfX, bool _bEndInstr>
+	inline void CRicoh5A22::WriteBank0_Y_Low_To_AddrOrPtr_SkipIfX_Phi2() {
+		if constexpr ( _bTo == LSN_TO_A ) {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Address, m_fsState.rRegs.ui8Y[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Address\tWrite Y.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.ui16Pointer, m_fsState.rRegs.ui8Y[0], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Write to Pointer\tWrite Y.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+		if constexpr ( _bSkipIfX ) {
+			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If X flag is set, skip the next cycle." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
@@ -5607,11 +6160,13 @@ namespace lsn {
 	/**
 	 * Writes m_fsState.ui8Operand[0] to m_fsState.ui16Address or m_fsState.ui16Pointer with bank.
 	 * 
+	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 	 **/
-	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr>
-	inline void CRicoh5A22::Write_Operand_Low_To_AddrOrPtr_And_DB_SkipIfM_Phi2() {
+	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr, bool _bSkipIfX>
+	inline void CRicoh5A22::Write_Operand_Low_To_AddrOrPtr_And_DB_SkipIfM_SkipIfX_Phi2() {
 		if constexpr ( _bTo == LSN_TO_A ) {
 			LSN_INSTR_START_PHI2_WRITE_BUSA( m_fsState.ui16Address, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[0], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
@@ -5641,6 +6196,24 @@ namespace lsn {
 			}
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( " If M flag is set, skip the next cycle." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else if constexpr ( _bSkipIfX ) {
+			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If X flag is set, skip the next cycle." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
@@ -5674,8 +6247,9 @@ namespace lsn {
 	 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Pointer or m_fsState.ui16Address and m_fsState.ui8Bank.
 	 * 
 	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 **/
-	template <bool _bTo>
+	template <bool _bTo, bool _bEndInstr>
 	inline void CRicoh5A22::Write_Operand_High_To_AddrOrPtr_And_Bank_Phi2() {
 		if constexpr ( _bTo == LSN_TO_A ) {
 			uint32_t ui32Offset = m_fsState.ui16Address + 1;
@@ -5692,7 +6266,12 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		
-		LSN_NEXT_FUNCTION;
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
 
 		LSN_INSTR_END_PHI2;
 	}
@@ -5703,9 +6282,10 @@ namespace lsn {
 	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 	 **/
-	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr>
-	inline void CRicoh5A22::Write_Operand_Low_To_AddrOrPtr_And_Bank_SkipIfM_Phi2() {
+	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr, bool _bSkipIfX>
+	inline void CRicoh5A22::Write_Operand_Low_To_AddrOrPtr_And_Bank_SkipIfM_SkipIfX_Phi2() {
 		if constexpr ( _bTo == LSN_TO_A ) {
 			LSN_INSTR_START_PHI2_WRITE_BUSA( m_fsState.ui16Address, m_fsState.ui8Bank, m_fsState.ui8Operand[0], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
@@ -5735,6 +6315,24 @@ namespace lsn {
 			}
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( " If M flag is set, skip the next cycle." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else if constexpr ( _bSkipIfX ) {
+			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+
+				if constexpr ( _bEndInstr ) {
+					LSN_FINISH_INST( true );
+				}
+				else {
+					LSN_NEXT_FUNCTION;
+				}
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( " If X flag is set, skip the next cycle." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {

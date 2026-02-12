@@ -9,10 +9,10 @@ LSN_1_STR( LSN_STR_BIRDSNES_ENG, "BirdSNES" )
 LSN_STR( LSN_STR_SUPER_NINTENDO_ENTERTAINMENT_SYSTEM, "Super Nintendo Entertainment System®", "スーパーファミコン®", "Super Nintendo Entertainment System®", "Super Nintendo Entertainment System®", "超级任天堂娱乐系统®" )
 LSN_STR( LSN_STR_SUPER_FAMICOM, "Super Famicom®", "スーパーファミコン®", "Super Famicom®", "Super Famicom®", "超级任天堂®" )
 
-LSN_1_STR( LSN_STR_ALL_SUPPORTED_FILES___SFC____ZIP____SFC___ZIP_, "All Supported Files (*.sfc, *.zip)\0*.sfc;*.zip\0" )
-LSN_1_STR( LSN_STR_SFC_FILES____SFC____SFC_, "SFC Files (*.sfc)\0*.sfc\0" )
-LSN_1_STR( LSN_STR_ZIP_FILES____ZIP____ZIP_, "ZIP Files (*.zip)\0*.zip\0" )
-LSN_1_STR( LSN_STR_ALL_FILES___________, "All Files (*.*)\0*.*\0" )
+LSN_STR( LSN_STR_ALL_SUPPORTED_FILES___SFC____ZIP____SFC___ZIP_, "All Supported Files (*.sfc, *.zip)\0*.sfc;*.zip\0", "対応ファイル (*.sfc, *.zip)\0*.sfc;*.zip\0", "Tous les fichiers pris en charge (*.sfc, *.zip)\0*.sfc;*.zip\0", "Todos los archivos compatibles (*.sfc, *.zip)\0*.sfc;*.zip\0", "所有支持的文件 (*.sfc, *.zip)\0*.sfc;*.zip\0" )
+LSN_STR( LSN_STR_SFC_FILES____SFC____SFC_, "SFC Files (*.sfc)\0*.sfc\0", "SFC ファイル (*.sfc)\0*.sfc\0", "Fichiers SFC (*.sfc)\0*.sfc\0", "Archivos SFC (*.sfc)\0*.sfc\0", "SFC 文件 (*.sfc)\0*.sfc\0" )
+LSN_STR( LSN_STR_ZIP_FILES____ZIP____ZIP_, "ZIP Files (*.zip)\0*.zip\0", "ZIP ファイル (*.zip)\0*.zip\0", "Fichiers ZIP (*.zip)\0*.zip\0", "Archivos ZIP (*.zip)\0*.zip\0", "ZIP 文件 (*.zip)\0*.zip\0" )
+LSN_STR( LSN_STR_ALL_FILES___________, "All Files (*.*)\0*.*\0", "すべてのファイル (*.*)\0*.*\0", "Tous les fichiers (*.*)\0*.*\0", "Todos los archivos (*.*)\0*.*\0", "所有文件 (*.*)\0*.*\0" )
 
 // Menu.
 LSN_STR( LSN_STR__FILE, "&File", "ファイル(&F)", "&Fichier", "&Archivo", "文件(&F)" )
