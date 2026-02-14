@@ -120,7 +120,6 @@ LSN_E_ENUM( LSN_E_WININET_E_SEC_CERT_REV_FAILED, "Revocation of the SSL certific
 //LSN_E_ENUM( LSN_E_ERROR_WINHTTP_INTERNAL_ERROR, "An internal error has occurred.", "内部エラーが発生しました。", "Une erreur interne s’est produite.", "Se produjo un error interno.", "发生了内部错误。" )
 LSN_E_ENUM( LSN_E_CURL_INIT_FAILED, "libcurl failed to initialize.", "libcurl の初期化に失敗しました。", "Échec de l’initialisation de libcurl.", "Falló la inicialización de libcurl.", "libcurl 初始化失败。" )
 
-
 // libcurl errors.
 LSN_E_ENUM( LSN_E_CURLE_OK, "Operation completed successfully.", "操作は正常に完了しました。", "L’opération s’est terminée avec succès.", "La operación se completó correctamente.", "操作已成功完成。" )
 LSN_E_ENUM( LSN_E_CURLE_UNSUPPORTED_PROTOCOL, "The specified protocol is not supported.", "指定されたプロトコルはサポートされていません。", "Le protocole spécifié n’est pas pris en charge.", "El protocolo especificado no es compatible.", "不支持指定的协议。" )
@@ -230,14 +229,12 @@ LSN_E_ENUM( LSN_E_INVALID_TARGET_HANDLE, "The target handle is invalid.", "対�
 LSN_E_ENUM( LSN_E_HANDLE_NOT_CLOSABLE, "The handle cannot be closed.", "このハンドルはクローズできません。", "Ce handle ne peut pas être fermé.", "Este identificador (handle) no se puede cerrar.", "该句柄无法关闭。" )
 LSN_E_ENUM( LSN_E_INVALID_HANDLE, "The handle is invalid.", "ハンドルが無効です。", "Le handle est invalide.", "El identificador (handle) no es válido.", "句柄无效。" )
 
-
 // Neural network errros.
 LSN_E_ENUM( LSN_E_TOO_FEW_INPUTS, "Too little input data for the number of neurons in the input layer.", "入力層のニューロン数に対して入力データが少なすぎます。", "Trop peu de données d’entrée pour le nombre de neurones de la couche d’entrée.", "Demasiados pocos datos de entrada para la cantidad de neuronas en la capa de entrada.", "相对于输入层神经元数量，输入数据过少。" )
 LSN_E_ENUM( LSN_E_UNATTACHED_LAYERS, "A set of weights is missing either an input or an output.", "重みのセットに入力または出力のどちらかが欠けています。", "Un jeu de poids manque d’une entrée ou d’une sortie.", "A un conjunto de pesos le falta una entrada o una salida.", "一组权重缺少输入或输出。" )
 LSN_E_ENUM( LSN_E_SPAN_TOO_LARGE, "The difference between a sparse neuron's lowest connection index and its highest connection index is greater than 0xFFFFFFFF.", "疎なニューロンの最小接続インデックスと最大接続インデックスの差が 0xFFFFFFFF を超えています。", "La différence entre l’indice de connexion le plus bas et le plus haut d’un neurone clairsemé dépasse 0xFFFFFFFF.", "La diferencia entre el índice de conexión más bajo y el más alto de una neurona dispersa es mayor que 0xFFFFFFFF.", "稀疏神经元的最低连接索引与最高连接索引之差大于 0xFFFFFFFF。" )
 LSN_E_ENUM( LSN_E_OFFSET_PLUS_STARTING_INDEX_TOO_LARGE, "The sum of the given offset and the first index caused integer overflow.", "指定されたオフセットと最初のインデックスの合計で整数オーバーフローが発生しました。", "La somme du décalage (offset) fourni et du premier indice a provoqué un dépassement d’entier.", "La suma del desplazamiento (offset) proporcionado y el primer índice causó un desbordamiento entero.", "给定偏移量与起始索引之和导致整数溢出。" )
 LSN_E_ENUM( LSN_E_LAYER_TOO_LARGE_FOR_MAX_SPARSE, "The layer is too large for the given sparse configuration.", "指定された疎構成に対してレイヤーが大きすぎます。", "La couche est trop grande pour la configuration clairsemée spécifiée.", "La capa es demasiado grande para la configuración dispersa especificada.", "对于给定的稀疏配置，该层过大。" )
-
 
 // Development errors.
 LSN_E_ENUM( LSN_E_NOT_IMPLEMENTED, "Feature not implemented yet.", "この機能はまだ実装されていません。", "La fonctionnalité n’est pas encore implémentée.", "La función aún no está implementada.", "该功能尚未实现。" )
