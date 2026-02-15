@@ -37,6 +37,7 @@ namespace lsn {
 			LSN_AM_ZERO_PAGE_Y,																/**< Zero-page-Y = 3 extra cycles. */
 			LSN_AM_DIRECT_PAGE,																/**< Direct page, up to 2 extra cycles. */
 			LSN_AM_DIRECT_PAGE_INDEXED_X,													/**< Direct page indexed X. */
+			LSN_AM_DIRECT_PAGE_INDEXED_Y,													/**< Direct page indexed Y. */
 			LSN_AM_DIRECT_PAGE_INDIRECT,													/**< Direct page indirect. */
 			LSN_AM_DIRECT_PAGE_INDIRECT_LONG,												/**< Direct page, up to 2 extra cycles. */
 			LSN_AM_DIRECT_PAGE_INDEXED_INDIRECT_X,											/**< Direct Indexed Indirect (d,x). */

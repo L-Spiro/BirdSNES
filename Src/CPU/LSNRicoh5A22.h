@@ -540,6 +540,13 @@ namespace lsn {
 		/** Clears the overflow flag (V). */
 		void															Clv_BeginInst();
 
+		/**
+		 * Performs A - Operand (comparison). Sets C, N, and Z.
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Cmp_BeginInst();
+
 		/** Copies m_fsState.ui8Operand[0] to m_fsState.rRegs.ui8Db. */
 		void															Copy_Operand_To_Db();
 
@@ -557,6 +564,22 @@ namespace lsn {
 			
 		/** Copies from the vector to PC.l. **/
 		void															CopyVectorToPc_L_Phi2();
+
+		/**
+		 * Performs X - Operand (comparison). Sets C, N, and Z.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Cpx_BeginInst();
+
+		/**
+		 * Performs Y - Operand (comparison). Sets C, N, and Z.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Cpy_BeginInst();
 
 		/** Performs A--. Sets N and Z. */
 		void															DecOnA_BeginInst();
@@ -1089,9 +1112,11 @@ namespace lsn {
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
 		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 		 **/
-		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false>
-		void															ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2();
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false, bool _bSkipIfX = false>
+		void															ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_SkipIfX_Phi2();
 
 		/**
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
@@ -1129,6 +1154,9 @@ namespace lsn {
 		 **/
 		template <bool _bFrom = LSN_FROM_A, bool _bSkipIfM = false, bool _bEndInstr = false, bool _bSkipIfX = false>
 		void															ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_SkipIfX_Phi2();
+
+		/** Resets Status bits based on Operand. Handles X/M flag sizing updates. **/
+		void															Rep_BeginInst();
 
 		/**
 		 * Performs Operand = (Operand << 1) | C.  Sets C, N, and Z, optionally increases PC.
@@ -1202,6 +1230,9 @@ namespace lsn {
 		template <bool _bAdjS>
 		void															SelectCopVectors();
 
+		/** Sets Status bits based on Operand. Handles X/M flag sizing updates. **/
+		void															Sep_BeginInst();
+
 		/** Sets I and X. */
 		void															SetBrkFlags();
 
@@ -1218,6 +1249,9 @@ namespace lsn {
 		 **/
 		template <bool _bIncPc = false>
 		void															Sta();
+
+		/** Stops the processor (STP). */
+		void															Stp_BeginInst();
 
 		/**
 		 * Copies X to m_fsState.ui16Operand.
@@ -1525,6 +1559,14 @@ namespace lsn {
 		 * \param _ui8OpVal The operand value used in the comparison.
 		 */
 		inline void														Cmp( uint8_t _ui8RegVal, uint8_t _ui8OpVal );
+
+		/**
+		 * Performs a compare against a register and an operand by setting flags.
+		 *
+		 * \param _ui16RegVal The register value used in the comparison.
+		 * \param _ui16OpVal The operand value used in the comparison.
+		 */
+		inline void														Cmp( uint16_t _ui16RegVal, uint16_t _ui16OpVal );
 
 		/**
 		 * Performs an 8-bit subtract-with-carry with an operand, setting flags C, N, V, and Z.
@@ -2704,6 +2746,39 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
+	/**
+	 * Performs A - Operand (comparison). Sets C, N, and Z.
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Cmp_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			Cmp( m_fsState.rRegs.ui8A[0], m_fsState.ui8Operand[0] );
+		}
+		else {
+			Cmp( m_fsState.rRegs.ui16A, m_fsState.ui16Operand );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\t" );
+
+		if constexpr ( _bIncPc ) {
+			lsn::DebugA( "Inc. PC. " );
+		}
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "Set C flag based off (A.L >= Operand.L), set Z flag based off (A.L == Operand.L), and set N flag based off ((A.L - Operand.L) & $80) != 0." );
+		}
+		else {
+			lsn::DebugA( "If M flag is set, set C flag based off (A.L >= Operand.L), set Z flag based off (A.L == Operand.L), and set N flag based off ((A.L - Operand.L) & $80) != 0, otherwise "
+				"set C flag based off (A >= Operand), set Z flag based off (A == Operand), and set N flag based off ((A - Operand) & $8000) != 0." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<_bIncPc, false, false>();
+	}
+
 	/** Copies m_fsState.ui8Operand[0] to m_fsState.rRegs.ui8Db. */
 	inline void CRicoh5A22::Copy_Operand_To_Db() {
 		LSN_INSTR_START_PHI1( true );
@@ -2803,6 +2878,76 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
+	}
+	
+	/**
+	 * Performs X - Operand (comparison). Sets C, N, and Z.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Cpx_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if ( (m_fsState.rRegs.ui8Status & X()) ) {
+			Cmp( m_fsState.rRegs.ui8X[0], m_fsState.ui8Operand[0] );
+		}
+		else {
+			Cmp( m_fsState.rRegs.ui16X, m_fsState.ui16Operand );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\t" );
+
+		if constexpr ( _bIncPc ) {
+			lsn::DebugA( "Inc. PC. " );
+		}
+
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "Set C flag based off (X.L >= Operand.L), set Z flag based off (X.L == Operand.L), and set N flag based off ((X.L - Operand.L) & $80) != 0." );
+		}
+		else {
+			lsn::DebugA( "If X flag is set, set C flag based off (X.L >= Operand.L), set Z flag based off (X.L == Operand.L), and set N flag based off ((X.L - Operand.L) & $80) != 0, otherwise "
+				"set C flag based off (X >= Operand), set Z flag based off (X == Operand), and set N flag based off ((X - Operand) & $8000) != 0." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<_bIncPc, false, false>();
+	}
+
+	/**
+	 * Performs Y - Operand (comparison). Sets C, N, and Z.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Cpy_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if ( (m_fsState.rRegs.ui8Status & X()) ) {
+			Cmp( m_fsState.rRegs.ui8Y[0], m_fsState.ui8Operand[0] );
+		}
+		else {
+			Cmp( m_fsState.rRegs.ui16Y, m_fsState.ui16Operand );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\t" );
+
+		if constexpr ( _bIncPc ) {
+			lsn::DebugA( "Inc. PC. " );
+		}
+
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "Set C flag based off (Y.L >= Operand.L), set Z flag based off (Y.L == Operand.L), and set N flag based off ((Y.L - Operand.L) & $80) != 0." );
+		}
+		else {
+			lsn::DebugA( "If X flag is set, set C flag based off (Y.L >= Operand.L), set Z flag based off (Y.L == Operand.L), and set N flag based off ((Y.L - Operand.L) & $80) != 0, otherwise "
+				"set C flag based off (Y >= Operand), set Z flag based off (Y == Operand), and set N flag based off ((Y - Operand) & $8000) != 0." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<_bIncPc, false, false>();
 	}
 
 	inline void CRicoh5A22::Dex_BeginInst() {
@@ -5258,9 +5403,11 @@ namespace lsn {
 	 * 
 	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
 	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 	 **/
-	template <bool _bTo, bool _bSkipIfM>	
-	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_Phi2() {
+	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr, bool _bSkipIfX>	
+	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_SkipIfX_Phi2() {
 #ifdef LSN_CYCLES_DOC
 		std::string sDebug;
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -5285,12 +5432,26 @@ namespace lsn {
 			sDebug += " If M flag is set, skip the next cycle.";
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
+		else if constexpr ( _bSkipIfX ) {
+			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+				LSN_NEXT_FUNCTION_BY( 2 );
+			}
+#ifdef LSN_CYCLES_DOC
+			sDebug += " If X flag is set, skip the next cycle.";
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			if constexpr ( _bEndInstr ) {
+				LSN_FINISH_INST( true );
+			}
+			else {
+				LSN_NEXT_FUNCTION;
+			}
+		}
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( sDebug.c_str() );
 #endif	// #ifdef LSN_CYCLES_DOC
-		
-		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI2;
 	}
@@ -5482,6 +5643,41 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		LSN_INSTR_END_PHI2;
+	}
+
+	/** Resets Status bits based on Operand. Handles X/M flag sizing updates. **/
+	inline void CRicoh5A22::Rep_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			// In Emulation mode, X and M are unused/Break and cannot be cleared via REP.
+			m_fsState.rRegs.ui8Status &= ~(m_fsState.ui8Operand[0] & ~(X() | M()));
+		}
+		else {
+			m_fsState.rRegs.ui8Status &= ~m_fsState.ui8Operand[0];
+			
+			// If X flag became 1 (8-bit), we must clear the high bytes of X and Y?
+			// The 65816 datasheet says "Index registers are not cleared".
+			// But for consistency with 8-bit operations, we often ensure the high byte is zeroed
+			// if we are paranoid, or rely on operations to mask it. 
+			// However, standard behavior is that the high byte is hidden but preserved when switching 16->8.
+			// When switching 8->16, the old high byte reappears (unless XCE cleared it).
+			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+				m_fsState.rRegs.ui8X[1] = 0;
+				m_fsState.rRegs.ui8Y[1] = 0;
+			}
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "\tP &= ~(Operand.L & ~(X flag | M flag))." );
+		}
+		else {
+			lsn::DebugA( "\tP &= ~Operand.L, set X.H and Y.H to 0 if X flag is set." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
 	}
 
 	/**
@@ -5967,6 +6163,34 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
+	/** Sets Status bits based on Operand. Handles X/M flag sizing updates. **/
+	inline void CRicoh5A22::Sep_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			// In Emulation mode, X and M are forced.
+			m_fsState.rRegs.ui8Status |= (m_fsState.ui8Operand[0] & ~(X() | M()));
+		}
+		else {
+			m_fsState.rRegs.ui8Status |= m_fsState.ui8Operand[0];
+			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+				m_fsState.rRegs.ui8X[1] = 0;
+				m_fsState.rRegs.ui8Y[1] = 0;
+			}
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "\tP |= (Operand.L & ~(X flag | M flag))." );
+		}
+		else {
+			lsn::DebugA( "\tP |= Operand.L, set X.H and Y.H to 0 if X flag is set." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
 	/** Sets I and X. */
 	inline void CRicoh5A22::SetBrkFlags() {
 		LSN_INSTR_START_PHI1( true );
@@ -6046,6 +6270,19 @@ namespace lsn {
 		LSN_NEXT_FUNCTION;
 
 		LSN_INSTR_END_PHI1;
+	}
+
+	/** Stops the processor (STP). */
+	inline void CRicoh5A22::Stp_BeginInst() {
+		LSN_INSTR_START_PHI1( false );
+		//m_fsState.rRegs.ui16Pc--;
+		
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tStop processor." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		// Loop this instruction forever until Reset.
+		BeginInst<false, false, false>();
 	}
 
 	/**
@@ -7605,6 +7842,21 @@ namespace lsn {
 		SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui8RegVal == _ui8OpVal );
 		// ...and the sign (IE A>=$80) of the register.
 		SetBit<N()>( m_fsState.rRegs.ui8Status, ((_ui8RegVal - _ui8OpVal) & 0x80) != 0 );
+	}
+
+	/**
+	 * Performs a compare against a register and an operand by setting flags.
+	 *
+	 * \param _ui16RegVal The register value used in the comparison.
+	 * \param _ui16OpVal The operand value used in the comparison.
+	 */
+	inline void CRicoh5A22::Cmp( uint16_t _ui16RegVal, uint16_t _ui16OpVal ) {
+		// If the value in the register is equal or greater than the compared value, the Carry will be set.
+		SetBit<C()>( m_fsState.rRegs.ui8Status, _ui16RegVal >= _ui16OpVal );
+		// The equal (Z) and negative (N) flags will be set based on equality or lack thereof...
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui16RegVal == _ui16OpVal );
+		// ...and the sign (IE A>=$8000) of the register.
+		SetBit<N()>( m_fsState.rRegs.ui8Status, ((_ui16RegVal - _ui16OpVal) & 0x8000) != 0 );
 	}
 
 	/**
