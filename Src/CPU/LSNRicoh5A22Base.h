@@ -49,6 +49,7 @@ namespace lsn {
 			LSN_AM_PROGRAM_COUNTER_RELATIVE_LONG,											/**< Program counter relative long (rl). */
 			LSN_AM_ABSOLUTE,																/**< Absolute addressing = 3 extra cycles. */
 			LSN_AM_ABSOLUTE_INDIRECT,														/**< Absolute indirect. */
+			LSN_AM_ABSOLUTE_INDIRECT_LONG,													/**< Absolute indirect long. */
 			LSN_AM_ABSOLUTE_INDEXED_INDIRECT,												/**< Absolute indexed indirect (Jump). */
 			LSN_AM_ABSOLUTE_LONG,															/**< Absolute long, X. */
 			LSN_AM_ABSOLUTE_LONG_X,															/**< Absolute long. */

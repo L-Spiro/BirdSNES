@@ -40,7 +40,7 @@
 #define LSN_POP_SPECIAL( RESULT, SPEED )								LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? ((0x100 | m_fsState.rRegs.ui8S[0]) + _i8SOff) : (m_fsState.rRegs.ui16S + _i8SOff), (RESULT), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( _i8SOff ) )
 
 #define LSN_UPDATE_PC													if LSN_LIKELY( m_fsState.bAllowWritingToPc ) { m_fsState.rRegs.ui16Pc += m_fsState.ui16PcModify; } m_fsState.ui16PcModify = 0
-#define LSN_UPDATE_S													m_fsState.rRegs.ui16S += m_fsState.ui16SModify; m_fsState.ui16SModify = 0
+#define LSN_UPDATE_S													m_fsState.rRegs.ui16S += m_fsState.ui16SModify; m_fsState.ui16SModify = 0; if LSN_UNLIKELY( m_fsState.bEmulationMode ) { m_fsState.rRegs.ui8S[1] = 1; }
 
 #define LSN_R															CRicoh5A22::LSN_CT_READ
 #define LSN_W															CRicoh5A22::LSN_CT_WRITE
@@ -580,9 +580,18 @@ namespace lsn {
 		 **/
 		template <bool _bIncPc = false>
 		void															Cpy_BeginInst();
+		
 
 		/** Performs A--. Sets N and Z. */
 		void															DecOnA_BeginInst();
+
+		/**
+		 * Performs Operand--. Sets N and Z.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <bool _bIncPc = false>
+		void															Dec();
 
 		/** Performs X--. Sets N and Z. */
 		void															Dex_BeginInst();
@@ -686,6 +695,9 @@ namespace lsn {
 		template <bool _bTo = LSN_TO_A>	
 		void															Fix_PtrOrAddr_From_AddrOrPtr_High();
 
+		/** Performs Operand++. Sets N and Z. */
+		void															Inc();
+
 		/** Performs A++. Sets N and Z. */
 		void															IncOnA_BeginInst();
 
@@ -694,6 +706,9 @@ namespace lsn {
 
 		/** Performs Y++. Sets N and Z. */
 		void															Iny_BeginInst();
+
+		/** Performs JML [abs] (Indirect Long). Sets PC and PB. */
+		void															Jml_Absolute_Indirect_BeginInst();
 
 		/**
 		 * Performs PC = Address (Absolute JMP).
@@ -762,6 +777,9 @@ namespace lsn {
 		template <int16_t _i16AddrAdj = -1>
 		void															MvX_Adjust_And_SetRepeat();
 
+		/** Performs NOP. */
+		void															Nop_BeginInst();
+
 		/**
 		 * Generic null operation.
 		 * 
@@ -819,6 +837,9 @@ namespace lsn {
 
 		/** Performs PLP and begins the next instruction. */
 		void															Plp_BeginInst();
+
+		/** Pulls X from the stack. Sets N and Z. */
+		void															Plx_BeginInst();
 
 		/** Pulls Y from the stack. **/
 		void															Ply_BeginInst();
@@ -1037,8 +1058,9 @@ namespace lsn {
 		 * 
 		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \tparam _bBankWrap If true, the bank wraps (instead of carries) on addresses where + 1 crosses into a new bank.
 		 **/
-		template <bool _bFrom = LSN_FROM_A, bool _bEndInstr = false>
+		template <bool _bFrom = LSN_FROM_A, bool _bEndInstr = false, bool _bBankWrap = true>
 		void															Read_PtrOrAddr_And_DB_To_Operand_High_Phi2();
 
 		/**
@@ -1131,9 +1153,19 @@ namespace lsn {
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
 		 * 
 		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 **/
-		template <bool _bFrom = LSN_FROM_A>
+		template <bool _bFrom = LSN_FROM_A, bool _bEndInstr = false>
 		void															ReadBank0_PtrOrAddr_To_Bank_LowByteWrap_Phi2();
+
+		/**
+		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 **/
+		template <bool _bFrom = LSN_FROM_A, bool _bEndInstr = false>
+		void															ReadBank0_PtrOrAddr_To_Operand_High_LowByteWrap_Phi2();
 
 		/**
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
@@ -1176,14 +1208,16 @@ namespace lsn {
 
 		/**
 		 * Performs Operand = (Operand >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
-		 * * \tparam _bIncPc If true, PC is updated.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
 		 **/
 		template <bool _bIncPc = false>
 		void															Ror();
 
 		/**
 		 * Performs A = (A >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
-		 * * \tparam _bIncPc If true, PC is updated.
+		 * 
+		 * \tparam _bIncPc If true, PC is updated.
 		 **/
 		template <bool _bIncPc = false>
 		void															RorOnA_BeginInst();
@@ -1321,6 +1355,9 @@ namespace lsn {
 
 		/** Executes WDM (reserved).  Consumes the immediate byte; no architecturally visible effects. */
 		void															Wdm_BeginInst();
+
+		/** Puts the CPU into a waiting state. */
+		void															Wai_Phi2();
 
 		/**
 		 * Writes m_fsState.ui8Operand[1] to m_fsState.ui16Address or m_fsState.ui16Pointer.
@@ -1481,8 +1518,9 @@ namespace lsn {
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \tparam _bBankWrap If true, the bank wraps (instead of carries) on addresses where + 1 crosses into a new bank.
 		 **/
-		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
+		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false, bool _bBankWrap = true>
 		void															Write_Operand_High_To_AddrOrPtr_And_DB_Phi2();
 
 		/**
@@ -1521,9 +1559,11 @@ namespace lsn {
 		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = true, bool _bEndInstr = false, bool _bSkipIfX = false>
 		void															Write_Operand_Low_To_AddrOrPtr_And_Bank_SkipIfM_SkipIfX_Phi2();
 
+		/** Exchanges the low and high bytes of the Accumulator. Sets N and Z based on the new low byte. */
+		void															Xba_BeginInst();
+
 		/** Exchanges the carry (C) and emulation (E) flags. */
 		void															Xce_BeginInst();
-
 
 		/**
 		 * Prepares to enter a new instruction.
@@ -2701,7 +2741,7 @@ namespace lsn {
 		SetBit<C(), false>( m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSets the C flag to 0." );
+		lsn::DebugA( "\tSet the C flag to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -2714,7 +2754,7 @@ namespace lsn {
 		SetBit<D(), false>( m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSets the D flag to 0." );
+		lsn::DebugA( "\tSet the D flag to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -2727,7 +2767,7 @@ namespace lsn {
 		SetBit<I(), false>( m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSets the I flag to 0." );
+		lsn::DebugA( "\tSet the I flag to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -2740,7 +2780,7 @@ namespace lsn {
 		SetBit<V(), false>( m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSets the V flag to 0." );
+		lsn::DebugA( "\tSet the V flag to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -2878,6 +2918,52 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
+	}
+
+	/**
+	 * Performs Operand--. Sets N and Z.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <bool _bIncPc>
+	inline void CRicoh5A22::Dec() {
+		LSN_INSTR_START_PHI1( false );
+
+		if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			--m_fsState.ui8Operand[0];
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand[0] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand[0] );
+		}
+		else {
+			--m_fsState.ui16Operand;
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand[1] & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui16Operand );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\t" );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		if constexpr ( _bIncPc ) {
+			LSN_UPDATE_PC;
+
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "Inc. PC. " );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "Perform Operand.L--, set N based off (Operand.L & $80) and Z based off Operand.L." );
+		}
+		else {
+			lsn::DebugA( "If M flag is set, perform Operand.L--, set N based off (Operand.L & $80), and set Z based off Operand.L, otherwise perform Operand--, set N based off (Operand.H & $80), and set Z based off Operand." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
 	}
 	
 	/**
@@ -3381,6 +3467,35 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
+	/** Performs Operand++. Sets N and Z. */
+    inline void CRicoh5A22::Inc() {
+        LSN_INSTR_START_PHI1( true );
+
+        if ( (m_fsState.rRegs.ui8Status & M()) ) {
+            m_fsState.ui8Operand[0]++;
+            SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
+            SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand[0] == 0 );
+        }
+        else {
+            m_fsState.ui16Operand++;
+            SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui16Operand & 0x8000) != 0 );
+            SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.ui16Operand == 0 );
+        }
+
+#ifdef LSN_CYCLES_DOC
+        if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( "\tPerform Operand.L += 1, set N based off (Operand.L & $80), set Z based off Operand.L." );
+		}
+		else {
+			lsn::DebugA( "\tIf M flag is set, perform Operand.L += 1, set N based off (Operand.L & $80), and set Z based off Operand.L, otherwise perform Operand += 1, set N based off (Operand.H & $80), and set Z based off Operand." );
+		}
+#endif  // #ifdef LSN_CYCLES_DOC
+
+		LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;
+    }
+
 	/** Performs A++. Sets N and Z. */
 	inline void CRicoh5A22::IncOnA_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
@@ -3462,6 +3577,20 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
+	/** Performs JML [abs] (Indirect Long). Sets PC and PB. */
+	inline void CRicoh5A22::Jml_Absolute_Indirect_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		m_fsState.rRegs.ui16Pc = m_fsState.ui16Operand;
+		m_fsState.rRegs.ui8Pb = m_fsState.ui8Bank;
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tSet PC to Operand. Set PB to Bank." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
 	/**
 	 * Performs PC = Address (Absolute JMP).
 	 */
@@ -3490,11 +3619,21 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 
 #ifdef LSN_CYCLES_DOC
-		if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
-			lsn::DebugA( (" Dec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ". ").c_str() );
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
+				lsn::DebugA( (" Dec. S.L by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + " and set S.H to 1. ").c_str() );
+			}
+			else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
+				lsn::DebugA( (" Inc. S.L by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + " and set S.H to 1. ").c_str() );
+			}
 		}
-		else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
-			lsn::DebugA( (" Inc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ". ").c_str() );
+		else {
+			if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
+				lsn::DebugA( (" Dec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ". ").c_str() );
+			}
+			else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
+				lsn::DebugA( (" Inc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ". ").c_str() );
+			}
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 		LSN_UPDATE_S;
@@ -3816,6 +3955,13 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
+	/** Performs NOP. */
+	inline void CRicoh5A22::Nop_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		BeginInst<false, false, false>();
+	}
+
 	/**
 	 * Generic null operation.
 	 * 
@@ -3848,11 +3994,21 @@ namespace lsn {
 			}
 			if constexpr ( _bAdjS ) {
 #ifdef LSN_CYCLES_DOC
-				if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
-					sDebug += "Dec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ". ";
+				if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+					if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
+						sDebug += "Dec. S.L by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
+					}
+					else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
+						sDebug += "Inc. S.L by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
+					}
 				}
-				else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
-					sDebug += "Inc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ". ";
+				else {
+					if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
+						sDebug += "Dec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ". ";
+					}
+					else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
+						sDebug += "Inc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ". ";
+					}
 				}
 #endif	// #ifdef LSN_CYCLES_DOC
 				LSN_UPDATE_S;
@@ -3949,11 +4105,21 @@ namespace lsn {
 			if constexpr ( _bAdjS ) {
 				LSN_UPDATE_S;
 #ifdef LSN_CYCLES_DOC
-				if ( m_fsState.ui16SModify < 0 ) {
-					sDebug += "Dec. S by " + std::to_string( -m_fsState.ui16SModify ) + ". ";
+				if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+					if ( m_fsState.ui16SModify < 0 ) {
+						sDebug += "Dec. S.L by " + std::to_string( -m_fsState.ui16SModify ) + " and set S.H to 1. ";
+					}
+					else if ( m_fsState.ui16SModify > 0 ) {
+						sDebug += "Inc. S.L by " + std::to_string( m_fsState.ui16SModify ) + " and set S.H to 1. ";
+					}
 				}
-				else if ( m_fsState.ui16SModify > 0 ) {
-					sDebug += "Inc. S by " + std::to_string( m_fsState.ui16SModify ) + ". ";
+				else {
+					if ( m_fsState.ui16SModify < 0 ) {
+						sDebug += "Dec. S by " + std::to_string( -m_fsState.ui16SModify ) + ". ";
+					}
+					else if ( m_fsState.ui16SModify > 0 ) {
+						sDebug += "Inc. S by " + std::to_string( m_fsState.ui16SModify ) + ". ";
+					}
 				}
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
@@ -4034,10 +4200,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if ( !m_fsState.bEmulationMode ) {
-			lsn::DebugA( "\tSets Operand.L to P." );
+			lsn::DebugA( "\tSet Operand.L to P." );
 		}
 		else {
-			lsn::DebugA( "\tSets Operand.L to P with X and M flags set." );
+			lsn::DebugA( "\tSet Operand.L to P with X and M flags set." );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4133,6 +4299,33 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
+	}
+
+	/** Pulls X from the stack. Sets N and Z. */
+	inline void CRicoh5A22::Plx_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		if ( (m_fsState.rRegs.ui8Status & X()) ) {
+			m_fsState.rRegs.ui8X[0] = m_fsState.ui8Operand[0];
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8X[0] & 0x80) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[0] == 0 );
+		}
+		else {
+			m_fsState.rRegs.ui16X = m_fsState.ui16Operand;
+			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16X & 0x8000) != 0 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16X == 0 );
+		}
+
+		BeginInst<false, true, false>();
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			lsn::DebugA( " Set X.L to Operand.L, set N based off (X.L & $80), and set Z based off X.L." );
+		}
+		else {
+			lsn::DebugA( " If X flag is set, set X.L to Operand.L, set N based off (X.L & $80), and Z based off X.L, otherwise set X to Operand, set N based off (X.H & $80), and Z based off X." );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
 	}
 
 	/** Pulls Y from the stack. **/
@@ -5025,21 +5218,52 @@ namespace lsn {
 	 * 
 	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \tparam _bBankWrap If true, the bank wraps (instead of carries) on addresses where + 1 crosses into a new bank.
 	 **/
-	template <bool _bFrom, bool _bEndInstr>
+	template <bool _bFrom, bool _bEndInstr, bool _bBankWrap>
 	inline void CRicoh5A22::Read_PtrOrAddr_And_DB_To_Operand_High_Phi2() {
 		if constexpr ( _bFrom == LSN_FROM_A ) {
-			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+			if constexpr ( _bBankWrap ) {
+				LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read Address + 1:DB\tStore as Operand.H." );
+				lsn::DebugA( "* Read Address + 1:DB\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
+			}
+			else {
+				uint32_t ui32Offset = m_fsState.ui16Address + 1;
+				LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.rRegs.ui8Db + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "* Read Address + 1:DB (With Carry)\tStore as Operand.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+			}
 		}
 		else {
-			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+			if constexpr ( _bBankWrap ) {
+				LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Read Pointer + 1:DB\tStore as Operand.H." );
+				lsn::DebugA( "* Read Pointer + 1:DB\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
+			}
+			else {
+				uint32_t ui32Offset = m_fsState.ui16Pointer + 1;
+				LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.rRegs.ui8Db + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "* Read Pointer + 1:DB (With Carry)\tStore as Operand.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+			}
 		}
+//		if constexpr ( _bFrom == LSN_FROM_A ) {
+//			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+//#ifdef LSN_CYCLES_DOC
+//			lsn::DebugA( "Read Address + 1:DB\tStore as Operand.H." );
+//#endif	// #ifdef LSN_CYCLES_DOC
+//		}
+//		else {
+//			LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+//#ifdef LSN_CYCLES_DOC
+//			lsn::DebugA( "Read Pointer + 1:DB\tStore as Operand.H." );
+//#endif	// #ifdef LSN_CYCLES_DOC
+//		}
 
 		if constexpr ( _bEndInstr ) {
 			LSN_FINISH_INST( true );
@@ -5504,8 +5728,9 @@ namespace lsn {
 	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
 	 * 
 	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 **/
-	template <bool _bFrom>
+	template <bool _bFrom, bool _bEndInstr>
 	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_LowByteWrap_Phi2() {
 		if constexpr ( _bFrom == LSN_FROM_A ) {
 			if ( !m_fsState.rRegs.ui8D[0] ) {
@@ -5527,6 +5752,47 @@ namespace lsn {
 			}
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "If D.L is 0, Read (((Pointer.L + 2) & $FF) | (Pointer.H << 8)), otherwise read Pointer + 2\tStore as Bank." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 **/
+	template <bool _bFrom, bool _bEndInstr>
+	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_LowByteWrap_Phi2() {
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			if ( !m_fsState.rRegs.ui8D[0] ) {
+				LSN_INSTR_START_PHI2_READ0_BUSA( uint8_t( m_fsState.ui8Address[0] + 1 ) | (m_fsState.ui8Address[1] << 8), m_fsState.ui8Operand[1], m_ui8Speed );
+			}
+			else {
+				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 1, m_fsState.ui8Operand[1], m_ui8Speed );
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "If D.L is 0, Read (((Address.L + 1) & $FF) | (Address.H << 8)), otherwise read Address + 1\tStore as Bank." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		}
+		else {
+			if ( !m_fsState.rRegs.ui8D[0] ) {
+				LSN_INSTR_START_PHI2_READ0_BUSA( uint8_t( m_fsState.ui8Pointer[0] + 1 ) | (m_fsState.ui8Pointer[1] << 8), m_fsState.ui8Operand[1], m_ui8Speed );
+			}
+			else {
+				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Operand[1], m_ui8Speed );
+			}
+#ifdef LSN_CYCLES_DOC
+			lsn::DebugA( "If D.L is 0, Read (((Pointer.L + 1) & $FF) | (Pointer.H << 8)), otherwise read Pointer + 1\tStore as Bank." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 
@@ -5733,11 +5999,12 @@ namespace lsn {
 
 	/**
 	 * Performs Operand = (Operand >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
-	 * * \tparam _bIncPc If true, PC is updated.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
 	 **/
 	template <bool _bIncPc>
 	inline void CRicoh5A22::Ror() {
-		LSN_INSTR_START_PHI1( true );
+		LSN_INSTR_START_PHI1( false );
 
 		const bool bOldC = (m_fsState.rRegs.ui8Status & C()) != 0;
 
@@ -5974,7 +6241,7 @@ namespace lsn {
 		SetBit<C(), true>( m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSets the C flag to 1." );
+		lsn::DebugA( "\tSet the C flag to 1." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -5987,7 +6254,7 @@ namespace lsn {
 		SetBit<D(), true>( m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSets the D flag to 1." );
+		lsn::DebugA( "\tSet the D flag to 1." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -6000,7 +6267,7 @@ namespace lsn {
 		SetBit<I(), true>( m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSets the I flag to 1." );
+		lsn::DebugA( "\tSet the I flag to 1." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -6078,11 +6345,21 @@ namespace lsn {
 		if constexpr ( _bAdjS ) {
 			LSN_UPDATE_S;
 #ifdef LSN_CYCLES_DOC
-			if ( m_fsState.ui16SModify < 0 ) {
-				sDebug += "Dec. S by " + std::to_string( -m_fsState.ui16SModify ) + ". ";
+			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+				if ( m_fsState.ui16SModify < 0 ) {
+					sDebug += "Dec. S.L by " + std::to_string( -m_fsState.ui16SModify ) + " and set S.H to 1. ";
+				}
+				else if ( m_fsState.ui16SModify > 0 ) {
+					sDebug += "Inc. S.L by " + std::to_string( m_fsState.ui16SModify ) + " and set S.H to 1. ";
+				}
 			}
-			else if ( m_fsState.ui16SModify > 0 ) {
-				sDebug += "Inc. S by " + std::to_string( m_fsState.ui16SModify ) + ". ";
+			else {
+				if ( m_fsState.ui16SModify < 0 ) {
+					sDebug += "Dec. S by " + std::to_string( -m_fsState.ui16SModify ) + ". ";
+				}
+				else if ( m_fsState.ui16SModify > 0 ) {
+					sDebug += "Inc. S by " + std::to_string( m_fsState.ui16SModify ) + ". ";
+				}
 			}
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
@@ -6188,7 +6465,7 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<true, false, false>();
 	}
 
 	/** Sets I and X. */
@@ -6264,7 +6541,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Sets Operand to A." );
+		lsn::DebugA( "Set Operand to A." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		LSN_NEXT_FUNCTION;
@@ -6308,7 +6585,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Sets Operand to X." );
+		lsn::DebugA( "Set Operand to X." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		LSN_NEXT_FUNCTION;
@@ -6335,7 +6612,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Sets Operand to Y." );
+		lsn::DebugA( "Set Operand to Y." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		LSN_NEXT_FUNCTION;
@@ -6366,7 +6643,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Sets Operand to 0." );
+		lsn::DebugA( "Set Operand to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		LSN_NEXT_FUNCTION;
@@ -6450,15 +6727,16 @@ namespace lsn {
 		LSN_INSTR_START_PHI1( true );
 
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			m_fsState.rRegs.ui16S = m_fsState.rRegs.ui8A[0];
+			m_fsState.rRegs.ui8S[0] = m_fsState.rRegs.ui8A[0];
+			m_fsState.rRegs.ui8S[1] = 1;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tSets S to A.L." );
+			lsn::DebugA( "\tSet S.L to A.L and S.H to 1." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
 			m_fsState.rRegs.ui16S = m_fsState.rRegs.ui16A;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tSets S to A." );
+			lsn::DebugA( "\tSet S to A." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 
@@ -6624,15 +6902,16 @@ namespace lsn {
 		LSN_INSTR_START_PHI1( true );
 
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			m_fsState.rRegs.ui16S = m_fsState.rRegs.ui8X[0];
+			m_fsState.rRegs.ui8S[0] = m_fsState.rRegs.ui8X[0];
+			m_fsState.rRegs.ui8S[1] = 1;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tSets S to X.L." );
+			lsn::DebugA( "\tSet S.L to X.L and S.H to 1." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
 			m_fsState.rRegs.ui16S = m_fsState.rRegs.ui16X;
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "\tSets S to X." );
+			lsn::DebugA( "\tSet S to X." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 
@@ -6729,6 +7008,21 @@ namespace lsn {
 #endif	// LSN_CYCLES_DOC
 
 		BeginInst<true, false, false>();
+	}
+
+	/** Puts the CPU into a waiting state. */
+	inline void CRicoh5A22::Wai_Phi2() {
+		m_ui8Speed = m_ui8FastDiv;
+
+		LSN_NEXT_FUNCTION_BY( uint8_t( -1 ) );
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tEnter waiting state.  Repeat this cycle forever." );
+#endif	// LSN_CYCLES_DOC
+
+		LSN_FINISH_INST( true );
+
+		LSN_INSTR_END_PHI2;
 	}
 
 	/**
@@ -7462,21 +7756,53 @@ namespace lsn {
 	 * 
 	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \tparam _bBankWrap If true, the bank wraps (instead of carries) on addresses where + 1 crosses into a new bank.
 	 **/
-	template <bool _bTo, bool _bEndInstr>
+	template <bool _bTo, bool _bEndInstr, bool _bBankWrap>
 	inline void CRicoh5A22::Write_Operand_High_To_AddrOrPtr_And_DB_Phi2() {
 		if constexpr ( _bTo == LSN_TO_A ) {
-			LSN_INSTR_START_PHI2_WRITE_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+			if constexpr ( _bBankWrap ) {
+				LSN_INSTR_START_PHI2_WRITE_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Write to Address + 1:DB\tWrite Operand.H." );
+				lsn::DebugA( "Write to Address + 1:DB\tWrite Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
+			}
+			else {
+				uint32_t ui32Offset = m_fsState.ui16Address + 1;
+				LSN_INSTR_START_PHI2_WRITE_BUSA( ui32Offset, m_fsState.rRegs.ui8Db + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "Write to Address + 1:DB (With Carry)\tWrite Operand.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+			}
 		}
 		else {
-			LSN_INSTR_START_PHI2_WRITE_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+			if constexpr ( _bBankWrap ) {
+				LSN_INSTR_START_PHI2_WRITE_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "Write to Pointer + 1:DB\tWrite Operand.H." );
+				lsn::DebugA( "Write to Pointer + 1:DB\tWrite Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
+			}
+			else {
+				uint32_t ui32Offset = m_fsState.ui16Pointer + 1;
+				LSN_INSTR_START_PHI2_WRITE_BUSA( ui32Offset, m_fsState.rRegs.ui8Db + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+				lsn::DebugA( "Write to Pointer + 1:DB (With Carry)\tWrite Operand.H." );
+#endif	// #ifdef LSN_CYCLES_DOC
+			}
 		}
+
+//		if constexpr ( _bTo == LSN_TO_A ) {
+//			LSN_INSTR_START_PHI2_WRITE_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+//#ifdef LSN_CYCLES_DOC
+//			lsn::DebugA( "Write to Address + 1:DB\tWrite Operand.H." );
+//#endif	// #ifdef LSN_CYCLES_DOC
+//		}
+//		else {
+//			LSN_INSTR_START_PHI2_WRITE_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
+//#ifdef LSN_CYCLES_DOC
+//			lsn::DebugA( "Write to Pointer + 1:DB\tWrite Operand.H." );
+//#endif	// #ifdef LSN_CYCLES_DOC
+//		}
 		
 		if constexpr ( _bEndInstr ) {
 			LSN_FINISH_INST( true );
@@ -7678,6 +8004,26 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 
+	
+
+	/** Exchanges the low and high bytes of the Accumulator. Sets N and Z based on the new low byte. */
+	inline void CRicoh5A22::Xba_BeginInst() {
+		LSN_INSTR_START_PHI1( true );
+
+		uint8_t ui8Tmp = m_fsState.rRegs.ui8A[0];
+		m_fsState.rRegs.ui8A[0] = m_fsState.rRegs.ui8A[1];
+		m_fsState.rRegs.ui8A[1] = ui8Tmp;
+
+		SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] & 0x80 );
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tSwap A.L and A.H, set N based off (A.L & $80), and set Z based off A.L." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
 	/** Exchanges the carry (C) and emulation (E) flags. */
 	inline void CRicoh5A22::Xce_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
@@ -7686,14 +8032,15 @@ namespace lsn {
 		SetBit<C()>( m_fsState.rRegs.ui8Status, m_fsState.bEmulationMode );
 		m_fsState.bEmulationMode = bOldCarry;
 
-		if ( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
 			m_fsState.rRegs.ui8Status |= (M() | X());
 			m_fsState.rRegs.ui8X[1] = 0;
 			m_fsState.rRegs.ui8Y[1] = 0;
+			m_fsState.rRegs.ui8S[1] = 1;
 		}
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tExchanges the Carry and Emulation flags. If Emulation mode is entered, M and X flags are set to 1, and X.H and Y.H are cleared to 0." );
+		lsn::DebugA( "\tExchanges the Carry and Emulation flags. If Emulation mode is entered, M and X flags are set to 1, S.H is set to 1, and X.H and Y.H are cleared to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -7732,6 +8079,9 @@ namespace lsn {
 		m_fsState.ui8FuncIndex = 0;
 		m_pfTickFunc = m_pfTickFuncCopy = &CRicoh5A22::Tick_InstructionCycleStd;
 		m_fsState.bBoundaryCrossed = false;
+		/*if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			m_fsState.rRegs.ui8S[1] = 1;
+		}*/
 		//m_ui8RdyOffCnt = 0;
 		LSN_INSTR_END_PHI1;
 	}

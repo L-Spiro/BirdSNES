@@ -88,6 +88,9 @@ namespace lsn {
 		m_fsState.ui16PcModify = 1;
 		m_baBusA.ReadWriteLog().clear();
 
+		if ( m_fsState.bEmulationMode ) {
+			m_fsState.rRegs.ui8S[1] = 1;
+		}
 		int32_t i32Cnt = 0;
 #ifdef LSN_CYCLES_DOC
 		
@@ -117,7 +120,8 @@ namespace lsn {
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BPL && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BNE && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVS &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCS && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BEQ && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BMI &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRA &&
-				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVP && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVN ) {
+				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVP && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVN &&
+				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_STP ) {
 				if ( m_bHandleNmi != (I <= 0) ) {
 					lsn::DebugA( "\r\nDouble-check polling.\r\n" );
 				}
@@ -136,15 +140,14 @@ namespace lsn {
 		lsn::DebugA( " +X.1\t\t\r\n\r\n\r\n" );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		if ( m_fsState.bEmulationMode ) {
-			m_fsState.rRegs.ui8S[1] = 1;
-		}
+		
 
 		bool bErrored = false;
 		// Verify.
 		if ( m_fsState.ui8FuncIndex != 0 ) {
-			if ( (m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVP && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVN) ||
-				((m_iInstructionSet[m_fsState.ui16OpCode].iInstruction == LSN_I_MVP || m_iInstructionSet[m_fsState.ui16OpCode].iInstruction == LSN_I_MVN) && m_fsState.rRegs.ui16A == 0xFFFF) ) {
+			if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_WAI &&
+				((m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVP && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVN) ||
+				((m_iInstructionSet[m_fsState.ui16OpCode].iInstruction == LSN_I_MVP || m_iInstructionSet[m_fsState.ui16OpCode].iInstruction == LSN_I_MVN) && m_fsState.rRegs.ui16A == 0xFFFF)) ) {
 				lsn::DebugA( "\r\nDid not end on BeginInst().\r\n" );
 				bErrored = true;
 			}
@@ -212,7 +215,7 @@ namespace lsn {
 					}
 				}
 				
-				if ( m_fsState.ui16OpCode != 0x40 ) {	// RTI.
+				if ( m_fsState.ui16OpCode != 0x40 && m_fsState.ui16OpCode != 0xCB && m_fsState.ui16OpCode != 0xDB ) {	// RTI, WAI, STP.
 					if ( ((m_baBusA.ReadWriteLog()[J].ui8S & X()) != 0) != (cvoVerifyMe.vCycles[I].sStatus[6] == 'x') ) {
 						lsn::DebugA( cvoVerifyMe.sName.c_str() );
 						lsn::DebugA( "\r\nCPU Failure: Cycle Status.X Wrong\r\n" );
@@ -230,7 +233,7 @@ namespace lsn {
 			}
 		}
 		if ( bErrored ) {
-				lsn::DebugA( (std::format( "M: {}\r\nD.L: {}\r\nX: {}\r\n\r\n", (m_fsState.rRegs.ui8Status & M()) ? true : false, m_fsState.rRegs.ui8D[0], (m_fsState.rRegs.ui8Status & X()) ? true : false )).c_str() );
+			lsn::DebugA( (std::format( "M: {}\r\nD.L: {}\r\nX: {}\r\n\r\n", (m_fsState.rRegs.ui8Status & M()) ? true : false, m_fsState.rRegs.ui8D[0], (m_fsState.rRegs.ui8Status & X()) ? true : false )).c_str() );
 		}
 		return i32Cnt;
 	}
