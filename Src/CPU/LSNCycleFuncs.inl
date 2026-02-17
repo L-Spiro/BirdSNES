@@ -957,7 +957,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				&CRicoh5A22::Jmp_Absolute_BeginInst
 			},
 		},
-		6, 6, LSN_AM_ABSOLUTE_INDEXED_INDIRECT, 3, 3, LSN_I_JMP, "JMP", "Absolute Indexed Indirect (Jump)"
+		6, 6, LSN_AM_ABSOLUTE_INDEXED_INDIRECT, 3, 3, LSN_I_JMP, "JMP", "Absolute Indexed Indirect (a,x) (Jump)"
 	},
 	{	// 7D
 		LSN_ABSOLUTE_INDEXED_X_R( ADC, Adc_BeginInst, true )
@@ -1821,7 +1821,7 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {								/**< The ins
 				&CRicoh5A22::Jmp_Absolute_BeginInst
 			},
 		},
-		8, 8, LSN_AM_ABSOLUTE_INDEXED_INDIRECT, 3, 3, LSN_I_JSR, "JSR", "Absolute Indexed Indirect (X)"
+		8, 8, LSN_AM_ABSOLUTE_INDEXED_INDIRECT, 3, 3, LSN_I_JSR, "JSR", "Absolute Indexed Indirect (a,x) (Jump)"
 	},
 	{	// FD
 		LSN_ABSOLUTE_INDEXED_X_R( SBC, Sbc_BeginInst<false>, true )

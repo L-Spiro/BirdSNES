@@ -52,7 +52,7 @@
 #define LSN_FROM_P														false
 
 #ifdef LSN_CPU_VERIFY
-//#define LSN_CYCLES_DOC													1
+#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY
 
 
@@ -2954,10 +2954,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( "Perform Operand.L--, set N based off (Operand.L & $80) and Z based off Operand.L." );
+			lsn::DebugA( "Perform Operand.L -= 1, set N based off (Operand.L & $80), and Z based off Operand.L." );
 		}
 		else {
-			lsn::DebugA( "If M flag is set, perform Operand.L--, set N based off (Operand.L & $80), and set Z based off Operand.L, otherwise perform Operand--, set N based off (Operand.H & $80), and set Z based off Operand." );
+			lsn::DebugA( "If M flag is set, perform Operand.L -= 1, set N based off (Operand.L & $80), and set Z based off Operand.L, otherwise perform Operand - 1, set N based off (Operand.H & $80), and set Z based off Operand." );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4368,10 +4368,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush A.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush A.H onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush A.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush A.H onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4396,10 +4396,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush A.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush A.L onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush A.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush A.L onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4424,10 +4424,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush D.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush D.H onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush D.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush D.H onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4452,10 +4452,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush D.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush D.L onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush D.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush D.L onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4525,10 +4525,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.H onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.H onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4549,10 +4549,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.L onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.L onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4585,18 +4585,18 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bSpecial ) {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
+				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
 			}
 		}
 		else {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PB onto stack.").c_str() );
+				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PB onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
 			}
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -4628,10 +4628,10 @@ namespace lsn {
 		}
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PB onto stack.").c_str() );
+			lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PB onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4657,18 +4657,18 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bSpecial ) {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
+				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
 			}
 		}
 		else {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.H onto stack.").c_str() );
+				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.H onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
 			}
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -4702,18 +4702,18 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bSpecial ) {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
+				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
 			}
 		}
 		else {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.H onto stack.").c_str() );
+				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.H onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
 			}
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -4741,18 +4741,18 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bSpecial ) {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
+				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
 			}
 		}
 		else {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.L onto stack.").c_str() );
+				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.L onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
 			}
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -4792,18 +4792,18 @@ namespace lsn {
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bSpecial ) {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
+				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
 			}
 		}
 		else {
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.L onto stack.").c_str() );
+				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.L onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.L onto stack.").c_str() );
 			}
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -4828,10 +4828,10 @@ namespace lsn {
 			LSN_PUSH( m_fsState.rRegs.ui8Status, m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush P onto stack.").c_str() );
+			lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush P onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush P onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush P onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4852,10 +4852,10 @@ namespace lsn {
 			LSN_PUSH( m_fsState.rRegs.ui8Status, m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush P onto stack.").c_str() );
+				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush P onto stack.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush P onto stack.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush P onto stack.").c_str() );
 			}
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
@@ -4875,10 +4875,10 @@ namespace lsn {
 			}
 #ifdef LSN_CYCLES_DOC
 			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-				lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush P onto stack with B flag if software BRK.").c_str() );
+				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush P onto stack with B flag if software BRK.").c_str() );
 			}
 			else {
-				lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush P onto stack with B flag if software BRK.").c_str() );
+				lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush P onto stack with B flag if software BRK.").c_str() );
 			}
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
@@ -4899,10 +4899,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush X.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush X.H onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush X.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush X.H onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4923,10 +4923,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush X.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush X.L onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush X.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush X.L onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4951,10 +4951,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush Y.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush Y.H onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Y.H onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Y.H onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -4975,10 +4975,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("*** Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Y.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Y.L onto stack.").c_str() );
 		}
 		else {
-			lsn::DebugA( ("*** Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Y.L onto stack.").c_str() );
+			lsn::DebugA( ("Write to (S" + std::format( "{:+}", _i8SOff ) + ")\tPush Y.L onto stack.").c_str() );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
@@ -5005,14 +5005,14 @@ namespace lsn {
 			if constexpr ( _bBankWrap ) {
 				LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address + 1, m_fsState.ui8Bank, m_fsState.ui8Pointer[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "* Read Address + 1:Bank\tStore as Address.H." );
+				lsn::DebugA( "Read Address + 1:Bank\tStore as Address.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
 				uint32_t ui32Offset = m_fsState.ui16Address + 1;
 				LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Pointer[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "* Read Address + 1:Bank (With Carry)\tStore as Address.H." );
+				lsn::DebugA( "Read Address + 1:Bank (With Carry)\tStore as Address.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 		}
@@ -5020,14 +5020,14 @@ namespace lsn {
 			if constexpr ( _bBankWrap ) {
 				LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Bank, m_fsState.ui8Address[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "* Read Pointer + 1:Bank\tStore as Address.H." );
+				lsn::DebugA( "Read Pointer + 1:Bank\tStore as Address.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
 				uint32_t ui32Offset = m_fsState.ui16Pointer + 1;
 				LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Address[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "* Read Pointer + 1:Bank (With Carry)\tStore as Address.H." );
+				lsn::DebugA( "Read Pointer + 1:Bank (With Carry)\tStore as Address.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 		}
@@ -5113,14 +5113,14 @@ namespace lsn {
 			uint32_t ui32Offset = m_fsState.ui16Address + 1;
 			LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "* Read Address + 1:Bank (With Carry)\tStore as Operand.H." );
+			lsn::DebugA( "Read Address + 1:Bank (With Carry)\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
 			uint32_t ui32Offset = m_fsState.ui16Pointer + 1;
 			LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.ui8Bank + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-			lsn::DebugA( "* Read Pointer + 1:Bank (With Carry)\tStore as Operand.H." );
+			lsn::DebugA( "Read Pointer + 1:Bank (With Carry)\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 
@@ -5226,14 +5226,14 @@ namespace lsn {
 			if constexpr ( _bBankWrap ) {
 				LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Address + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "* Read Address + 1:DB\tStore as Operand.H." );
+				lsn::DebugA( "Read Address + 1:DB\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
 				uint32_t ui32Offset = m_fsState.ui16Address + 1;
 				LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.rRegs.ui8Db + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "* Read Address + 1:DB (With Carry)\tStore as Operand.H." );
+				lsn::DebugA( "Read Address + 1:DB (With Carry)\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 		}
@@ -5241,14 +5241,14 @@ namespace lsn {
 			if constexpr ( _bBankWrap ) {
 				LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Db, m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "* Read Pointer + 1:DB\tStore as Operand.H." );
+				lsn::DebugA( "Read Pointer + 1:DB\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
 				uint32_t ui32Offset = m_fsState.ui16Pointer + 1;
 				LSN_INSTR_START_PHI2_READ_BUSA( ui32Offset, m_fsState.rRegs.ui8Db + (ui32Offset >> 16), m_fsState.ui8Operand[1], m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
-				lsn::DebugA( "* Read Pointer + 1:DB (With Carry)\tStore as Operand.H." );
+				lsn::DebugA( "Read Pointer + 1:DB (With Carry)\tStore as Operand.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 		}
@@ -8004,8 +8004,6 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 
-	
-
 	/** Exchanges the low and high bytes of the Accumulator. Sets N and Z based on the new low byte. */
 	inline void CRicoh5A22::Xba_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
@@ -8065,11 +8063,21 @@ namespace lsn {
 
 		if constexpr ( _bAdjS ) {
 #ifdef LSN_CYCLES_DOC
-			if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
-				lsn::DebugA( ("\tDec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ".").c_str() );
+			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+				if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
+					lsn::DebugA( ("\tDec. S.L by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + " and set S.H to 1.").c_str() );
+				}
+				else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
+					lsn::DebugA( ("\tInc. S.L by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + " and set S.H to 1.").c_str() );
+				}
 			}
-			else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
-				lsn::DebugA( ("\tInc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ".").c_str() );
+			else {
+				if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
+					lsn::DebugA( ("\tDec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ".").c_str() );
+				}
+				else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
+					lsn::DebugA( ("\tInc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ".").c_str() );
+				}
 			}
 #endif	// #ifdef LSN_CYCLES_DOC
 			LSN_UPDATE_S;
