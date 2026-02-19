@@ -6194,7 +6194,7 @@ namespace lsn {
 				"\t\t  if (HiSum < 0) HiSum -= 6.\r\n"
 				"\t\t  C flag = HiSum >= 0.\r\n"
 				"\t\t  Result = ui8(((HiSum & 0x0F) << 4) | (Lo & $0F)).\r\n"
-				"\t\t  Z flag = Result == $00. N flag = (Result & $80) != 0.\r\n" );
+				"\t\t  Z flag = Result == $00. N flag = (Result & $80) != 0." );
 		}
 		else {
 			lsn::DebugA( 
@@ -6458,10 +6458,10 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( "\tP |= (Operand.L & ~(X flag | M flag))." );
+			lsn::DebugA( "\tPerform P |= (Operand.L & ~(X flag | M flag))." );
 		}
 		else {
-			lsn::DebugA( "\tP |= Operand.L, set X.H and Y.H to 0 if X flag is set." );
+			lsn::DebugA( "\tPerform P |= Operand.L, set X.H and Y.H to 0 if X flag is set." );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
