@@ -52,7 +52,7 @@
 #define LSN_FROM_P														false
 
 #ifdef LSN_CPU_VERIFY
-#define LSN_CYCLES_DOC													1
+//#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY
 
 
@@ -4320,7 +4320,7 @@ namespace lsn {
 
 #ifdef LSN_CYCLES_DOC
 		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( " Set X.L to Operand.L, set N based off (X.L & $80), and set Z based off X.L." );
+			lsn::DebugA( "\tSet X.L to Operand.L, set N based off (X.L & $80), and set Z based off X.L." );
 		}
 		else {
 			lsn::DebugA( " If X flag is set, set X.L to Operand.L, set N based off (X.L & $80), and Z based off X.L, otherwise set X to Operand, set N based off (X.H & $80), and Z based off X." );
