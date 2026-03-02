@@ -111,6 +111,9 @@
     <ClCompile Include="Src\LSNWinMain_CpuVerify.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\CPU\LSNSpc700.cpp">
+      <Filter>Source Files\CPU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\BirdSNES.h">
@@ -188,6 +191,12 @@
     <ClInclude Include="Src\System\LSNTickable.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
+    <ClInclude Include="Src\CPU\LSNSpc700.h">
+      <Filter>Header Files\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Bus\LSNBusB.h">
+      <Filter>Header Files\Bus</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Src\BirdSNES.ico">
@@ -209,10 +218,16 @@
     <None Include="Src\Strings\LSNStringsEnum.inl">
       <Filter>Header Files\Strings</Filter>
     </None>
-    <None Include="Src\CPU\LSNCycleFuncs.inl">
+    <None Include="Src\CPU\LSNRicoh5A22CycleFuncs.inl">
       <Filter>Header Files\CPU</Filter>
     </None>
-    <None Include="Src\CPU\LSNInstructions.inl">
+    <None Include="Src\CPU\LSNRicoh5A22Instructions.inl">
+      <Filter>Header Files\CPU</Filter>
+    </None>
+    <None Include="Src\CPU\LSNSpc700Instructions.inl">
+      <Filter>Header Files\CPU</Filter>
+    </None>
+    <None Include="Src\CPU\LSNSpc700CycleFuncs.inl">
       <Filter>Header Files\CPU</Filter>
     </None>
   </ItemGroup>

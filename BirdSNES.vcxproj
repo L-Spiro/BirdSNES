@@ -46,6 +46,7 @@
     <ClCompile Include="Src\BirdSNES.cpp" />
     <ClCompile Include="Src\Compression\MiniZ\miniz.c" />
     <ClCompile Include="Src\CPU\LSNRicoh5A22.cpp" />
+    <ClCompile Include="Src\CPU\LSNSpc700.cpp" />
     <ClCompile Include="Src\Files\LSNFileBase.cpp" />
     <ClCompile Include="Src\Files\LSNFileMap.cpp" />
     <ClCompile Include="Src\Files\LSNStdFile.cpp" />
@@ -58,9 +59,11 @@
   <ItemGroup>
     <ClInclude Include="Src\BirdSNES.h" />
     <ClInclude Include="Src\Bus\LSNBusA.h" />
+    <ClInclude Include="Src\Bus\LSNBusB.h" />
     <ClInclude Include="Src\Compression\MiniZ\miniz.h" />
     <ClInclude Include="Src\CPU\LSNRicoh5A22.h" />
     <ClInclude Include="Src\CPU\LSNRicoh5A22Base.h" />
+    <ClInclude Include="Src\CPU\LSNSpc700.h" />
     <ClInclude Include="Src\Errors\LSNErrors.h" />
     <ClInclude Include="Src\Files\LSNFileBase.h" />
     <ClInclude Include="Src\Files\LSNFileMap.h" />
@@ -90,8 +93,10 @@
     <ResourceCompile Include="Src\BirdSNES.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Src\CPU\LSNCycleFuncs.inl" />
-    <None Include="Src\CPU\LSNInstructions.inl" />
+    <None Include="Src\CPU\LSNRicoh5A22CycleFuncs.inl" />
+    <None Include="Src\CPU\LSNRicoh5A22Instructions.inl" />
+    <None Include="Src\CPU\LSNSpc700CycleFuncs.inl" />
+    <None Include="Src\CPU\LSNSpc700Instructions.inl" />
     <None Include="Src\Errors\LSNErrorEnum.inl" />
     <None Include="Src\Strings\LSNStringsEnum.inl" />
   </ItemGroup>

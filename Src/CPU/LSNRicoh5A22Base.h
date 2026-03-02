@@ -65,7 +65,7 @@ namespace lsn {
 		/** Instructions. Numbers specified because these are used in look-up tables. */
 		enum LSN_INSTRUCTIONS : uint8_t {
 #define LSN_INST( NAME, DESC )				LSN_I_ ## NAME,
-#include "LSNInstructions.inl"
+#include "LSNRicoh5A22Instructions.inl"
 #undef LSN_INST
 
 			LSN_I_TOTAL

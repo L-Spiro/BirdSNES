@@ -12,7 +12,7 @@
 namespace lsn {
 
 	// == Members.
-#include "LSNCycleFuncs.inl"
+#include "LSNRicoh5A22CycleFuncs.inl"
 
 	CRicoh5A22::CRicoh5A22( CBusA &_bBusA ) :
 		m_baBusA( _bBusA ) {
