@@ -965,7 +965,6 @@ namespace lsn {
 		 * Pushes m_fsState.rRegs.ui8Status with or without B/X to the given S offset.
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
-		 * \tparam _bCop If this is the COP instruction, just do a normal push.
 		 **/
 		template <int8_t _i8SOff = 0>
 		void															Push_S_Phi2();
@@ -1413,7 +1412,7 @@ namespace lsn {
 		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 **/
-		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfX = false, bool _bEndInstr = false>
 		void															WriteBank0_X_Low_To_AddrOrPtr_SkipIfX_Phi2();
 
 		/**
@@ -1432,7 +1431,7 @@ namespace lsn {
 		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 **/
-		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false>
+		template <bool _bTo = LSN_TO_A, bool _bSkipIfX = false, bool _bEndInstr = false>
 		void															WriteBank0_Y_Low_To_AddrOrPtr_SkipIfX_Phi2();
 
 		/**

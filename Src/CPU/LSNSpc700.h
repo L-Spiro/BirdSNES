@@ -50,9 +50,9 @@
 #define LSN_SPC700_FROM_A														true
 #define LSN_SPC700_FROM_P														false
 
-#ifdef LSN_CPU_VERIFY
+#ifdef LSN_SPC700_CPU_VERIFY
 //#define LSN_SPC700_CYCLES_DOC													1
-#endif	// #ifdef LSN_CPU_VERIFY
+#endif	// #ifdef LSN_SPC700_CPU_VERIFY
 
 
 namespace lsn {

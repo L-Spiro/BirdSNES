@@ -7,6 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1267BCED2F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCE72F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl */; };
+		1267BCEE2F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCE72F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl */; };
+		1267BCEF2F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCE72F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl */; };
+		1267BCF02F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCE72F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl */; };
+		1267BCF12F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCE92F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl */; };
+		1267BCF22F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCE92F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl */; };
+		1267BCF32F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCE92F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl */; };
+		1267BCF42F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCE92F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl */; };
+		1267BCF52F562DE800C2BC78 /* LSNSpc700.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1267BCEA2F562DE800C2BC78 /* LSNSpc700.cpp */; };
+		1267BCF62F562DE800C2BC78 /* LSNSpc700.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1267BCEA2F562DE800C2BC78 /* LSNSpc700.cpp */; };
+		1267BCF72F562DE800C2BC78 /* LSNSpc700.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1267BCEA2F562DE800C2BC78 /* LSNSpc700.cpp */; };
+		1267BCF82F562DE800C2BC78 /* LSNSpc700.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1267BCEA2F562DE800C2BC78 /* LSNSpc700.cpp */; };
+		1267BCF92F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCEB2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl */; };
+		1267BCFA2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCEB2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl */; };
+		1267BCFB2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCEB2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl */; };
+		1267BCFC2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCEB2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl */; };
+		1267BCFD2F562DE800C2BC78 /* LSNSpc700Instructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCEC2F562DE800C2BC78 /* LSNSpc700Instructions.inl */; };
+		1267BCFE2F562DE800C2BC78 /* LSNSpc700Instructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCEC2F562DE800C2BC78 /* LSNSpc700Instructions.inl */; };
+		1267BCFF2F562DE800C2BC78 /* LSNSpc700Instructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCEC2F562DE800C2BC78 /* LSNSpc700Instructions.inl */; };
+		1267BD002F562DE800C2BC78 /* LSNSpc700Instructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 1267BCEC2F562DE800C2BC78 /* LSNSpc700Instructions.inl */; };
 		126C27432EFCBA590036A687 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 126C27422EFCBA590036A687 /* AppDelegate.m */; };
 		126C27462EFCBA590036A687 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 126C27452EFCBA590036A687 /* GameViewController.m */; };
 		126C27492EFCBA590036A687 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 126C27482EFCBA590036A687 /* Base */; };
@@ -71,9 +91,6 @@
 		12CFC8CE2F0153BB00792565 /* LSNStringsEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */; };
 		12CFC8CF2F0153BB00792565 /* LSNStringsEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */; };
 		12CFC8D02F0153BB00792565 /* LSNStringsEnum.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */; };
-		12CFC8E12F0B478F00792565 /* LSNCycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8DC2F0B478F00792565 /* LSNCycleFuncs.inl */; };
-		12CFC8E22F0B478F00792565 /* LSNCycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8DC2F0B478F00792565 /* LSNCycleFuncs.inl */; };
-		12CFC8E32F0B478F00792565 /* LSNCycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8DC2F0B478F00792565 /* LSNCycleFuncs.inl */; };
 		12CFC8E42F0B478F00792565 /* LSNRicoh5A22.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */; };
 		12CFC8E52F0B478F00792565 /* LSNRicoh5A22.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */; };
 		12CFC8E62F0B478F00792565 /* LSNRicoh5A22.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */; };
@@ -97,7 +114,6 @@
 		12CFC91A2F0D992E00792565 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8412EFF991100792565 /* LICENSE */; };
 		12CFC91B2F0D992E00792565 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 126C27392EFCBA590036A687 /* Assets.xcassets */; };
 		12CFC91C2F0D992E00792565 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 126C27702EFCBA590036A687 /* Base */; };
-		12CFC91D2F0D992E00792565 /* LSNCycleFuncs.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8DC2F0B478F00792565 /* LSNCycleFuncs.inl */; };
 		12CFC91E2F0D992E00792565 /* ChangeLog.md in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC8402EFF991100792565 /* ChangeLog.md */; };
 		12CFC9272F0D9A2F00792565 /* ExpressionEvaluator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC6F62EFCBF4100792565 /* ExpressionEvaluator.framework */; };
 		12CFC9282F0D9A2F00792565 /* LSon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC7C42EFF90B100792565 /* LSon.framework */; };
@@ -106,10 +122,6 @@
 		12CFC9332F0D9A4900792565 /* ExpressionEvaluator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC6F62EFCBF4100792565 /* ExpressionEvaluator.framework */; };
 		12CFC9342F0D9A4900792565 /* LSon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12CFC7C42EFF90B100792565 /* LSon.framework */; };
 		12CFC9392F0E8C3200792565 /* LSNMacOsMain_CpuVerify.mm in Sources */ = {isa = PBXBuildFile; fileRef = 12CFC9382F0E8C3200792565 /* LSNMacOsMain_CpuVerify.mm */; };
-		12CFC9422F246AAC00792565 /* LSNInstructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC9412F246AAC00792565 /* LSNInstructions.inl */; };
-		12CFC9432F246AAC00792565 /* LSNInstructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC9412F246AAC00792565 /* LSNInstructions.inl */; };
-		12CFC9442F246AAC00792565 /* LSNInstructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC9412F246AAC00792565 /* LSNInstructions.inl */; };
-		12CFC9452F246AAC00792565 /* LSNInstructions.inl in Resources */ = {isa = PBXBuildFile; fileRef = 12CFC9412F246AAC00792565 /* LSNInstructions.inl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -186,6 +198,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1267BCE72F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNRicoh5A22Instructions.inl; sourceTree = "<group>"; };
+		1267BCE82F562DE800C2BC78 /* LSNSpc700.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNSpc700.h; sourceTree = "<group>"; };
+		1267BCE92F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNSpc700CycleFuncs.inl; sourceTree = "<group>"; };
+		1267BCEA2F562DE800C2BC78 /* LSNSpc700.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LSNSpc700.cpp; sourceTree = "<group>"; };
+		1267BCEB2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNRicoh5A22CycleFuncs.inl; sourceTree = "<group>"; };
+		1267BCEC2F562DE800C2BC78 /* LSNSpc700Instructions.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNSpc700Instructions.inl; sourceTree = "<group>"; };
+		1267BD012F562DFB00C2BC78 /* LSNBusB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNBusB.h; sourceTree = "<group>"; };
+		1267BD022F562E3B00C2BC78 /* LSNTickable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNTickable.h; sourceTree = "<group>"; };
 		126C27352EFCBA580036A687 /* Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
 		126C27362EFCBA580036A687 /* Renderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Renderer.m; sourceTree = "<group>"; };
 		126C27372EFCBA580036A687 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
@@ -248,14 +268,12 @@
 		12CFC8C92F0153BB00792565 /* LSNStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNStrings.h; sourceTree = "<group>"; };
 		12CFC8CA2F0153BB00792565 /* LSNStringsEnum.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNStringsEnum.inl; sourceTree = "<group>"; };
 		12CFC8CC2F0153BB00792565 /* LSNBusA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNBusA.h; sourceTree = "<group>"; };
-		12CFC8DC2F0B478F00792565 /* LSNCycleFuncs.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNCycleFuncs.inl; sourceTree = "<group>"; };
 		12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LSNRicoh5A22.cpp; sourceTree = "<group>"; };
 		12CFC8DE2F0B478F00792565 /* LSNRicoh5A22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNRicoh5A22.h; sourceTree = "<group>"; };
 		12CFC8DF2F0B478F00792565 /* LSNRicoh5A22Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSNRicoh5A22Base.h; sourceTree = "<group>"; };
 		12CFC9222F0D992E00792565 /* BirdSNES macOS CPU Vfy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BirdSNES macOS CPU Vfy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12CFC9372F0E87E100792565 /* LSNBirdSNES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LSNBirdSNES.h; path = Src/LSNBirdSNES.h; sourceTree = SOURCE_ROOT; };
 		12CFC9382F0E8C3200792565 /* LSNMacOsMain_CpuVerify.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = LSNMacOsMain_CpuVerify.mm; path = Src/LSNMacOsMain_CpuVerify.mm; sourceTree = SOURCE_ROOT; };
-		12CFC9412F246AAC00792565 /* LSNInstructions.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LSNInstructions.inl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -298,6 +316,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1267BD032F562E3B00C2BC78 /* System */ = {
+			isa = PBXGroup;
+			children = (
+				1267BD022F562E3B00C2BC78 /* LSNTickable.h */,
+			);
+			name = System;
+			path = Src/System;
+			sourceTree = SOURCE_ROOT;
+		};
 		126C272F2EFCBA570036A687 = {
 			isa = PBXGroup;
 			children = (
@@ -323,6 +350,7 @@
 				12CFC8092EFF991100792565 /* Foundation */,
 				12CFC8C82F0153BB00792565 /* OS */,
 				12CFC8CB2F0153BB00792565 /* Strings */,
+				1267BD032F562E3B00C2BC78 /* System */,
 				12CFC81A2EFF991100792565 /* Utilities */,
 				12CFC9372F0E87E100792565 /* LSNBirdSNES.h */,
 				126C27352EFCBA580036A687 /* Renderer.h */,
@@ -509,6 +537,7 @@
 			isa = PBXGroup;
 			children = (
 				12CFC8CC2F0153BB00792565 /* LSNBusA.h */,
+				1267BD012F562DFB00C2BC78 /* LSNBusB.h */,
 			);
 			name = Bus;
 			path = Src/Bus;
@@ -517,11 +546,15 @@
 		12CFC8E02F0B478F00792565 /* CPU */ = {
 			isa = PBXGroup;
 			children = (
-				12CFC8DC2F0B478F00792565 /* LSNCycleFuncs.inl */,
-				12CFC9412F246AAC00792565 /* LSNInstructions.inl */,
 				12CFC8DD2F0B478F00792565 /* LSNRicoh5A22.cpp */,
 				12CFC8DE2F0B478F00792565 /* LSNRicoh5A22.h */,
 				12CFC8DF2F0B478F00792565 /* LSNRicoh5A22Base.h */,
+				1267BCEB2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl */,
+				1267BCE72F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl */,
+				1267BCEA2F562DE800C2BC78 /* LSNSpc700.cpp */,
+				1267BCE82F562DE800C2BC78 /* LSNSpc700.h */,
+				1267BCE92F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl */,
+				1267BCEC2F562DE800C2BC78 /* LSNSpc700Instructions.inl */,
 			);
 			name = CPU;
 			path = Src/CPU;
@@ -680,14 +713,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				126C27492EFCBA590036A687 /* Base in Resources */,
+				1267BCFD2F562DE800C2BC78 /* LSNSpc700Instructions.inl in Resources */,
+				1267BCF12F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl in Resources */,
 				126C277B2EFCBA590036A687 /* Assets.xcassets in Resources */,
 				126C274C2EFCBA590036A687 /* Base in Resources */,
 				12CFC8B62EFF991100792565 /* LICENSE in Resources */,
-				12CFC9422F246AAC00792565 /* LSNInstructions.inl in Resources */,
 				12CFC8B32EFF991100792565 /* ChangeLog.md in Resources */,
 				12CFC8C22F001F5000792565 /* LSNErrorEnum.inl in Resources */,
-				12CFC8E12F0B478F00792565 /* LSNCycleFuncs.inl in Resources */,
+				1267BCF92F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl in Resources */,
 				12CFC8BC2EFF991100792565 /* readme.md in Resources */,
+				1267BCED2F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl in Resources */,
 				12CFC8CE2F0153BB00792565 /* LSNStringsEnum.inl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -697,14 +732,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				126C275D2EFCBA590036A687 /* Base in Resources */,
+				1267BCFE2F562DE800C2BC78 /* LSNSpc700Instructions.inl in Resources */,
+				1267BCF22F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl in Resources */,
 				126C277C2EFCBA590036A687 /* Assets.xcassets in Resources */,
 				126C27602EFCBA590036A687 /* Base in Resources */,
 				12CFC8B72EFF991100792565 /* LICENSE in Resources */,
-				12CFC9432F246AAC00792565 /* LSNInstructions.inl in Resources */,
 				12CFC8B42EFF991100792565 /* ChangeLog.md in Resources */,
 				12CFC8C32F001F5000792565 /* LSNErrorEnum.inl in Resources */,
-				12CFC8E22F0B478F00792565 /* LSNCycleFuncs.inl in Resources */,
+				1267BCFA2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl in Resources */,
 				12CFC8BD2EFF991100792565 /* readme.md in Resources */,
+				1267BCEE2F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl in Resources */,
 				12CFC8CF2F0153BB00792565 /* LSNStringsEnum.inl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -713,15 +750,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1267BCF32F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl in Resources */,
 				12CFC8D02F0153BB00792565 /* LSNStringsEnum.inl in Resources */,
 				12CFC8BE2EFF991100792565 /* readme.md in Resources */,
 				12CFC8C42F001F5000792565 /* LSNErrorEnum.inl in Resources */,
+				1267BCFB2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl in Resources */,
 				12CFC8B82EFF991100792565 /* LICENSE in Resources */,
-				12CFC9442F246AAC00792565 /* LSNInstructions.inl in Resources */,
 				126C277D2EFCBA590036A687 /* Assets.xcassets in Resources */,
 				126C27712EFCBA590036A687 /* Base in Resources */,
-				12CFC8E32F0B478F00792565 /* LSNCycleFuncs.inl in Resources */,
+				1267BCEF2F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl in Resources */,
 				12CFC8B52EFF991100792565 /* ChangeLog.md in Resources */,
+				1267BCFF2F562DE800C2BC78 /* LSNSpc700Instructions.inl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -729,15 +768,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1267BCF42F562DE800C2BC78 /* LSNSpc700CycleFuncs.inl in Resources */,
 				12CFC9172F0D992E00792565 /* LSNStringsEnum.inl in Resources */,
 				12CFC9182F0D992E00792565 /* readme.md in Resources */,
 				12CFC9192F0D992E00792565 /* LSNErrorEnum.inl in Resources */,
+				1267BCFC2F562DE800C2BC78 /* LSNRicoh5A22CycleFuncs.inl in Resources */,
 				12CFC91A2F0D992E00792565 /* LICENSE in Resources */,
-				12CFC9452F246AAC00792565 /* LSNInstructions.inl in Resources */,
 				12CFC91B2F0D992E00792565 /* Assets.xcassets in Resources */,
 				12CFC91C2F0D992E00792565 /* Base in Resources */,
-				12CFC91D2F0D992E00792565 /* LSNCycleFuncs.inl in Resources */,
+				1267BCF02F562DE800C2BC78 /* LSNRicoh5A22Instructions.inl in Resources */,
 				12CFC91E2F0D992E00792565 /* ChangeLog.md in Resources */,
+				1267BD002F562DE800C2BC78 /* LSNSpc700Instructions.inl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -751,6 +792,7 @@
 				12CFC8652EFF991100792565 /* LSNCrc.cpp in Sources */,
 				12CFC8562EFF991100792565 /* LSNFileBase.cpp in Sources */,
 				12CFC85F2EFF991100792565 /* LSNStdFile.cpp in Sources */,
+				1267BCF52F562DE800C2BC78 /* LSNSpc700.cpp in Sources */,
 				12CFC8682EFF991100792565 /* LSNUtilities.cpp in Sources */,
 				126C27752EFCBA590036A687 /* Renderer.m in Sources */,
 				126C27462EFCBA590036A687 /* GameViewController.m in Sources */,
@@ -772,6 +814,7 @@
 				12CFC8662EFF991100792565 /* LSNCrc.cpp in Sources */,
 				12CFC8572EFF991100792565 /* LSNFileBase.cpp in Sources */,
 				12CFC8602EFF991100792565 /* LSNStdFile.cpp in Sources */,
+				1267BCF62F562DE800C2BC78 /* LSNSpc700.cpp in Sources */,
 				12CFC8692EFF991100792565 /* LSNUtilities.cpp in Sources */,
 				126C27762EFCBA590036A687 /* Renderer.m in Sources */,
 				126C275A2EFCBA590036A687 /* GameViewController.m in Sources */,
@@ -793,6 +836,7 @@
 				12CFC8672EFF991100792565 /* LSNCrc.cpp in Sources */,
 				12CFC8582EFF991100792565 /* LSNFileBase.cpp in Sources */,
 				12CFC8612EFF991100792565 /* LSNStdFile.cpp in Sources */,
+				1267BCF72F562DE800C2BC78 /* LSNSpc700.cpp in Sources */,
 				12CFC86A2EFF991100792565 /* LSNUtilities.cpp in Sources */,
 				126C27772EFCBA590036A687 /* Renderer.m in Sources */,
 				126C276E2EFCBA590036A687 /* GameViewController.m in Sources */,
@@ -819,6 +863,7 @@
 				12CFC90B2F0D992E00792565 /* Renderer.m in Sources */,
 				12CFC90C2F0D992E00792565 /* GameViewController.m in Sources */,
 				12CFC90D2F0D992E00792565 /* main.m in Sources */,
+				1267BCF82F562DE800C2BC78 /* LSNSpc700.cpp in Sources */,
 				12CFC90E2F0D992E00792565 /* LSNZipFile.cpp in Sources */,
 				12CFC90F2F0D992E00792565 /* AppDelegate.m in Sources */,
 				12CFC9102F0D992E00792565 /* LSNRicoh5A22.cpp in Sources */,

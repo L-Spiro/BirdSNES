@@ -39,7 +39,7 @@ int main( int /*_iArgC*/, char ** /*_ppcArgV*/ ) {
 
 	static const char cChars[2] = { 'n', 'e' };
 
-	for ( uint32_t I = 0x00; I < 0x40; ++I ) {
+	for ( uint32_t I = 0x00; I < 0x100; ++I ) {
 		lson::CJson jSon;
 		std::vector<uint8_t> vBytes;
 		lsn::CStdFile sfFile;
