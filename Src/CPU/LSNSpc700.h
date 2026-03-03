@@ -87,7 +87,31 @@ namespace lsn {
 
 		/** Addressing modes. */
 		enum LSN_ADDRESSING_MODES : uint8_t {
-			LSN_AM_IMPLIED,														/**< Implied addressing = 1 extra cycle. */
+			LSN_AM_IMPLIED,														/**< Implied addressing (also covers Implied Accumulator). */
+			LSN_AM_ACCUMULATOR,													/**< Accumulator addressing. */
+			LSN_AM_IMMEDIATE,													/**< Immediate addressing (#imm). */
+			LSN_AM_DIRECT_PAGE,													/**< Direct page (dp). */
+			LSN_AM_DIRECT_PAGE_INDEXED_X,										/**< Direct page indexed X (dp+X). */
+			LSN_AM_DIRECT_PAGE_INDEXED_Y,										/**< Direct page indexed Y (dp+Y). */
+			LSN_AM_ABSOLUTE,													/**< Absolute addressing (!abs). */
+			LSN_AM_ABSOLUTE_X,													/**< Absolute X addressing (!abs+X). */
+			LSN_AM_ABSOLUTE_Y,													/**< Absolute Y addressing (!abs+Y). */
+			LSN_AM_DIRECT_PAGE_INDEXED_INDIRECT_X,								/**< Direct page indexed indirect X ([dp+X]). */
+			LSN_AM_DIRECT_PAGE_INDIRECT_INDEXED_Y,								/**< Direct page indirect indexed Y ([dp]+Y). */
+			LSN_AM_ABSOLUTE_INDEXED_INDIRECT_X,									/**< Absolute indexed indirect X ([!abs+X] for JMP). */
+			LSN_AM_RELATIVE,													/**< Relative jumping (rel). */
+			LSN_AM_DIRECT_PAGE_RELATIVE,										/**< Direct page relative (dp, rel). */
+			LSN_AM_DIRECT_PAGE_INDEXED_X_RELATIVE,								/**< Direct page indexed X relative (dp+X, rel). */
+			LSN_AM_INDIRECT_X,													/**< Indirect X addressing ((X)). */
+			LSN_AM_INDIRECT_X_AUTO_INC,											/**< Indirect X auto-increment ((X)+). */
+			LSN_AM_INDIRECT_X_INDIRECT_Y,										/**< Indirect page to indirect page ((X), (Y)). */
+			LSN_AM_DIRECT_PAGE_DIRECT_PAGE,										/**< Direct page to direct page (dp, dp). */
+			LSN_AM_DIRECT_PAGE_IMMEDIATE,										/**< Immediate to direct page (dp, #imm). */
+			LSN_AM_DIRECT_PAGE_BIT,												/**< Direct page bit (dp.bit). */
+			LSN_AM_DIRECT_PAGE_BIT_RELATIVE,									/**< Direct page bit relative jumping (dp.bit, rel). */
+			LSN_AM_ABSOLUTE_BIT,												/**< Absolute boolean bit (mem.bit). */
+			LSN_AM_UPAGE,														/**< U-Page / PCALL (upage). */
+			LSN_AM_TCALL,														/**< Table vector / TCALL. */
 		};
 
 		/** Instructions. */
@@ -102,6 +126,8 @@ namespace lsn {
 
 		// == Types.
 		/** The processor registers. */
+#pragma warning( push )
+#pragma warning( disable : 4201 )	// warning C4201: nonstandard extension used: nameless struct/union
 		struct LSN_REGISTERS {
 			union {
 				struct {
@@ -118,6 +144,7 @@ namespace lsn {
 			};
 			uint8_t																ui8Status = 0;																	/**< The processor status register. */
 		};
+#pragma warning( pop )
 
 		typedef void (CSpc700:: *												PfCycle)();																		/**< A function pointer for the functions that handle each cycle. */
 		typedef void (CSpc700:: *												PfTicks)();																		/**< A function pointer for the tick handlers. */
@@ -138,6 +165,8 @@ namespace lsn {
 			LSN_INSTRUCTIONS													iInstruction;																	/**< The instruction. */
 			const char *														pcName;																			/**< The name of the instruction. */
 			const char *														pcTypeString;																	/**< The type string of the instruction. */
+			const char *														pc65816Name;																	/**< The 65816-style name of the instruction. */
+			const char *														pc65816TypeString;																/**< The 65816-style type string of the instruction. */
 		};
 
 		/** Cycle type (read, write, null. */
