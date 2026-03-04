@@ -39,10 +39,11 @@ namespace lsn {
 			uint8_t *								pui8Data;							/**< A pointer to the default bus memory. */
 			uint16_t								ui16Parm1;							/**< The user-supplied parameter to pass back to this function. */
 			uint16_t								ui16Address;						/**< The 16-bit address being accessed. */
+			uint8_t									ui8OpenBusMask;						/**< The open-bus mask. */
 		};
 
 		/** An address-reading function. */
-		typedef void (LSN_FASTCALL *				PfReadFunc)( const LSN_ACCESSFUNCPARMS &_rfpParms, uint8_t &_ui8Ret, uint8_t &_ui8OpenMask );
+		typedef void (LSN_FASTCALL *				PfReadFunc)( const LSN_ACCESSFUNCPARMS &_rfpParms, uint8_t &_ui8Ret );
 
 		/** An address-writing function. */
 		typedef void (LSN_FASTCALL *				PfWriteFunc)( const LSN_ACCESSFUNCPARMS &_rfpParms, uint8_t _ui8Val );
@@ -63,15 +64,15 @@ namespace lsn {
 		 */
 		inline uint8_t								Read( uint16_t _ui16Addr ) {
 			uint8_t ui8Ret = m_ui8LastRead;
-			uint8_t ui8Mask = 0xFF;
 			const LSN_ADDR_ACCESSOR & aaAcc = m_aaAccessors[_ui16Addr];
 			m_afpAccessParms.ui16Address = _ui16Addr;
 			m_afpAccessParms.pvParm0 = aaAcc.pvReaderParm0;
 			m_afpAccessParms.ui16Parm1 = aaAcc.ui16ReaderParm1;
+			m_afpAccessParms.ui8OpenBusMask = 0xFF;
 			aaAcc.pfReader( m_afpAccessParms,
-				ui8Ret, ui8Mask );
+				ui8Ret );
 			//ui8Mask = m_ui8OpenBusMask[_ui16Addr];
-			m_ui8LastRead = (m_ui8LastRead & ~ui8Mask) | (ui8Ret & ui8Mask);
+			m_ui8LastRead = (m_ui8LastRead & ~m_afpAccessParms.ui8OpenBusMask) | (ui8Ret & m_afpAccessParms.ui8OpenBusMask);
 
 #ifdef LSN_CPU_VERIFY
 			m_vReadWriteLog.push_back( { .ui16Address = _ui16Addr, .ui8Value = ui8Ret, .bRead = true } );
@@ -90,8 +91,9 @@ namespace lsn {
 			m_afpAccessParms.ui16Address = _ui16Addr;
 			m_afpAccessParms.pvParm0 = aaAcc.pvWriterParm0;
 			m_afpAccessParms.ui16Parm1 = aaAcc.ui16WriterParm1;
+			m_afpAccessParms.ui8OpenBusMask = 0xFF;
 			aaAcc.pfWriter( m_afpAccessParms, _ui8Val );
-			m_ui8LastRead = _ui8Val;
+			m_ui8LastRead = (m_ui8LastRead & ~m_afpAccessParms.ui8OpenBusMask) | (_ui8Val & m_afpAccessParms.ui8OpenBusMask);
 #ifdef LSN_CPU_VERIFY
 			m_vReadWriteLog.push_back( { .ui16Address = _ui16Addr, .ui8Value = _ui8Val, .bRead = false } );
 #endif	// #ifdef LSN_CPU_VERIFY

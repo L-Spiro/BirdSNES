@@ -20,26 +20,21 @@
 
 #define LSN_SPC700_INSTR_START_PHI1( ISREAD )									/*m_fsState.bIsReadCycle = (ISREAD)*/
 #define LSN_SPC700_INSTR_END_PHI1
-#define LSN_SPC700_INSTR_START_PHI2_READ_BUSA( ADDR, BANK, RESULT, SPEED )		RESULT = m_baBusA.Read( uint16_t( ADDR ), uint8_t( BANK ), (SPEED) )
-#define LSN_SPC700_INSTR_START_PHI2_WRITE_BUSA( ADDR, BANK, VAL, SPEED )		m_baBusA.Write( uint16_t( ADDR ), uint8_t( BANK ), uint8_t( VAL ), (SPEED) )
-#define LSN_SPC700_INSTR_START_PHI2_READ0_BUSA( ADDR, RESULT, SPEED )			RESULT = m_baBusA.ReadBank0( uint16_t( ADDR ), (SPEED) )
-#define LSN_SPC700_INSTR_START_PHI2_WRITE0_BUSA( ADDR, VAL, SPEED )				m_baBusA.WriteBank0( uint16_t( ADDR ), uint8_t( VAL ), (SPEED) )
+#define LSN_SPC700_INSTR_START_PHI2_READ_BUSB( ADDR, RESULT )					RESULT = m_bbBusB.Read( uint16_t( ADDR ) )
+#define LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( ADDR, VAL )						m_bbBusB.Write( uint16_t( ADDR ), uint8_t( VAL ) )
 #define LSN_SPC700_INSTR_END_PHI2
 
 #define LSN_SPC700_NEXT_FUNCTION_BY( AMT )										m_fsState.ui8FuncIndex += AMT
 #define LSN_SPC700_NEXT_FUNCTION												LSN_NEXT_FUNCTION_BY( 1 )
-#define LSN_SPC700_FINISH_INST( CHECK_INTERRUPTS )								if constexpr ( CHECK_INTERRUPTS ) { LSN_CHECK_INTERRUPTS; } LSN_NEXT_FUNCTION
+#define LSN_SPC700_FINISH_INST( CHECK_INTERRUPTS )								//if constexpr ( CHECK_INTERRUPTS ) { LSN_SPC700_CHECK_INTERRUPTS; } LSN_SPC700_NEXT_FUNCTION
 
-#define LSN_SPC700_CHECK_INTERRUPTS												if ( !(m_fsState.rRegs.ui8Status & I()) ) { m_bHandleIrq = m_bIrqStatusPhi1Flag; } m_bHandleNmi |= m_bDetectedNmi
+#define LSN_SPC700_CHECK_INTERRUPTS												//if ( !(m_fsState.rRegs.ui8Status & I()) ) { m_bHandleIrq = m_bIrqStatusPhi1Flag; } m_bHandleNmi |= m_bDetectedNmi
 
-#define LSN_SPC700_PUSH( VAL, SPEED )											LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), (VAL), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( -1 + _i8SOff ) )
-#define LSN_SPC700_POP( RESULT, SPEED )											LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), (RESULT), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( _i8SOff ) )
-
-#define LSN_SPC700_PUSH_SPECIAL( VAL, SPEED )									LSN_INSTR_START_PHI2_WRITE0_BUSA( m_fsState.bEmulationMode ? ((0x100 | m_fsState.rRegs.ui8S[0]) + _i8SOff) : (m_fsState.rRegs.ui16S + _i8SOff), (VAL), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( -1 + _i8SOff ) )
-#define LSN_SPC700_POP_SPECIAL( RESULT, SPEED )									LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? ((0x100 | m_fsState.rRegs.ui8S[0]) + _i8SOff) : (m_fsState.rRegs.ui16S + _i8SOff), (RESULT), (SPEED) ); m_fsState.ui16SModify = uint16_t( int16_t( _i8SOff ) )
+#define LSN_SPC700_PUSH( VAL )													LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )), (VAL) ); m_fsState.ui16SModify = uint16_t( int16_t( -1 + _i8SOff ) )
+#define LSN_SPC700_POP( RESULT )												LSN_SPC700_INSTR_START_PHI2_READ_BUSA( (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )), (RESULT) ); m_fsState.ui16SModify = uint16_t( int16_t( _i8SOff ) )
 
 #define LSN_SPC700_UPDATE_PC													if LSN_LIKELY( m_fsState.bAllowWritingToPc ) { m_fsState.rRegs.ui16Pc += m_fsState.ui16PcModify; } m_fsState.ui16PcModify = 0
-#define LSN_SPC700_UPDATE_S														m_fsState.rRegs.ui16S += m_fsState.ui16SModify; m_fsState.ui16SModify = 0; if LSN_UNLIKELY( m_fsState.bEmulationMode ) { m_fsState.rRegs.ui8S[1] = 1; }
+#define LSN_SPC700_UPDATE_S														m_fsState.rRegs.ui16S += m_fsState.ui16SModify; m_fsState.ui16SModify = 0
 
 #define LSN_SPC700_R															CSpc700::LSN_CT_READ
 #define LSN_SPC700_W															CSpc700::LSN_CT_WRITE
