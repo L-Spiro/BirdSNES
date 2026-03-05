@@ -1,4 +1,4 @@
-#ifndef LSN_CPU_VERIFY
+#if !defined( LSN_CPU_VERIFY ) && !defined( LSN_SPC700_CPU_VERIFY )
 
 // BirdSNES.cpp : Defines the entry point for the application.
 //
@@ -181,4 +181,4 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-#endif	// #ifndef LSN_CPU_VERIFY
+#endif	// #if !defined( LSN_CPU_VERIFY ) && !defined( LSN_SPC700_CPU_VERIFY )

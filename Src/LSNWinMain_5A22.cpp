@@ -10,6 +10,8 @@
 #include "Bus/LSNBusA.h"
 #include "Cpu/LSNRicoh5A22.h"
 #include "LSONJson.h"
+
+
 int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevInstance*/, _In_ LPWSTR /*_lpCmdLine*/, _In_ int /*_nCmdShow*/ ) {
 	std::unique_ptr<lsn::CBusA> pbBus = std::make_unique<lsn::CBusA>();
 	pbBus->ApplyBasicMapping();
@@ -53,7 +55,7 @@ int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevI
 								lsn::CRicoh5A22::InstrTable()[I].iInstruction != lsn::CRicoh5A22Base::LSN_I_STP &&
 								lsn::CRicoh5A22::InstrTable()[I].amAddrMode != lsn::CRicoh5A22Base::LSN_AM_BLOCK_MOVE && lsn::CRicoh5A22::InstrTable()[I].iInstruction != lsn::CRicoh5A22Base::LSN_I_BRA ) {
 								lsn::DebugLine( std::format( "\r\n\r\n\r\n*** CHECK CYCLE COUNT {} -> {} ***\r\n\r\n\r\n\r\n\r\n", wChars[N] == 'n' ? lsn::CRicoh5A22::InstrTable()[I].ui8TotalCyclesN : lsn::CRicoh5A22::InstrTable()[I].ui8TotalCyclesE,
-										i32MinSize ) );
+									i32MinSize ) );
 							}
 
 #ifdef LSN_CYCLES_DOC

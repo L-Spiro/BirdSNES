@@ -126,6 +126,13 @@ namespace lsn {
 		LSN_AS_DMA,																/**< Memory is being accssed by DMA. */
 	};
 
+	/** Read/write/no-access. */
+	enum LSN_CYCLE_TYPE {
+		LSN_CT_READ,															/**< A read cycle. */
+		LSN_CT_WRITE,															/**< A write cycle. */
+		LSN_CT_NULL,															/**< A no-access cycle. */
+	};
+
 #ifdef __APPLE__
 	/**
 	 * \brief Writes a C-string to stderr (no newline).

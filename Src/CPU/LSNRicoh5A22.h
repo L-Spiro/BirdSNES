@@ -42,14 +42,28 @@
 #define LSN_UPDATE_PC													if LSN_LIKELY( m_fsState.bAllowWritingToPc ) { m_fsState.rRegs.ui16Pc += m_fsState.ui16PcModify; } m_fsState.ui16PcModify = 0
 #define LSN_UPDATE_S													m_fsState.rRegs.ui16S += m_fsState.ui16SModify; m_fsState.ui16SModify = 0; if LSN_UNLIKELY( m_fsState.bEmulationMode ) { m_fsState.rRegs.ui8S[1] = 1; }
 
-#define LSN_R															CRicoh5A22::LSN_CT_READ
-#define LSN_W															CRicoh5A22::LSN_CT_WRITE
-#define LSN_N															CRicoh5A22::LSN_CT_NULL
+#ifndef LSN_R
+#define LSN_R															LSN_CT_READ
+#endif	// #ifndef LSN_R
+#ifndef LSN_W
+#define LSN_W															LSN_CT_WRITE
+#endif	// #ifndef LSN_W
+#ifndef LSN_N
+#define LSN_N															LSN_CT_NULL
+#endif	// #ifndef LSN_N
 
+#ifndef LSN_TO_A
 #define LSN_TO_A														true
+#endif	// #ifndef LSN_TO_A
+#ifndef LSN_TO_P
 #define LSN_TO_P														false
+#endif	// #ifndef LSN_TO_P
+#ifndef LSN_FROM_A
 #define LSN_FROM_A														true
+#endif	// #ifndef LSN_FROM_A
+#ifndef LSN_FROM_P
 #define LSN_FROM_P														false
+#endif	// #ifndef LSN_FROM_P
 
 #ifdef LSN_CPU_VERIFY
 //#define LSN_CYCLES_DOC													1
@@ -60,6 +74,7 @@ namespace lsn {
 
 #pragma warning( push )
 #pragma warning( disable : 4324 )	// warning C4324: 'lsn::CRicoh5A22::LSN_FULL_STATE': structure was padded due to alignment specifier
+#pragma warning( disable : 26495 )	// warning C26495: Variable 'lsn::CRicoh5A22::LSN_REGISTERS::<unnamed-tag>::ui16A' is uninitialized. Always initialize a member variable (type.6).
 
 	/**
 	 * Class CRicoh5A22
@@ -799,7 +814,7 @@ namespace lsn {
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
 		 **/
-		 template <bool _bSkipIfM = false, int8_t _i8SOff = INT8_MIN, bool _bEndInstr = false, bool _bSkipIfX = false>
+		template <bool _bSkipIfM = false, int8_t _i8SOff = INT8_MIN, bool _bEndInstr = false, bool _bSkipIfX = false>
 		void															Null_Phi2();
 
 		/**
@@ -4688,7 +4703,7 @@ namespace lsn {
 		if LSN_UNLIKELY( m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
 			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, m_ui8Speed );
-			m_fsState.ui16SModify = uint16_t( -1 + _i8SOff );
+			m_fsState.ui16SModify = uint16_t( int8_t( -1 ) + _i8SOff );
 		}
 		else {
 			if constexpr ( _bSpecial ) {
@@ -4778,7 +4793,7 @@ namespace lsn {
 		if LSN_UNLIKELY( m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
 			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, m_ui8Speed );
-			m_fsState.ui16SModify = uint16_t( -1 + _i8SOff );
+			m_fsState.ui16SModify = uint16_t( int8_t( -1 ) + _i8SOff );
 		}
 		else {
 			if constexpr ( _bSpecial ) {
@@ -4862,7 +4877,7 @@ namespace lsn {
 			if LSN_UNLIKELY( m_bBrkIsReset ) {
 				uint8_t ui8Tmp;
 				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, m_ui8Speed );
-				m_fsState.ui16SModify = uint16_t( -1L + _i8SOff );
+				m_fsState.ui16SModify = uint16_t( int8_t( -1 ) + _i8SOff );
 			}
 			else {
 				if ( m_fsState.bPushB ) {

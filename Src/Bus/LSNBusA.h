@@ -36,12 +36,12 @@ namespace lsn {
 		// == Types.
 		/** Reader parameters. */
 		struct LSN_ACCESSFUNCPARMS {
-			void *									pvParm0;						/**< The user-supplied pointer to pass back to this function. */
-			uint32_t								ui32FullAddress;				/**< The full address being accessed. */
-			uint8_t *								pui8Data;						/**< A pointer to the default bus memory. */
-			LSN_ACCESS_SOURCE						asAccessSource;					/**< The source of the memory access (CPU vs DMA). */
-			uint16_t								ui16Address;					/**< The 16-bit address being accessed. */
-			uint8_t									ui8Bank;						/**< The bank being accessed. */
+			void *									pvParm0 = nullptr;				/**< The user-supplied pointer to pass back to this function. */
+			uint8_t *								pui8Data = nullptr;				/**< A pointer to the default bus memory. */
+			uint32_t								ui32FullAddress = 0;			/**< The full address being accessed. */
+			LSN_ACCESS_SOURCE						asAccessSource = LSN_AS_CPU;	/**< The source of the memory access (CPU vs DMA). */
+			uint16_t								ui16Address = 0;				/**< The 16-bit address being accessed. */
+			uint8_t									ui8Bank = 0;					/**< The bank being accessed. */
 		};
 
 		/** An address-reading function. */
@@ -450,12 +450,12 @@ namespace lsn {
 		// == Types.
 		/** Per-page information. */
 		struct LSN_ADDR_ACCESSOR {
-			PfReadFunc								pfReader;							/**< The function for reading the assigned address range. */
-			void *									pvReaderParm0;						/**< The readers’ first parameter. */
-			PfWriteFunc								pfWriter;							/**< The function for writing the assigned address range. */
-			void *									pvWriterParm0;						/**< The writers’ first parameter. */
-			PfDebugReadFunc							pfDebugReader;						/**< The debug function for reading the assigned address range. */
-			PfDebugWriteFunc						pfDebugWriter;						/**< The debug function for writing the assigned address range. */
+			PfReadFunc								pfReader = nullptr;					/**< The function for reading the assigned address range. */
+			void *									pvReaderParm0 = nullptr;			/**< The readers’ first parameter. */
+			PfWriteFunc								pfWriter = nullptr;					/**< The function for writing the assigned address range. */
+			void *									pvWriterParm0 = nullptr;			/**< The writers’ first parameter. */
+			PfDebugReadFunc							pfDebugReader = nullptr;			/**< The debug function for reading the assigned address range. */
+			PfDebugWriteFunc						pfDebugWriter = nullptr;			/**< The debug function for writing the assigned address range. */
 			//uint32_t								ui32ReaderParm1;					/**< The reader's second parameter. */
 			//uint32_t								ui32WriterParm1;					/**< The writer's second parameter. */
 		};
@@ -463,7 +463,7 @@ namespace lsn {
 
 		// == Members.
 		uint8_t										m_ui8Speeds[0x10000];				/**< The speed table. 64 kibibytes. */
-		LSN_ADDR_ACCESSOR							m_aaAccessors[0x1000000>>8];		/**< An accessor per logical page. 3.0 mebibytes on x64, 1.5 on x86. */
+		LSN_ADDR_ACCESSOR							m_aaAccessors[0x1000000>>8] {};		/**< An accessor per logical page. 3.0 mebibytes on x64, 1.5 on x86. */
 		uint8_t *									m_pui8Memory = nullptr;				/**< A pointer to the RAM memory. 8/4 bytes */
 		LSN_ACCESSFUNCPARMS							m_rfpAccessFuncParms;				/**< Parameters to pass to read/write functions. */
 		uint8_t										m_ui8DataBus = 0;					/**< The data-bus value. 1 byte. */
