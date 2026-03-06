@@ -76,55 +76,56 @@ namespace lsn {
 		}*/
 		// Tick once for each cycle.
 		m_bbBusB.ReadWriteLog().clear();
+		//BeginInst();
 		/*m_bbBusB.ReadWriteLog().push_back( {} );
 		m_fsState.ui16Operand = m_bbBusB.Read( m_fsState.rRegs.ui16Pc );
 		m_fsState.ui16PcModify = 1;*/
 
 		int32_t i32Cnt = 0;
-#ifdef LSN_CYCLES_DOC
+#ifdef LSN_SPC700_CYCLES_DOC
 		
 		std::string sLine;
-#endif	// #ifdef LSN_CYCLES_DOC
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		for ( auto I = cvoVerifyMe.vCycles.size(); I--; ) {
 			m_bbBusB.ReadWriteLog().push_back( {} );
-#ifdef LSN_CYCLES_DOC
+#ifdef LSN_SPC700_CYCLES_DOC
 			if ( i32Cnt ) {
 				lsn::DebugA( (std::to_string( i32Cnt ) + ".1\t").c_str() );
 			}
-#endif	// #ifdef LSN_CYCLES_DOC
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 			Tick();
 
 			m_bDetectedNmi = true;
-#ifdef LSN_CYCLES_DOC
+#ifdef LSN_SPC700_CYCLES_DOC
 			if ( i32Cnt ) {
 				lsn::DebugA( ("\r\n" + std::to_string( i32Cnt ) + ".2\t").c_str() );
 			}
 			else {
-				lsn::DebugA( " -X.2\tRead PC:PB\t" );
+				lsn::DebugA( " -X.2\t" );
 			}
-#endif	// #ifdef LSN_CYCLES_DOC
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 			++i32Cnt;
 			TickPhi2();
-			if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK &&
+			/*if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BPL && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BNE && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVS &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCS && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BEQ && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BMI &&
 				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRA ) {
 				if ( m_bHandleNmi != (I <= 0) ) {
 					lsn::DebugA( "\r\nDouble-check polling.\r\n" );
 				}
-			}
-#ifdef LSN_CYCLES_DOC
+			}*/
+#ifdef LSN_SPC700_CYCLES_DOC
 			lsn::DebugA( "\r\n" );
-#endif	// #ifdef LSN_CYCLES_DOC
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		}
-#ifdef LSN_CYCLES_DOC
+#ifdef LSN_SPC700_CYCLES_DOC
 		lsn::DebugA( (std::to_string( i32Cnt ) + ".1\t").c_str() );
-#endif	// #ifdef LSN_CYCLES_DOC
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		Tick();
-#ifdef LSN_CYCLES_DOC
-		lsn::DebugA( (std::string( "\r\n" ) + std::to_string( i32Cnt ) + ".2\tRead PC:PB\tStore as OpCode.\r\n").c_str() );
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( (std::string( "\r\n" ) + std::to_string( i32Cnt ) + ".2\tRead PC\tStore as OpCode.\r\n").c_str() );
 		lsn::DebugA( " +X.1\t\t\r\n\r\n\r\n" );
-#endif	// #ifdef LSN_CYCLES_DOC
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
 		
 
@@ -157,9 +158,9 @@ namespace lsn {
 #undef LSN_VURIFFY
 
 		// Ensure no pending updates to PC or S.
-		if ( m_fsState.ui16SModify ) {
+		if ( m_fsState.ui8SModify ) {
 			lsn::DebugA( cvoVerifyMe.sName.c_str() );
-			lsn::DebugA( "\r\nS is pending an update.\r\n" );
+			lsn::DebugA( "\r\nSP is pending an update.\r\n" );
 			lsn::DebugA( "\r\n\r\n" ); bErrored = true;
 		}
 		if ( m_fsState.ui16PcModify ) {

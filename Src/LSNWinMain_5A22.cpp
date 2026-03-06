@@ -8,7 +8,7 @@
 
 
 #include "Bus/LSNBusA.h"
-#include "Cpu/LSNRicoh5A22.h"
+#include "Cpu/Ricoh5A22/LSNRicoh5A22.h"
 #include "LSONJson.h"
 
 

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "../LSNBirdSNES.h"
+#include "../../LSNBirdSNES.h"
 
 #include <cstdint>
 

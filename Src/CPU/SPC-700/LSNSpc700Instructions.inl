@@ -1,3 +1,4 @@
+// LSN_I_
 LSN_INST( ADC, "Add Memory to Accumulator with Carry" )
 LSN_INST( ADDW, "Add Memory to Word Register (YA)" )
 LSN_INST( AND, "\u201CAND\u201D Memory with Accumulator" )

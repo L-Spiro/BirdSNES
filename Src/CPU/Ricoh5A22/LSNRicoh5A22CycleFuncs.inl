@@ -48,6 +48,16 @@
 
 #define LSN_IMPLIED_2( NAME, FUNC )																{ { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Operand_Discard_Phi2<true>, &CRicoh5A22::FUNC }, { /* BeginInst() */ &CRicoh5A22::Fetch_Opcode_IncPc_Phi2, &CRicoh5A22::Null<LSN_R, true>, &CRicoh5A22::Fetch_Operand_Discard_Phi2<true>, &CRicoh5A22::FUNC }, }, 2, 2, LSN_AM_IMPLIED, 1, 1, LSN_I_ ## NAME, #NAME, "Implied"
 
+#ifndef LSN_R
+#define LSN_R																					LSN_CT_READ
+#endif	// #ifndef LSN_R
+#ifndef LSN_W
+#define LSN_W																					LSN_CT_WRITE
+#endif	// #ifndef LSN_W
+#ifndef LSN_N
+#define LSN_N																					LSN_CT_NULL
+#endif	// #ifndef LSN_N
+
 CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The instruction set. */
 	/** 00-07 */
 	{	// 00
@@ -1833,3 +1843,57 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 		LSN_ABSOLUTE_LONG_X_R( SBC, Sbc_BeginInst<false> )
 	},
 };
+
+#undef LSN_R
+#undef LSN_W
+#undef LSN_N
+
+#undef LSN_STACK_RELATIVE_R
+#undef LSN_STACK_RELATIVE_W
+
+#undef LSN_STACK_RELATIVE_INDIRECT_INDEXED_Y_R
+#undef LSN_STACK_RELATIVE_INDIRECT_INDEXED_Y_W
+
+#undef LSN_DIRECT_PAGE_R
+#undef LSN_DIRECT_PAGE_RMW
+
+#undef LSN_DIRECT_PAGE_WITH_X_R
+#undef LSN_DIRECT_PAGE_WITH_X_RMW
+
+#undef LSN_DIRECT_PAGE_INDIRECT_R
+#undef LSN_DIRECT_PAGE_INDIRECT_W
+
+#undef LSN_DIRECT_PAGE_INDIRECT_LONG_R
+#undef LSN_DIRECT_PAGE_INDIRECT_LONG_W
+
+#undef LSN_DIRECT_PAGE_INDEXED_INDIRECT_X_R
+#undef LSN_DIRECT_PAGE_INDEXED_INDIRECT_X_W
+
+#undef LSN_DIRECT_PAGE_INDIRECT_INDEXED_Y_R
+#undef LSN_DIRECT_PAGE_INDIRECT_INDEXED_Y_W
+
+#undef LSN_DIRECT_PAGE_INDIRECT_LONG_INDEXED_Y_R
+//#undef LSN_DIRECT_PAGE_INDIRECT_LONG_INDEXED_Y_W
+
+#undef LSN_IMMEDIATE
+
+#undef LSN_ABSOLUTE_R
+#undef LSN_ABSOLUTE_RMW
+#undef LSN_ABSOLUTE_W
+
+#undef LSN_ABSOLUTE_LONG_R
+#undef LSN_ABSOLUTE_LONG_W
+
+#undef LSN_ABSOLUTE_LONG_X_R
+//#undef LSN_ABSOLUTE_LONG_X_W
+
+#undef LSN_ABSOLUTE_INDEXED_X_R
+#undef LSN_ABSOLUTE_INDEXED_X_RMW
+#undef LSN_ABSOLUTE_INDEXED_X_W
+
+#undef LSN_ABSOLUTE_INDEXED_Y_R
+#undef LSN_ABSOLUTE_INDEXED_Y_W
+
+#undef LSN_BRANCH
+
+#undef LSN_IMPLIED_2

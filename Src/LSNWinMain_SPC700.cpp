@@ -8,7 +8,7 @@
 
 
 #include "Bus/LSNBusB.h"
-#include "Cpu/LSNSpc700.h"
+#include "Cpu/SPC-700/LSNSpc700.h"
 #include "LSONJson.h"
 
 
@@ -22,7 +22,7 @@ int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevI
 	auto pRoot = GetThisPath().remove_filename();
 	const std::filesystem::path pTests = std::filesystem::path( ".." ) / ".." / "Research" / "spc700" / "v1";
 	{
-		for ( uint32_t I = 0x00; I < 0x01; ++I ) {
+		for ( uint32_t I = 0x00; I < 0x03; ++I ) {
 			std::wstring wsFile;
 			lson::CJson jSon;
 			std::vector<uint8_t> vBytes;
@@ -48,30 +48,27 @@ int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevI
 					for ( size_t J = 0; J < jvRoot.vArray.size(); ++J ) {
 						const lson::CJsonContainer::LSON_JSON_VALUE & jvThis = jSon.GetContainer()->GetValue( jvRoot.vArray[J] );
 							
-						/*if ( J >= 9000 && i32MinSize != (wChars[N] == 'n' ? lsn::CSpc700::InstrTable()[I].ui8TotalCyclesN : lsn::CSpc700::InstrTable()[I].ui8TotalCyclesE) &&
-							lsn::CSpc700::InstrTable()[I].iInstruction != lsn::CRicoh5A22Base::LSN_I_WAI &&
-							lsn::CSpc700::InstrTable()[I].iInstruction != lsn::CRicoh5A22Base::LSN_I_STP &&
-							lsn::CSpc700::InstrTable()[I].amAddrMode != lsn::CRicoh5A22Base::LSN_AM_BLOCK_MOVE && lsn::CSpc700::InstrTable()[I].iInstruction != lsn::CRicoh5A22Base::LSN_I_BRA ) {
-							lsn::DebugLine( std::format( "\r\n\r\n\r\n*** CHECK CYCLE COUNT {} -> {} ***\r\n\r\n\r\n\r\n\r\n", wChars[N] == 'n' ? lsn::CSpc700::InstrTable()[I].ui8TotalCyclesN : lsn::CSpc700::InstrTable()[I].ui8TotalCyclesE,
+						if ( J >= 9000 && i32MinSize != lsn::CSpc700::InstrTable()[I].ui8TotalCycles && lsn::CSpc700::InstrTable()[I].iInstruction != lsn::CSpc700::LSN_I_BRA ) {
+							lsn::DebugLine( std::format( "\r\n\r\n\r\n*** CHECK CYCLE COUNT {} -> {} ***\r\n\r\n\r\n\r\n\r\n", lsn::CSpc700::InstrTable()[I].ui8TotalCycles,
 								i32MinSize ) );
-						}*/
+						}
 
-#ifdef LSN_CYCLES_DOC
+#ifdef LSN_SPC700_CYCLES_DOC
 						lsn::DebugLine( std::format( "{} ({:02X})\tCycles: {}\tSize: {}\r\n"
 						"\t{}\r\nCycle\tR/W\tDesc.", lsn::CSpc700::InstrTable()[I].pcName, I,
 							i32MinSize,
-							wChars[N] == 'n' ? lsn::CSpc700::InstrTable()[I].ui8SizeN : lsn::CSpc700::InstrTable()[I].ui8SizeE,
+							lsn::CSpc700::InstrTable()[I].ui8Size,
 							lsn::CSpc700::InstrTable()[I].pcTypeString ) );
-#endif	// #ifdef LSN_CYCLES_DOC
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 						int32_t i32Cycles = pcCpu->RunJsonTest( jSon, jvThis );
 						if ( i32Cycles > 0 ) {
 							i32MinSize = std::min( i32MinSize, i32Cycles );
 							i32MaxSize = std::max( i32MaxSize, i32Cycles );
 						}
 					}
-#ifdef LSN_CYCLES_DOC
+#ifdef LSN_SPC700_CYCLES_DOC
 					lsn::DebugLine( std::format( "Min: {}\tMax: {}", i32MinSize, i32MaxSize ).c_str() );
-#endif	// #ifdef LSN_CYCLES_DOC
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 					lsn::DebugA( "JSON NOT FAIL\r\n" );
 					::OutputDebugStringW( wcFile );
 					lsn::DebugA( "\r\n" );
