@@ -54,6 +54,19 @@
 #include <memory>
 #include <vector>
 
+#ifndef LSN_TO_A
+#define LSN_TO_A																true
+#endif	// #ifndef LSN_TO_A
+#ifndef LSN_TO_P
+#define LSN_TO_P																false
+#endif	// #ifndef LSN_TO_P
+#ifndef LSN_FROM_A
+#define LSN_FROM_A																true
+#endif	// #ifndef LSN_FROM_A
+#ifndef LSN_FROM_P
+#define LSN_FROM_P																false
+#endif	// #ifndef LSN_FROM_P
+
 
 namespace lsn {
 

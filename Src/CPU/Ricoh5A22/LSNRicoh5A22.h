@@ -42,19 +42,6 @@
 #define LSN_UPDATE_PC													if LSN_LIKELY( m_fsState.bAllowWritingToPc ) { m_fsState.rRegs.ui16Pc += m_fsState.ui16PcModify; } m_fsState.ui16PcModify = 0
 #define LSN_UPDATE_S													m_fsState.rRegs.ui16S += m_fsState.ui16SModify; m_fsState.ui16SModify = 0; if LSN_UNLIKELY( m_fsState.bEmulationMode ) { m_fsState.rRegs.ui8S[1] = 1; }
 
-#ifndef LSN_TO_A
-#define LSN_TO_A														true
-#endif	// #ifndef LSN_TO_A
-#ifndef LSN_TO_P
-#define LSN_TO_P														false
-#endif	// #ifndef LSN_TO_P
-#ifndef LSN_FROM_A
-#define LSN_FROM_A														true
-#endif	// #ifndef LSN_FROM_A
-#ifndef LSN_FROM_P
-#define LSN_FROM_P														false
-#endif	// #ifndef LSN_FROM_P
-
 #ifdef LSN_CPU_VERIFY
 //#define LSN_CYCLES_DOC													1
 #endif	// #ifdef LSN_CPU_VERIFY

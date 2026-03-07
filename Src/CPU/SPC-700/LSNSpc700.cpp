@@ -95,7 +95,6 @@ namespace lsn {
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 			Tick();
 
-			m_bDetectedNmi = true;
 #ifdef LSN_SPC700_CYCLES_DOC
 			if ( i32Cnt ) {
 				lsn::DebugA( ("\r\n" + std::to_string( i32Cnt ) + ".2\t").c_str() );
@@ -106,14 +105,6 @@ namespace lsn {
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 			++i32Cnt;
 			TickPhi2();
-			/*if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRK &&
-				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BPL && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BNE && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BVS &&
-				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCC && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BCS && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BEQ && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BMI &&
-				m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_BRA ) {
-				if ( m_bHandleNmi != (I <= 0) ) {
-					lsn::DebugA( "\r\nDouble-check polling.\r\n" );
-				}
-			}*/
 #ifdef LSN_SPC700_CYCLES_DOC
 			lsn::DebugA( "\r\n" );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
