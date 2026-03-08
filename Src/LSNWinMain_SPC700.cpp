@@ -22,7 +22,7 @@ int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevI
 	auto pRoot = GetThisPath().remove_filename();
 	const std::filesystem::path pTests = std::filesystem::path( ".." ) / ".." / "Research" / "spc700" / "v1";
 	{
-		for ( uint32_t I = 0x09; I < 0x0A; ++I ) {
+		for ( uint32_t I = 0x00; I < 0x0C; ++I ) {
 			std::wstring wsFile;
 			lson::CJson jSon;
 			std::vector<uint8_t> vBytes;
@@ -48,7 +48,7 @@ int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevI
 					for ( size_t J = 0; J < jvRoot.vArray.size(); ++J ) {
 						const lson::CJsonContainer::LSON_JSON_VALUE & jvThis = jSon.GetContainer()->GetValue( jvRoot.vArray[J] );
 							
-						if ( J >= 9000 && i32MinSize != lsn::CSpc700::InstrTable()[I].ui8TotalCycles && lsn::CSpc700::InstrTable()[I].iInstruction != lsn::CSpc700::LSN_I_BRA ) {
+						if ( J >= 900 && i32MinSize != lsn::CSpc700::InstrTable()[I].ui8TotalCycles && lsn::CSpc700::InstrTable()[I].iInstruction != lsn::CSpc700::LSN_I_BRA ) {
 							lsn::DebugLine( std::format( "\r\n\r\n\r\n*** CHECK CYCLE COUNT {} -> {} ***\r\n\r\n\r\n\r\n\r\n", lsn::CSpc700::InstrTable()[I].ui8TotalCycles,
 								i32MinSize ) );
 						}
