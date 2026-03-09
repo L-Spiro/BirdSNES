@@ -5,8 +5,11 @@
 #define LSN_PAGE_BIT_RELATIVE( NAME, BIT, VALUE )											{ /* BeginInst() */ &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>, &CSpc700::Null<LSN_R, true>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>, &CSpc700::Operand_To_DirectPage<LSN_TO_A, true>, &CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::Bbc<BIT, VALUE>, &CSpc700::Null_Phi2, &CSpc700::Null<LSN_R>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>, &CSpc700::EndIfNotJmp_BeginInst, &CSpc700::Null_Phi2, &CSpc700::Bbc_UpdatePc_L, &CSpc700::Null_Phi2, &CSpc700::Bbc_UpdatePc_H_BeginInst }, 5, LSN_AM_DIRECT_PAGE_BIT_RELATIVE, 3, LSN_I_ ## NAME, #NAME #BIT, "Direct Page Bit Relative", #NAME #BIT
 
 #define LSN_DIRECT_PAGE_R( NAME0, NAME1, FUNC )												{ /* BeginInst() */ &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>, &CSpc700::Null<LSN_R, true>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>, &CSpc700::Operand_To_DirectPage<LSN_TO_A, true>, &CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::FUNC }, 3, LSN_AM_DIRECT_PAGE, 2, LSN_I_ ## NAME0, #NAME0, "Direct Page (Read)", #NAME1
+#define LSN_DIRECT_PAGE_RMW( NAME0, NAME1, FUNC )											{ /* BeginInst() */ &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>, &CSpc700::Null<LSN_R, true>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>, &CSpc700::Operand_To_DirectPage<LSN_TO_A, true>, &CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::FUNC, &CSpc700::Write_PtrOrAddr_L_Phi2<LSN_TO_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::BeginInst }, 4, LSN_AM_DIRECT_PAGE, 2, LSN_I_ ## NAME0, #NAME0, "Direct Page (Read/Modify/Write)", #NAME1
 
 #define LSN_ABSOLUTE_R( NAME0, NAME1, FUNC )												{ /* BeginInst() */ &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>, &CSpc700::Null<LSN_R, true>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_L>, &CSpc700::Null<LSN_R, true>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_H>, &CSpc700::Null<LSN_R, true>, &CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::FUNC }, 4, LSN_AM_ABSOLUTE, 3, LSN_I_ ## NAME0, #NAME0, "Absolute (Read)", #NAME1
+#define LSN_ABSOLUTE_RMW( NAME0, NAME1, FUNC )												{ /* BeginInst() */ &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>, &CSpc700::Null<LSN_R, true>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_L>, &CSpc700::Null<LSN_R, true>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_H>, &CSpc700::Null<LSN_R, true>, &CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::FUNC, &CSpc700::Write_PtrOrAddr_L_Phi2<LSN_TO_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::BeginInst }, 5, LSN_AM_ABSOLUTE, 3, LSN_I_ ## NAME0, #NAME0, "Absolute (Read/Modify/Write)", #NAME1
+#define LSN_ABSOLUTE_RMW_BIT( NAME0, NAME1, FUNC )											{ /* BeginInst() */ &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>, &CSpc700::Null<LSN_R, true>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_L>, &CSpc700::Null<LSN_R, true>, &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_H>, &CSpc700::Null<LSN_R, true>, &CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::Null<LSN_R>, &CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::FUNC, &CSpc700::Write_PtrOrAddr_L_Phi2<LSN_TO_A, CSpc700::LSN_RT_OPERAND>, &CSpc700::BeginInst }, 6, LSN_AM_ABSOLUTE, 3, LSN_I_ ## NAME0, #NAME0, "Absolute (Read/Modify/Write)", #NAME1
 
 #define LSN_INDIRECT_X_R( NAME0, NAME1, FUNC )												{ /* BeginInst() */ &CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>, &CSpc700::Null<LSN_R, true>, &CSpc700::Null_Phi2, &CSpc700::Null<LSN_N>, &CSpc700::Read_X_Phi2<CSpc700::LSN_RT_OPERAND>, &CSpc700::FUNC }, 3, LSN_AM_INDIRECT_X, 1, LSN_I_ ## NAME0, #NAME0, "Indirect X (Read)", #NAME1
 
@@ -85,16 +88,49 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 		LSN_ABSOLUTE_BIT( OR1, OR1, BeginInst<false> )
 	},
 	{	// 0B
-		//LSN_DIRECT_PAGE_R( ASL, ASL, Asl )
+		LSN_DIRECT_PAGE_RMW( ASL, ASL, Asl )
+		//{
+		//	/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+		//	&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
+		//	&CSpc700::Operand_To_DirectPage<LSN_TO_A, true>,								&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>,
+		//	&CSpc700::Asl,																	&CSpc700::Write_PtrOrAddr_L_Phi2<LSN_TO_A, CSpc700::LSN_RT_OPERAND>,
+		//	&CSpc700::BeginInst
+		//},
+		//4, LSN_AM_DIRECT_PAGE, 2, LSN_I_ASL, "ASL", "Direct Page (Read/Modify/Write)", "ASL"
+	},
+	{	// 0C
+		LSN_ABSOLUTE_RMW( ASL, ASL, Asl )
+	},
+	{	// 0D
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
-			&CSpc700::Operand_To_DirectPage<LSN_TO_A, true>,								&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>,
-			&CSpc700::Asl,																	&CSpc700::Write_PtrOrAddr_L_Phi2<LSN_TO_A, CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
+			&CSpc700::Null<LSN_W>,															&CSpc700::Push_Phi2<CSpc700::LSN_RT_STATUS, 0>,
+			&CSpc700::Null<LSN_N, false, true>,												&CSpc700::Null_Phi2,
 			&CSpc700::BeginInst
 		},
-		4, LSN_AM_DIRECT_PAGE, 2, LSN_I_ASL, "ASL", "Direct Page (Read/Modify/Write)", "ASL"
+		4, LSN_AM_IMPLIED, 1, LSN_I_PUSH, "PUSH", "Implied", "PHP"
 	},
+	{	// 0E
+		//LSN_ABSOLUTE_RMW_BIT( TSET1, SET1, TSet1 )
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_L>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_H>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::TSet1_RegUpdate,														&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::TSet1,																&CSpc700::Write_PtrOrAddr_L_Phi2<LSN_TO_A, CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::BeginInst
+		},
+		6, LSN_AM_ABSOLUTE, 3, LSN_I_TSET1, "TSET1", "Absolute (Read/Modify/Write)", "SET1"
+	},
+	{	// 0F
+		{
+		}
+	},
+
+
+	/** 10-17 */
 };
 
 #undef LSN_R
@@ -105,7 +141,10 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 #undef LSN_IMMEDIATE_R
 #undef LSN_DIRECT_PAGE_INDEXED_INDIRECT_X_R
 #undef LSN_INDIRECT_X_R
+#undef LSN_ABSOLUTE_RMW_BIT
+#undef LSN_ABSOLUTE_RMW
 #undef LSN_ABSOLUTE_R
+#undef LSN_DIRECT_PAGE_RMW
 #undef LSN_DIRECT_PAGE_R
 #undef LSN_PAGE_BIT_RELATIVE
 #undef LSN_IMPLIED_BCC
