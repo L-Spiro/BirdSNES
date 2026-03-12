@@ -433,8 +433,9 @@ namespace lsn {
 		 *
 		 * \tparam _bIncPc If true, PC is updated.
 		 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand.
+		 * \tparam _bBeginInstr If true, BeginInst() is called.
 		 **/
-		template <bool _bIncPc = false, bool _bOperandPair = false>
+		template <bool _bIncPc = false, bool _bOperandPair = false, bool _bBeginInstr = true>
 		void																	Or_BeginInst();
 
 		/**
@@ -520,10 +521,18 @@ namespace lsn {
 		 * \tparam _rtRegType The register (X or Y) to add to Operand.
 		 * \tparam _bTo If LSN_TO_A, the result is written to Address, otherwise it is written to Pointer.
 		 * \tparam _ui16Mask A mask to be applied to the sum.
-		 * \tparam _bApplyP If true, (P << 3) is applied to the target address.
 		 **/
-		template <LSN_REG_TYPE _rtRegType = LSN_RT_X, bool _bTo = LSN_TO_A, uint16_t _ui16Mask = 0xFF, bool _bApplyP = true>
-		void																	X_Or_Y_Plus_Operand_To_AddrOrPtr_Masked_ApplyP();
+		template <LSN_REG_TYPE _rtRegType = LSN_RT_X, bool _bTo = LSN_TO_A, uint16_t _ui16Mask = 0xFF>
+		void																	XorY_Plus_Operand_To_AddrOrPtr_Masked();
+
+		/**
+		 * Adds X or Y to Address or Pointer.
+		 * 
+		 * \tparam _rtRegType The register (X or Y) to add to Address or Pointer.
+		 * \tparam _bFrom If LSN_FROM_A, Pointer = (X or Y) + Address, otherwise Address = (X or Y) + Pointer.
+		 **/
+		template <LSN_REG_TYPE _rtRegType = LSN_RT_X, bool _bFrom = LSN_FROM_A>
+		void																	XorY_Plus_PtrOrAddr_To_AddrOrPtr();
 
 		/**
 		 * Prepares to enter a new instruction.
@@ -852,9 +861,10 @@ namespace lsn {
 	 * Performs A |= Operand, sets N and Z.
 	 *
 	 * \tparam _bIncPc If true, PC is updated.
-	 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand
+	 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand.
+	 * \tparam _bBeginInstr If true, BeginInst() is called.
 	 **/
-	template <bool _bIncPc, bool _bOperandPair>
+	template <bool _bIncPc, bool _bOperandPair, bool _bBeginInstr>
 	inline void CSpc700::Or_BeginInst() {
 		LSN_SPC700_INSTR_START_PHI1( true );
 
@@ -864,7 +874,14 @@ namespace lsn {
 			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
 			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A );
 
-			BeginInst<_bIncPc, false, false>();
+			if constexpr ( _bBeginInstr ) {
+				BeginInst<_bIncPc, false, false>();
+			}
+			else {
+				LSN_SPC700_NEXT_FUNCTION;
+
+				LSN_SPC700_INSTR_END_PHI1;
+			}
 		}
 		else {
 			m_fsState.ui8Operand0 |= m_fsState.ui8Operand1;
@@ -1407,10 +1424,9 @@ namespace lsn {
 	 * \tparam _rtRegType The register (X or Y) to add to Operand.
 	 * \tparam _bTo If LSN_TO_A, the result is written to Address, otherwise it is written to Pointer.
 	 * \tparam _ui16Mask A mask to be applied to the sum.
-	 * \tparam _bApplyP If true, (P << 3) is applied to the target address.
 	 **/
-	template <CSpc700::LSN_REG_TYPE _rtRegType, bool _bTo, uint16_t _ui16Mask, bool _bApplyP>
-	inline void CSpc700::X_Or_Y_Plus_Operand_To_AddrOrPtr_Masked_ApplyP() {
+	template <CSpc700::LSN_REG_TYPE _rtRegType, bool _bTo, uint16_t _ui16Mask>
+	inline void CSpc700::XorY_Plus_Operand_To_AddrOrPtr_Masked() {
 		LSN_SPC700_INSTR_START_PHI1( true );
 		
 		if constexpr ( _bTo == LSN_TO_A ) {
@@ -1420,25 +1436,13 @@ namespace lsn {
 			else if constexpr ( _rtRegType == LSN_RT_Y ) {
 				m_fsState.ui16Address = ((m_fsState.rRegs.ui8Y + m_fsState.ui8Operand) & _ui16Mask);
 			}
-			if constexpr ( _bApplyP ) {
-				m_fsState.ui16Address |= ((m_fsState.rRegs.ui8Status & P()) << 3);
-			}
+			m_fsState.ui16Address |= ((m_fsState.rRegs.ui8Status & P()) << 3);
 #ifdef LSN_SPC700_CYCLES_DOC
-			if constexpr ( _bApplyP ) {
-				if constexpr ( _ui16Mask == 0xFFFF ) {
-					lsn::DebugA( "\tAddress = (X + Operand) | ((PSW & P flag) << 3)." );
-				}
-				else {
-					lsn::DebugA( std::format( "\tAddress = ((X + Operand) & ${:02X}) | ((PSW & P flag) << 3).", _ui16Mask ).c_str() );
-				}
+			if constexpr ( _ui16Mask == 0xFFFF ) {
+				lsn::DebugA( std::format( "\tAddress = ({} + Operand) | ((PSW & P flag) << 3).", RegTypeToString( _rtRegType ) ).c_str() );
 			}
 			else {
-				if constexpr ( _ui16Mask == 0xFFFF ) {
-					lsn::DebugA( "\tAddress = (X + Operand)." );
-				}
-				else {
-					lsn::DebugA( std::format( "\tAddress = ((X + Operand) & ${:02X}).", _ui16Mask ).c_str() );
-				}
+				lsn::DebugA( std::format( "\tAddress = (({} + Operand) & ${:02X}) | ((PSW & P flag) << 3).", RegTypeToString( _rtRegType ), _ui16Mask ).c_str() );
 			}
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		}
@@ -1449,28 +1453,56 @@ namespace lsn {
 			else if constexpr ( _rtRegType == LSN_RT_Y ) {
 				m_fsState.ui16Pointer = ((m_fsState.rRegs.ui8Y + m_fsState.ui8Operand) & _ui16Mask);
 			}
-			if constexpr ( _bApplyP ) {
-				m_fsState.ui16Pointer |= ((m_fsState.rRegs.ui8Status & P()) << 3);
-			}
+			m_fsState.ui16Pointer |= ((m_fsState.rRegs.ui8Status & P()) << 3);
 #ifdef LSN_SPC700_CYCLES_DOC
-			if constexpr ( _bApplyP ) {
-				if constexpr ( _ui16Mask == 0xFFFF ) {
-					lsn::DebugA( "\tPointer = (X + Operand) | ((PSW & P flag) << 3)." );
-				}
-				else {
-					lsn::DebugA( std::format( "\tPointer = ((X + Operand) & {:02X}) | ((PSW & P flag) << 3).", _ui16Mask ).c_str() );
-				}
+			if constexpr ( _ui16Mask == 0xFFFF ) {
+				lsn::DebugA( std::format( "\tPointer = ({} + Operand) | ((PSW & P flag) << 3).", RegTypeToString( _rtRegType ) ).c_str() );
 			}
 			else {
-				if constexpr ( _ui16Mask == 0xFFFF ) {
-					lsn::DebugA( "\tPointer = (X + Operand)." );
-				}
-				else {
-					lsn::DebugA( std::format( "\tPointer = ((X + Operand) & {:02X}).", _ui16Mask ).c_str() );
-				}
+				lsn::DebugA( std::format( "\tPointer = (({} + Operand) & ${:02X}) | ((PSW & P flag) << 3).", RegTypeToString( _rtRegType ), _ui16Mask ).c_str() );
 			}
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		}
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Adds X or Y to Address or Pointer.
+	 * 
+	 * \tparam _rtRegType The register (X or Y) to add to Address or Pointer.
+	 * \tparam _bFrom If LSN_FROM_A, Pointer = (X or Y) + Address, otherwise Address = (X or Y) + Pointer.
+	 **/
+	template <CSpc700::LSN_REG_TYPE _rtRegType, bool _bFrom>
+	inline void CSpc700::XorY_Plus_PtrOrAddr_To_AddrOrPtr() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			if constexpr ( _rtRegType == LSN_RT_X ) {
+				m_fsState.ui16Pointer = m_fsState.rRegs.ui8X + m_fsState.ui16Address;
+			}
+			else if constexpr ( _rtRegType == LSN_RT_Y ) {
+				m_fsState.ui16Pointer = m_fsState.rRegs.ui8Y + m_fsState.ui16Address;
+			}
+			
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( std::format( "\tPointer = ({} + Address).", RegTypeToString( _rtRegType ) ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+		else {
+			if constexpr ( _rtRegType == LSN_RT_X ) {
+				m_fsState.ui16Address = m_fsState.rRegs.ui8X + m_fsState.ui16Pointer;
+			}
+			else if constexpr ( _rtRegType == LSN_RT_Y ) {
+				m_fsState.ui16Address = m_fsState.rRegs.ui8Y + m_fsState.ui16Pointer;
+			}
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( std::format( "\tAddress = ({} + Pointer).", RegTypeToString( _rtRegType ) ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+			
 
 		LSN_SPC700_NEXT_FUNCTION;
 
