@@ -363,12 +363,21 @@ namespace lsn {
 		/**
 		 * Updates the low byte of PC with the new jump target.
 		 **/
-		void																	Bbc_UpdatePc_L();
+		void																	Branch_UpdatePc_L();
 
 		/**
 		 * Updates the high byte of PC with the new jump target.
 		 **/
-		void																	Bbc_UpdatePc_H_BeginInst();
+		void																	Branch_UpdatePc_H_BeginInst();
+
+		/**
+		 * Makdes a decision to branch or not.
+		 * 
+		 * \tparam _uBit The bit to check.
+		 * \tparam _uVal The value the bit needs to be to for a jump to take place.
+		 **/
+		template <uint8_t _uBit, uint8_t _uVal>
+		void																	Branch();
 
 		/**
 		 * Unsets I and sets X.  Udpates SP.
@@ -377,7 +386,10 @@ namespace lsn {
 
 		/**
 		 * Ends the instruction if m_fsState.bTakeJump is not set.
+		 * 
+		 * \tparam _uBit The bit to check.
 		 **/
+		template <uint8_t _ui8DocJumpCycle = 7>
 		void																	EndIfNotJmp_BeginInst();
 
 		/**
@@ -503,12 +515,15 @@ namespace lsn {
 		void																	Write_PtrOrAddr_L_Phi2();
 
 		/**
-		 * Calculates the X-indexed indirect address, stores to either Address or Pointer.
+		 * Calculates the X- or Y- indexed indirect address, stores to either Address or Pointer.
 		 * 
-		 * \param _bTo If LSN_TO_A, the result is written to Address, otherwise it is written to Pointer.
+		 * \tparam _rtRegType The register (X or Y) to add to Operand.
+		 * \tparam _bTo If LSN_TO_A, the result is written to Address, otherwise it is written to Pointer.
+		 * \tparam _ui16Mask A mask to be applied to the sum.
+		 * \tparam _bApplyP If true, (P << 3) is applied to the target address.
 		 **/
-		template <bool _bTo = LSN_TO_A>
-		void																	X_And_Operand_To_AddrOrPtr_FF();
+		template <LSN_REG_TYPE _rtRegType = LSN_RT_X, bool _bTo = LSN_TO_A, uint16_t _ui16Mask = 0xFF, bool _bApplyP = true>
+		void																	X_Or_Y_Plus_Operand_To_AddrOrPtr_Masked_ApplyP();
 
 		/**
 		 * Prepares to enter a new instruction.
@@ -584,7 +599,7 @@ namespace lsn {
 	/**
 	 * Updates the low byte of PC with the new jump target.
 	 **/
-	inline void CSpc700::Bbc_UpdatePc_L() {
+	inline void CSpc700::Branch_UpdatePc_L() {
 		LSN_SPC700_INSTR_START_PHI1( false );
 
 		m_fsState.ui16Address = m_fsState.rRegs.ui16Pc + int8_t( m_fsState.ui8Operand );
@@ -602,7 +617,7 @@ namespace lsn {
 	/**
 	 * Updates the high byte of PC with the new jump target.
 	 **/
-	inline void CSpc700::Bbc_UpdatePc_H_BeginInst() {
+	inline void CSpc700::Branch_UpdatePc_H_BeginInst() {
 		LSN_SPC700_INSTR_START_PHI1( true );
 
 		m_fsState.rRegs.ui8Pc[1] = m_fsState.ui8Address[1];
@@ -615,10 +630,35 @@ namespace lsn {
 	}
 
 	/**
+	 * Makdes a decision to branch or not.
+	 * 
+	 * \tparam _uBit The bit to check.
+	 * \tparam _uVal The value the bit needs to be to for a jump to take place.
+	 **/
+	template <uint8_t _uBit, uint8_t _uVal>
+	inline void CSpc700::Branch() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+
+		m_fsState.bTakeJump = (m_fsState.rRegs.ui8Status & _uBit) == (_uVal * _uBit);
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "\t" ).c_str() );
+		LSN_SPC700_PRINT_PC;
+		lsn::DebugA( std::format( "Set Jump to (PSW & ${:02X}) == ${:02X}.", _uBit, _uVal * _uBit ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		
+		LSN_SPC700_UPDATE_PC;
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI1;
+	}
+
+	/**
 	 * Unsets I and sets X.  Udpates SP.
 	 **/
 	inline void CSpc700::Brk() {
-		LSN_SPC700_INSTR_START_PHI1( true );
+		LSN_SPC700_INSTR_START_PHI1( false );
 
 		SetBit<I(), 0>( m_fsState.rRegs.ui8Status );
 		SetBit<X(), 1>( m_fsState.rRegs.ui8Status );
@@ -638,7 +678,10 @@ namespace lsn {
 
 	/**
 	 * Ends the instruction if m_fsState.bTakeJump is not set.
+	 * 
+	 * \tparam _uBit The bit to check.
 	 **/
+	template <uint8_t _ui8DocJumpCycle>
 	inline void CSpc700::EndIfNotJmp_BeginInst() {
 		if ( !m_fsState.bTakeJump ) {
 			BeginInst<true>();
@@ -653,7 +696,7 @@ namespace lsn {
 			LSN_SPC700_INSTR_END_PHI1;
 		}
 #ifdef LSN_SPC700_CYCLES_DOC
-		lsn::DebugA( "\tInc. PC. If !Jump, end instruction (next half-cycle is 7.2)." );
+		lsn::DebugA( std::format( "\tInc. PC. If !Jump, end instruction (next half-cycle is {}.2).", _ui8DocJumpCycle ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 	}
 
@@ -1359,23 +1402,73 @@ namespace lsn {
 	}
 
 	/**
-	 * Calculates the X-indexed indirect address, stores to either Address or Pointer.
+	 * Calculates the X- or Y- indexed indirect address, stores to either Address or Pointer.
 	 * 
-	 * \param _bTo If LSN_TO_A, the result is written to Address, otherwise it is written to Pointer.
+	 * \tparam _rtRegType The register (X or Y) to add to Operand.
+	 * \tparam _bTo If LSN_TO_A, the result is written to Address, otherwise it is written to Pointer.
+	 * \tparam _ui16Mask A mask to be applied to the sum.
+	 * \tparam _bApplyP If true, (P << 3) is applied to the target address.
 	 **/
-	template <bool _bTo>
-	inline void CSpc700::X_And_Operand_To_AddrOrPtr_FF() {
+	template <CSpc700::LSN_REG_TYPE _rtRegType, bool _bTo, uint16_t _ui16Mask, bool _bApplyP>
+	inline void CSpc700::X_Or_Y_Plus_Operand_To_AddrOrPtr_Masked_ApplyP() {
 		LSN_SPC700_INSTR_START_PHI1( true );
+		
 		if constexpr ( _bTo == LSN_TO_A ) {
-			m_fsState.ui16Address = ((m_fsState.rRegs.ui8X + m_fsState.ui8Operand) & 0xFF) | ((m_fsState.rRegs.ui8Status & P()) << 3);
+			if constexpr ( _rtRegType == LSN_RT_X ) {
+				m_fsState.ui16Address = ((m_fsState.rRegs.ui8X + m_fsState.ui8Operand) & _ui16Mask);
+			}
+			else if constexpr ( _rtRegType == LSN_RT_Y ) {
+				m_fsState.ui16Address = ((m_fsState.rRegs.ui8Y + m_fsState.ui8Operand) & _ui16Mask);
+			}
+			if constexpr ( _bApplyP ) {
+				m_fsState.ui16Address |= ((m_fsState.rRegs.ui8Status & P()) << 3);
+			}
 #ifdef LSN_SPC700_CYCLES_DOC
-			lsn::DebugA( "\tAddress = ((X + Operand) & $FF) | ((PSW & P flag) << 3)." );
+			if constexpr ( _bApplyP ) {
+				if constexpr ( _ui16Mask == 0xFFFF ) {
+					lsn::DebugA( "\tAddress = (X + Operand) | ((PSW & P flag) << 3)." );
+				}
+				else {
+					lsn::DebugA( std::format( "\tAddress = ((X + Operand) & ${:02X}) | ((PSW & P flag) << 3).", _ui16Mask ).c_str() );
+				}
+			}
+			else {
+				if constexpr ( _ui16Mask == 0xFFFF ) {
+					lsn::DebugA( "\tAddress = (X + Operand)." );
+				}
+				else {
+					lsn::DebugA( std::format( "\tAddress = ((X + Operand) & ${:02X}).", _ui16Mask ).c_str() );
+				}
+			}
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		}
 		else {
-			m_fsState.ui16Pointer = ((m_fsState.rRegs.ui8X + m_fsState.ui8Operand) & 0xFF) | ((m_fsState.rRegs.ui8Status & P()) << 3);
+			if constexpr ( _rtRegType == LSN_RT_X ) {
+				m_fsState.ui16Pointer = ((m_fsState.rRegs.ui8X + m_fsState.ui8Operand) & _ui16Mask);
+			}
+			else if constexpr ( _rtRegType == LSN_RT_Y ) {
+				m_fsState.ui16Pointer = ((m_fsState.rRegs.ui8Y + m_fsState.ui8Operand) & _ui16Mask);
+			}
+			if constexpr ( _bApplyP ) {
+				m_fsState.ui16Pointer |= ((m_fsState.rRegs.ui8Status & P()) << 3);
+			}
 #ifdef LSN_SPC700_CYCLES_DOC
-			lsn::DebugA( "\tPointer = ((X + Operand) & $FF) | ((PSW & P flag) << 3)." );
+			if constexpr ( _bApplyP ) {
+				if constexpr ( _ui16Mask == 0xFFFF ) {
+					lsn::DebugA( "\tPointer = (X + Operand) | ((PSW & P flag) << 3)." );
+				}
+				else {
+					lsn::DebugA( std::format( "\tPointer = ((X + Operand) & {:02X}) | ((PSW & P flag) << 3).", _ui16Mask ).c_str() );
+				}
+			}
+			else {
+				if constexpr ( _ui16Mask == 0xFFFF ) {
+					lsn::DebugA( "\tPointer = (X + Operand)." );
+				}
+				else {
+					lsn::DebugA( std::format( "\tPointer = ((X + Operand) & {:02X}).", _ui16Mask ).c_str() );
+				}
+			}
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		}
 
