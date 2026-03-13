@@ -8185,11 +8185,8 @@ namespace lsn {
 	 * \param _ui8OpVal The operand value used in the comparison.
 	 */
 	inline void CRicoh5A22::Cmp( uint8_t _ui8RegVal, uint8_t _ui8OpVal ) {
-		// If the value in the register is equal or greater than the compared value, the Carry will be set.
 		SetBit<C()>( m_fsState.rRegs.ui8Status, _ui8RegVal >= _ui8OpVal );
-		// The equal (Z) and negative (N) flags will be set based on equality or lack thereof...
 		SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui8RegVal == _ui8OpVal );
-		// ...and the sign (IE A>=$80) of the register.
 		SetBit<N()>( m_fsState.rRegs.ui8Status, ((_ui8RegVal - _ui8OpVal) & 0x80) != 0 );
 	}
 
@@ -8200,11 +8197,8 @@ namespace lsn {
 	 * \param _ui16OpVal The operand value used in the comparison.
 	 */
 	inline void CRicoh5A22::Cmp( uint16_t _ui16RegVal, uint16_t _ui16OpVal ) {
-		// If the value in the register is equal or greater than the compared value, the Carry will be set.
 		SetBit<C()>( m_fsState.rRegs.ui8Status, _ui16RegVal >= _ui16OpVal );
-		// The equal (Z) and negative (N) flags will be set based on equality or lack thereof...
 		SetBit<Z()>( m_fsState.rRegs.ui8Status, _ui16RegVal == _ui16OpVal );
-		// ...and the sign (IE A>=$8000) of the register.
 		SetBit<N()>( m_fsState.rRegs.ui8Status, ((_ui16RegVal - _ui16OpVal) & 0x8000) != 0 );
 	}
 

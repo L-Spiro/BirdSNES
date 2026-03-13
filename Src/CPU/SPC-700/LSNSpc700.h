@@ -259,9 +259,16 @@ namespace lsn {
 		struct LSN_FULL_STATE {
 			const PfCycle *														pfCurInstruction = nullptr;															/**< The current instruction being executed. */
 			LSN_REGISTERS														rRegs;																				/**< Registers. */
+			uint16_t															ui16OpCode = 0;																		/**< The current opcode. */
+			uint16_t															ui16PcModify = 0;																	/**< The amount by which to modify PC during the next Phi1. */
+			union {
+				uint8_t															ui8Temp[2];																			/**< A 16-bit temporary. */
+				uint16_t														ui16Temp;																			/**< A 16-bit temporary. */
+			};
 			uint8_t																ui8Operand;																			/**< The operand. */
 			uint8_t																ui8Operand0;																		/**< Operand 0. */
 			uint8_t																ui8Operand1;																		/**< Operand 1. */
+			uint8_t																ui8FuncIndex = 0;																	/**< The function index. */
 			union {
 				uint8_t															ui8Address[2];																		/**< An address loaded into memory before transfer to a register such as PC. */
 				uint16_t														ui16Address;																		/**< An address loaded into memory before transfer to a register such as PC. */
@@ -270,16 +277,10 @@ namespace lsn {
 				uint8_t															ui8Pointer[2];																		/**< An address loaded into memory for indirect access. */
 				uint16_t														ui16Pointer;																		/**< An address loaded into memory for indirect access. */
 			};
-			uint16_t															ui16OpCode = 0;																		/**< The current opcode. */
-			uint16_t															ui16PcModify = 0;																	/**< The amount by which to modify PC during the next Phi1. */
+			
 			uint8_t																ui8SModify = 0;																		/**< The amount by which to modify S during the next Phi1. */
-			uint8_t																ui8FuncIndex = 0;																	/**< The function index. */
-
-			//bool																bIsReadCycle = true;																/**< Is the current cycle a read? */
-			//bool																bBoundaryCrossed = false;															/**< Did we cross a page boundary? */
-			//bool																bPushB = false;																		/**< Push the B flag with the status byte? */
-			//bool																bAllowWritingToPc = true;															/**< Allow writing to PC? */
 			bool																bTakeJump = false;																	/**< Determines if a branch is taken. */
+
 		} LSN_ALIGN_STRUCT_END( 64 );
 
 
@@ -347,8 +348,20 @@ namespace lsn {
 		// CYCLES
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		/**
-		 * Performs Operand >>= 1, sets N, Z, and C.
+		 * Performs A &= Operand, sets N and Z.
+		 *
+		 * \tparam _bIncPc If true, PC is updated.
+		 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand.
 		 **/
+		template <bool _bIncPc = false, bool _bOperandPair = false>
+		void																	And_BeginInst();
+
+		/**
+		 * Performs Operand >>= 1, sets N, Z, and C.
+		 * 
+		 * \tparam _bOnA If true, A is modified in-place instead of Operand.
+		 **/
+		template <bool _bOnA = false>
 		void																	Asl();
 
 		/**
@@ -383,6 +396,29 @@ namespace lsn {
 		 * Unsets I and sets X.  Udpates SP.
 		 **/
 		void																	Brk();
+
+		/**
+		 * Performs a comparison between X and Operand.
+		 * 
+		 * \tparam _rtRegType The left operand.
+		 **/
+		template <LSN_REG_TYPE _rtRegType = LSN_RT_X>
+		void																	Cmp_BeginInst();
+
+		/**
+		 * Decreases X by one.  Sets N and Z.
+		 **/
+		void																	Dec_BeginInst();
+
+		/**
+		 * Decreases Operand by 1.  On underflow, sets Operand0 to 1, otherwise sets Operand0 to 0.
+		 **/
+		void																	DecW_L();
+
+		/**
+		 * Decreases Operand by Operand0.  Sets N and Z.
+		 **/
+		void																	DecW_H();
 
 		/**
 		 * Ends the instruction if m_fsState.bTakeJump is not set.
@@ -433,9 +469,8 @@ namespace lsn {
 		 *
 		 * \tparam _bIncPc If true, PC is updated.
 		 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand.
-		 * \tparam _bBeginInstr If true, BeginInst() is called.
 		 **/
-		template <bool _bIncPc = false, bool _bOperandPair = false, bool _bBeginInstr = true>
+		template <bool _bIncPc = false, bool _bOperandPair = false>
 		void																	Or_BeginInst();
 
 		/**
@@ -493,6 +528,14 @@ namespace lsn {
 		void																	Read_X_Phi2();
 
 		/**
+		 * Reads Y.
+		 * 
+		 * \tparam _rtRegType The destination to which to store the read.
+		 **/
+		template <LSN_REG_TYPE _rtRegType>
+		void																	Read_Y_Phi2();
+
+		/**
 		 * Sets a bit in Operand to the given value.
 		 * 
 		 * \tparam _ui8Bit The bit to set to 0 or 1.
@@ -500,6 +543,24 @@ namespace lsn {
 		 **/
 		template <uint8_t _ui8Bit, uint8_t _ui8Val>
 		void																	Set1();
+
+		/**
+		 * Sets a PSW bit to a given value.
+		 * 
+		 * \tparam _ui8Bit The bit to set to 0 or 1.
+		 * \tparam _ui8Val The value to which to set the given bit (must be 0 or 1).
+		 **/
+		template <uint8_t _ui8Bit, uint8_t _ui8Val>
+		void																	SetBit_BeginInst();
+
+		/**
+		 * Transfers a source to the operand.
+		 * 
+		 * \tparam _rtRegType The register type to transfer to Operand.
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		/*template <LSN_REG_TYPE _rtRegType, bool _bIncPc = false>
+		void																	Transfer_To_Operand();*/
 
 		/**
 		 * Test and set bits with A. Equality test against (A - Operand).
@@ -514,6 +575,24 @@ namespace lsn {
 		 **/
 		template <bool _bTo = LSN_TO_A, LSN_REG_TYPE _rtRegType = LSN_RT_OPERAND>
 		void																	Write_PtrOrAddr_L_Phi2();
+
+		/**
+		 * Writes the given register type to Pointer or Address + 1.
+		 * 
+		 * \tparam _bTo If LSN_TO_A, the register type is written to Address + 1, otherwise it is written to Pointer + 1.
+		 * \tparam _rtRegType The source to write to Address or pointer.
+		 * \tparam _ui16Mask The address mask.
+		 **/
+		template <bool _bTo = LSN_TO_A, LSN_REG_TYPE _rtRegType = LSN_RT_OPERAND, uint16_t _ui16Mask = 0xFFFF>
+		void																	Write_PtrOrAddr_H_Phi2();
+
+		/**
+		 * Write to X.
+		 * 
+		 * \tparam _rtRegType The source to write to X.
+		 **/
+		template <LSN_REG_TYPE _rtRegType>
+		void																	Write_X_Phi2();
 
 		/**
 		 * Calculates the X- or Y- indexed indirect address, stores to either Address or Pointer.
@@ -543,6 +622,14 @@ namespace lsn {
 		 */
 		template <bool _bIncPc = false, bool _bAdjS = false, bool _bCheckStartOfFunction = true>
 		inline void																BeginInst();
+
+		/**
+		 * Performs a compare against a register and an operand by setting flags.
+		 *
+		 * \param _ui8RegVal The register value used in the comparison.
+		 * \param _ui8OpVal The operand value used in the comparison.
+		 */
+		inline void																Cmp( uint8_t _ui8RegVal, uint8_t _ui8OpVal );
 	};
 
 
@@ -562,26 +649,90 @@ namespace lsn {
 	}
 	
 	/**
-	 * Performs Operand >>= 1, sets N, Z, and C.
+	 * Performs A &= Operand, sets N and Z.
+	 *
+	 * \tparam _bIncPc If true, PC is updated.
+	 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand.
 	 **/
-	inline void CSpc700::Asl() {
+	template <bool _bIncPc, bool _bOperandPair>
+	inline void CSpc700::And_BeginInst() {
 		LSN_SPC700_INSTR_START_PHI1( true );
 
-		SetBit<C()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand & 0x80 );
+		if constexpr ( !_bOperandPair ) {
+			m_fsState.rRegs.ui8A &= m_fsState.ui8Operand;
 
-		m_fsState.ui8Operand <<= 1;
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A );
 
-		SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand & 0x80 );
-		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand );
+			BeginInst<_bIncPc, false, false>();
+		}
+		else {
+			m_fsState.ui8Operand0 &= m_fsState.ui8Operand1;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand0 & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand0 );
+
+			LSN_SPC700_NEXT_FUNCTION;
+
+			LSN_SPC700_INSTR_END_PHI1;
+		}
 
 #ifdef LSN_SPC700_CYCLES_DOC
 		lsn::DebugA( "\t" );
-		lsn::DebugA( "C flag = (Operand & $80). Operand <<= 1. N flag = (Operand & $80), Z flag = !Operand." );
+		if constexpr ( _bIncPc && !_bOperandPair ) {
+			lsn::DebugA( "Inc. PC. " );
+		}
+		if constexpr ( !_bOperandPair ) {
+			lsn::DebugA( "A &= Operand. N flag = (A & $80), Z flag = !A." );
+		}
+		else {
+			lsn::DebugA( "Operand0 &= Operand1. N flag = (Operand0 & $80), Z flag = !Operand0." );
+		}
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+	}
+
+	/**
+	 * Performs Operand >>= 1, sets N, Z, and C.
+	 * 
+	 * \tparam _bOnA If true, A is modified in-place instead of Operand.
+	 **/
+	template <bool _bOnA>
+	inline void CSpc700::Asl() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+
+		if constexpr ( _bOnA ) {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+
+			m_fsState.rRegs.ui8A <<= 1;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "\tC flag = (A & $80). A <<= 1. N flag = (A & $80), Z flag = !A." );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
-		LSN_SPC700_NEXT_FUNCTION;
+			BeginInst<false, false, false>();
+		}
+		else {
+			SetBit<C()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand & 0x80 );
 
-		LSN_SPC700_INSTR_END_PHI1;
+			m_fsState.ui8Operand <<= 1;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "\t" );
+			lsn::DebugA( "C flag = (Operand & $80). Operand <<= 1. N flag = (Operand & $80), Z flag = !Operand." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+			LSN_SPC700_NEXT_FUNCTION;
+
+			LSN_SPC700_INSTR_END_PHI1;
+		}
+
+		
 	}
 
 	/**
@@ -615,7 +766,7 @@ namespace lsn {
 		m_fsState.rRegs.ui8Pc[0] = m_fsState.ui8Address[0];
 
 #ifdef LSN_SPC700_CYCLES_DOC
-		lsn::DebugA( "\tAddress = PC + int8( Operand ).\r\n\t\tPC.L = Address.L." );
+		lsn::DebugA( "\tAddress = PC + i8(Operand).\r\n\t\tPC.L = Address.L." );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
 		LSN_SPC700_NEXT_FUNCTION;
@@ -679,6 +830,92 @@ namespace lsn {
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
 		LSN_SPC700_UPDATE_S;
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Performs a comparison between X and Operand.
+	 * 
+	 * \tparam _rtRegType The left operand.
+	 **/
+	template <CSpc700::LSN_REG_TYPE _rtRegType>
+	inline void CSpc700::Cmp_BeginInst() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+
+		if constexpr ( _rtRegType == LSN_RT_X ) {
+			Cmp( m_fsState.rRegs.ui8X, m_fsState.ui8Operand );
+		}
+		else if constexpr ( _rtRegType == LSN_RT_Y ) {
+			Cmp( m_fsState.rRegs.ui8Y, m_fsState.ui8Operand );
+		}
+		else if constexpr ( _rtRegType == LSN_RT_A ) {
+			Cmp( m_fsState.rRegs.ui8A, m_fsState.ui8Operand );
+		}
+		
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\t" );
+		lsn::DebugA( std::format( "Tmp = {} - Operand. C flag = (Tmp >= 0), N flag = (Tmp & $80), Z = !Tmp.", RegTypeToString( _rtRegType ) ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
+	/**
+	 * Decreases X by one.  Sets N and Z.
+	 **/
+	inline void CSpc700::Dec_BeginInst() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+
+		--m_fsState.rRegs.ui8X;
+
+		SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X & 0x80 );
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8X );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\tX -= 1. N flag = (X & $80), Z flag = !X." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+
+		BeginInst<false, false, false>();
+	}
+
+	/**
+	 * Decreases Operand by 1.  On underflow, sets Operand0 to 1, otherwise sets Operand0 to 0.
+	 **/
+	inline void CSpc700::DecW_L() {
+		LSN_SPC700_INSTR_START_PHI1( false );
+
+		m_fsState.ui8Temp[0] = uint8_t( m_fsState.ui8Operand == 0 );
+		--m_fsState.ui8Operand;
+		m_fsState.ui8Temp[1] = uint8_t( m_fsState.ui8Operand == 0 );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\tUnderflow = (Operand == 0).\r\n\t\tOperand -= 1.\r\n\t\tLowZero = (Operand == 0)." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Decreases Operand by Operand0.  Sets N and Z.
+	 **/
+	inline void CSpc700::DecW_H() {
+		LSN_SPC700_INSTR_START_PHI1( false );
+
+		m_fsState.ui8Operand -= m_fsState.ui8Temp[0];
+
+		SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand & 0x80 );
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Temp[1] && !m_fsState.ui8Operand );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\tOperand -= Underflow. N flag = (Operand & $80), Z flag = (LowZero && !Operand)." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
 		LSN_SPC700_NEXT_FUNCTION;
 
@@ -862,9 +1099,8 @@ namespace lsn {
 	 *
 	 * \tparam _bIncPc If true, PC is updated.
 	 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand.
-	 * \tparam _bBeginInstr If true, BeginInst() is called.
 	 **/
-	template <bool _bIncPc, bool _bOperandPair, bool _bBeginInstr>
+	template <bool _bIncPc, bool _bOperandPair>
 	inline void CSpc700::Or_BeginInst() {
 		LSN_SPC700_INSTR_START_PHI1( true );
 
@@ -874,14 +1110,7 @@ namespace lsn {
 			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
 			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A );
 
-			if constexpr ( _bBeginInstr ) {
-				BeginInst<_bIncPc, false, false>();
-			}
-			else {
-				LSN_SPC700_NEXT_FUNCTION;
-
-				LSN_SPC700_INSTR_END_PHI1;
-			}
+			BeginInst<_bIncPc, false, false>();
 		}
 		else {
 			m_fsState.ui8Operand0 |= m_fsState.ui8Operand1;
@@ -918,12 +1147,14 @@ namespace lsn {
 		LSN_SPC700_INSTR_START_PHI1( false );
 		const bool bC = (m_fsState.rRegs.ui8Status & C());// != 0;
 		const uint8_t ui8Bit = (m_fsState.ui16Address >> 13);
-		const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
+		
 		if constexpr ( !_bNotBit ) {
+			const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
 			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) | uint8_t( bO ) );
 		}
 		else {
-			SetBit<C()>( m_fsState.rRegs.ui8Status, !(uint8_t( bC ) | uint8_t( bO )) );
+			const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) == 0;
+			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) | uint8_t( bO ) );
 		}
 		
 
@@ -933,7 +1164,7 @@ namespace lsn {
 			lsn::DebugA( "Bit = Address >> 13.\r\n\t\tC flag |= ((Operand & (1 << Bit)) != 0)." );
 		}
 		else {
-			lsn::DebugA( "C flag |= !Operand.0." );
+			lsn::DebugA( "Bit = Address >> 13.\r\n\t\tC flag |= ((Operand & (1 << Bit)) == 0)." );
 		}
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
@@ -1236,6 +1467,9 @@ namespace lsn {
 				else if constexpr ( _rtRegType == LSN_RT_PTR_H ) {
 					LSN_SPC700_INSTR_START_PHI2_READ_BUSB( m_fsState.ui16Address + 1, m_fsState.ui8Pointer[1] );
 				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+					LSN_SPC700_INSTR_START_PHI2_READ_BUSB( m_fsState.ui16Address + 1, m_fsState.ui8Operand );
+				}
 #ifdef LSN_SPC700_CYCLES_DOC
 				lsn::DebugA( std::format( "Read Address + 1\tStore as {}.", RegTypeToString( _rtRegType ) ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
@@ -1250,6 +1484,9 @@ namespace lsn {
 				}
 				else if constexpr ( _rtRegType == LSN_RT_PTR_H ) {
 					LSN_SPC700_INSTR_START_PHI2_READ_BUSB( m_fsState.ui16Pointer + 1, m_fsState.ui8Pointer[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+					LSN_SPC700_INSTR_START_PHI2_READ_BUSB( m_fsState.ui16Pointer + 1, m_fsState.ui8Operand );
 				}
 #ifdef LSN_SPC700_CYCLES_DOC
 				lsn::DebugA( std::format( "Read Pointer + 1\tStore as {}.", RegTypeToString( _rtRegType ) ).c_str() );
@@ -1268,6 +1505,9 @@ namespace lsn {
 				else if constexpr ( _rtRegType == LSN_RT_PTR_H ) {
 					LSN_SPC700_INSTR_START_PHI2_READ_BUSB( ((m_fsState.ui16Address + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Pointer[1] );
 				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+					LSN_SPC700_INSTR_START_PHI2_READ_BUSB( ((m_fsState.ui16Address + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand );
+				}
 #ifdef LSN_SPC700_CYCLES_DOC
 				lsn::DebugA( std::format( "Read ((Address + 1) & ${:02X}) | ((PSW & P flag) << 3)\tStore as {}.", _ui16Mask, RegTypeToString( _rtRegType ) ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
@@ -1282,6 +1522,9 @@ namespace lsn {
 				}
 				else if constexpr ( _rtRegType == LSN_RT_PTR_H ) {
 					LSN_SPC700_INSTR_START_PHI2_READ_BUSB( ((m_fsState.ui16Pointer + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Pointer[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+					LSN_SPC700_INSTR_START_PHI2_READ_BUSB( ((m_fsState.ui16Pointer + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand );
 				}
 #ifdef LSN_SPC700_CYCLES_DOC
 				lsn::DebugA( std::format( "Read ((Pointer + 1) & ${:02X}) | ((PSW & P flag) << 3)\tStore as {}.", _ui16Mask, RegTypeToString( _rtRegType ) ).c_str() );
@@ -1319,6 +1562,30 @@ namespace lsn {
 	}
 
 	/**
+	 * Reads Y.
+	 * 
+	 * \tparam _rtRegType The destination to which to store the read.
+	 **/
+	template <CSpc700::LSN_REG_TYPE _rtRegType>
+	inline void CSpc700::Read_Y_Phi2() {
+		if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+			LSN_SPC700_INSTR_START_PHI2_READ_BUSB( m_fsState.rRegs.ui8Y | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand );
+		}
+		else if constexpr ( _rtRegType == LSN_RT_OPERAND0 ) {
+			LSN_SPC700_INSTR_START_PHI2_READ_BUSB( m_fsState.rRegs.ui8Y | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand0 );
+		} else if constexpr ( _rtRegType == LSN_RT_OPERAND1 ) {
+			LSN_SPC700_INSTR_START_PHI2_READ_BUSB( m_fsState.rRegs.ui8Y | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand1 );
+		}
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "Read (Y | ((PSW & P flag) << 3))\tStore as {}.", RegTypeToString( _rtRegType ) ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI2;
+	}
+
+	/**
 	 * Sets a bit in Operand to the given value.
 	 * 
 	 * \tparam _ui8Bit The bit to set to 0 or 1.
@@ -1337,6 +1604,66 @@ namespace lsn {
 
 		LSN_SPC700_INSTR_END_PHI1;
 	}
+
+	/**
+	 * Sets a PSW bit to a given value.
+	 * 
+	 * \tparam _ui8Bit The bit to set to 0 or 1.
+	 * \tparam _ui8Val The value to which to set the given bit (must be 0 or 1).
+	 **/
+	template <uint8_t _ui8Bit, uint8_t _ui8Val>
+	inline void CSpc700::SetBit_BeginInst() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+
+		SetBit<_ui8Bit, _ui8Val>( m_fsState.rRegs.ui8Status );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		if constexpr ( _ui8Val ) {
+			lsn::DebugA( std::format( "\tPSW = (PSW | ${:02X}).", _ui8Bit ).c_str() );
+		}
+		else {
+			lsn::DebugA( std::format( "\tPSW = (PSW & ~${:02X}).", _ui8Bit ).c_str() );
+		}
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
+	/**
+	 * Transfers a source to the operand.
+	 * 
+	 * \tparam _rtRegType The register type to transfer to Operand.
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+//	template <CSpc700::LSN_REG_TYPE _rtRegType, bool _bIncPc>
+//	inline void CSpc700::Transfer_To_Operand() {
+//		LSN_SPC700_INSTR_START_PHI1( false );
+//		if constexpr ( _rtRegType == LSN_RT_A ) {
+//			m_fsState.ui8Operand = m_fsState.rRegs.ui8A;
+//		}
+//		else if constexpr ( _rtRegType == LSN_RT_OPERAND0 ) {
+//			m_fsState.ui8Operand = m_fsState.ui8Operand0;
+//		}
+//		else if constexpr ( _rtRegType == LSN_RT_OPERAND1 ) {
+//			m_fsState.ui8Operand = m_fsState.ui8Operand1;
+//		}
+//
+//		if constexpr ( _bIncPc ) {
+//			LSN_SPC700_UPDATE_PC;
+//		}
+//
+//#ifdef LSN_SPC700_CYCLES_DOC
+//		lsn::DebugA( "\t" );
+//		if constexpr ( _bIncPc ) {
+//			LSN_SPC700_PRINT_PC;
+//		}
+//		lsn::DebugA( std::format( "Operand = {}.", RegTypeToString( _rtRegType ) ).c_str() );
+//#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+//
+//		LSN_SPC700_NEXT_FUNCTION;
+//
+//		LSN_SPC700_INSTR_END_PHI1;
+//	}
 
 	/**
 	 * Test and set bits with A. Equality test against (A - Operand).
@@ -1412,6 +1739,129 @@ namespace lsn {
 			lsn::DebugA( std::format( "Write to Pointer\tWrite {}.", RegTypeToString( _rtRegType ) ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		}
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Writes the given register type to Pointer or Address + 1.
+	 * 
+	 * \tparam _bTo If LSN_TO_A, the register type is written to Address + 1, otherwise it is written to Pointer + 1.
+	 * \tparam _rtRegType The source to write to Address or pointer.
+	 * \tparam _ui16Mask The address mask.
+	 **/
+	template <bool _bTo, CSpc700::LSN_REG_TYPE _rtRegType, uint16_t _ui16Mask>
+	inline void CSpc700::Write_PtrOrAddr_H_Phi2() {
+		if constexpr ( _ui16Mask == 0xFFFF ) {
+			if constexpr ( _bTo == LSN_TO_A ) {
+				if constexpr ( _rtRegType == LSN_RT_PC_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Address, m_fsState.rRegs.ui8Pc[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Address + 1, m_fsState.ui8Operand );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND0 ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Address + 1, m_fsState.ui8Operand0 );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND1 ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Address + 1, m_fsState.ui8Operand1 );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_ADDR_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Address + 1, m_fsState.ui8Address[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_PTR_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Address + 1, m_fsState.ui8Pointer[1] );
+				}
+#ifdef LSN_SPC700_CYCLES_DOC
+				lsn::DebugA( std::format( "Write to Address + 1\tWrite {}.", RegTypeToString( _rtRegType ) ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+			}
+			else {
+				if constexpr ( _rtRegType == LSN_RT_PC_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Pointer + 1, m_fsState.rRegs.ui8Pc[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Pointer + 1, m_fsState.ui8Operand );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND0 ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Pointer + 1, m_fsState.ui8Operand0 );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND1 ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Pointer + 1, m_fsState.ui8Operand1 );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_ADDR_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Pointer + 1, m_fsState.ui8Address[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_PTR_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.ui16Pointer + 1, m_fsState.ui8Pointer[1] );
+				}
+#ifdef LSN_SPC700_CYCLES_DOC
+				lsn::DebugA( std::format( "Write to Pointer + 1\tWrite {}.", RegTypeToString( _rtRegType ) ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+			}
+		}
+		else {
+			if constexpr ( _bTo == LSN_TO_A ) {
+				if constexpr ( _rtRegType == LSN_RT_PC_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( ((m_fsState.ui16Address + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.rRegs.ui8Pc[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_ADDR_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( ((m_fsState.ui16Address + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Address[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_PTR_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( ((m_fsState.ui16Address + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Pointer[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( ((m_fsState.ui16Address + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand );
+				}
+#ifdef LSN_SPC700_CYCLES_DOC
+				lsn::DebugA( std::format( "Write to ((Address + 1) & ${:02X}) | ((PSW & P flag) << 3)\tWrite {}.", _ui16Mask, RegTypeToString( _rtRegType ) ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+			}
+			else {
+				if constexpr ( _rtRegType == LSN_RT_PC_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( ((m_fsState.ui16Pointer + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.rRegs.ui8Pc[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_ADDR_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( ((m_fsState.ui16Pointer + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Address[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_PTR_H ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( ((m_fsState.ui16Pointer + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Pointer[1] );
+				}
+				else if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+					LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( ((m_fsState.ui16Pointer + 1) & _ui16Mask) | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand );
+				}
+#ifdef LSN_SPC700_CYCLES_DOC
+				lsn::DebugA( std::format( "Write to ((Pointer + 1) & ${:02X}) | ((PSW & P flag) << 3)\tWrite {}.", _ui16Mask, RegTypeToString( _rtRegType ) ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+			}
+		}
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Write to X.
+	 * 
+	 * \tparam _rtRegType The source to write to X.
+	 **/
+	template <CSpc700::LSN_REG_TYPE _rtRegType>
+	inline void CSpc700::Write_X_Phi2() {
+		if constexpr ( _rtRegType == LSN_RT_OPERAND ) {
+			LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.rRegs.ui8X | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand );
+		}
+		else if constexpr ( _rtRegType == LSN_RT_OPERAND0 ) {
+			LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.rRegs.ui8X | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand0 );
+		} else if constexpr ( _rtRegType == LSN_RT_OPERAND1 ) {
+			LSN_SPC700_INSTR_START_PHI2_WRITE_BUSB( m_fsState.rRegs.ui8X | ((m_fsState.rRegs.ui8Status & P()) << 3), m_fsState.ui8Operand1 );
+		}
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "Write to (X | ((PSW & P flag) << 3))\tWrite {}.", RegTypeToString( _rtRegType ) ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
 		LSN_SPC700_NEXT_FUNCTION;
 
@@ -1536,6 +1986,19 @@ namespace lsn {
 		m_pfTickFunc = m_pfTickFuncCopy = &CSpc700::Tick_InstructionCycleStd;
 		//m_fsState.bBoundaryCrossed = false;
 		LSN_SPC700_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Performs a compare against a register and an operand by setting flags.
+	 *
+	 * \param _ui8RegVal The register value used in the comparison.
+	 * \param _ui8OpVal The operand value used in the comparison.
+	 */
+	inline void CSpc700::Cmp( uint8_t _ui8RegVal, uint8_t _ui8OpVal ) {
+		int32_t i32Z = int32_t( _ui8RegVal ) - int32_t( _ui8OpVal );
+		SetBit<C()>( m_fsState.rRegs.ui8Status, i32Z >= 0 );
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, !i32Z );
+		SetBit<N()>( m_fsState.rRegs.ui8Status, (i32Z & 0x80) != 0 );
 	}
 
 #pragma warning( pop )
