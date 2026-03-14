@@ -133,6 +133,16 @@ namespace lsn {
 #undef LSN_INST
 		};
 
+		/** Absolute bit modifications. */
+		enum LSN_BIT_MODS {
+			LSN_BM_OR,															/**< C flag |= bit. */
+			LSN_BM_NOR,															/**< C flag |= !bit. */
+			LSN_BM_AND,															/**< C flag &= bit. */
+			LSN_BM_NAND,														/**< C flag &= !bit. */
+			LSN_BM_EOR,															/**< C flag ^= bit. */
+			LSN_BM_LOAD,														/**< C flag = bit. */
+		};
+
 
 		// == Types.
 		/** The processor registers. */
@@ -348,6 +358,14 @@ namespace lsn {
 		// CYCLES
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		/**
+		 * Performs C <_bmBitMod> Bit.
+		 * 
+		 * \tparam _bmBitMod The type of modification to perform.
+		 **/
+		template <LSN_BIT_MODS _bmBitMod>
+		void																	AbsBitModify();
+
+		/**
 		 * Performs A &= Operand, sets N and Z.
 		 *
 		 * \tparam _bIncPc If true, PC is updated.
@@ -474,14 +492,6 @@ namespace lsn {
 		void																	Or_BeginInst();
 
 		/**
-		 * Performs C |= Operand.
-		 * 
-		 * \tparam _bNotBit If true, !Operand is OR’d instead of Operand.
-		 **/
-		template <bool _bNotBit = false>
-		void																	Or1();
-
-		/**
 		 * Pushes a register type.
 		 * 
 		 * \tparam _rtRegType The register type to push.
@@ -534,6 +544,14 @@ namespace lsn {
 		 **/
 		template <LSN_REG_TYPE _rtRegType>
 		void																	Read_Y_Phi2();
+
+		/**
+		 * Performs ((Operand <<= 1) | C), sets N, Z, and C.
+		 * 
+		 * \tparam _bOnA If true, A is modified in-place instead of Operand.
+		 **/
+		template <bool _bOnA = false>
+		void																	Rol();
 
 		/**
 		 * Sets a bit in Operand to the given value.
@@ -647,6 +665,54 @@ namespace lsn {
 		//(this->*m_iInstructionSet[m_fsState.ui16OpCode].pfHandler[m_fsState.bEmulationMode][m_fsState.ui8FuncIndex])();
 		(this->*m_fsState.pfCurInstruction[m_fsState.ui8FuncIndex])();
 	}
+
+	/**
+	 * Performs C <_bmBitMod> Bit.
+	 * 
+	 * \tparam _bmBitMod The type of modification to perform.
+	 **/
+	template <CSpc700::LSN_BIT_MODS _bmBitMod>
+	inline void CSpc700::AbsBitModify() {
+		LSN_SPC700_INSTR_START_PHI1( false );
+		const bool bC = (m_fsState.rRegs.ui8Status & C());// != 0;
+		const uint8_t ui8Bit = (m_fsState.ui16Address >> 13);
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\t" );
+		lsn::DebugA( "Bit = Address >> 13.\r\n\t\t" );
+#define LSN_CYCLES_DOC_TMP( STR )		lsn::DebugA( STR );
+#else
+#define LSN_CYCLES_DOC_TMP( STR )
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		
+		if constexpr ( _bmBitMod == LSN_BM_OR ) {
+			const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
+			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) | uint8_t( bO ) );
+			LSN_CYCLES_DOC_TMP( "C flag |= ((Operand & (1 << Bit)) != 0)." );
+		}
+		else if constexpr ( _bmBitMod == LSN_BM_NOR ) {
+			const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) == 0;
+			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) | uint8_t( bO ) );
+			LSN_CYCLES_DOC_TMP( "C flag |= ((Operand & (1 << Bit)) == 0)." );
+		}
+		else if constexpr ( _bmBitMod == LSN_BM_AND ) {
+			const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
+			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) & uint8_t( bO ) );
+			LSN_CYCLES_DOC_TMP( "C flag &= ((Operand & (1 << Bit)) != 0)." );
+		}
+		else if constexpr ( _bmBitMod == LSN_BM_NAND ) {
+			const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) == 0;
+			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) & uint8_t( bO ) );
+			LSN_CYCLES_DOC_TMP( "C flag &= ((Operand & (1 << Bit)) == 0)." );
+		}
+		
+
+#undef LSN_CYCLES_DOC_TMP
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI1;
+	}
 	
 	/**
 	 * Performs A &= Operand, sets N and Z.
@@ -731,8 +797,6 @@ namespace lsn {
 
 			LSN_SPC700_INSTR_END_PHI1;
 		}
-
-		
 	}
 
 	/**
@@ -1135,42 +1199,6 @@ namespace lsn {
 			lsn::DebugA( "Operand0 |= Operand1. N flag = (Operand0 & $80), Z flag = !Operand0." );
 		}
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
-	}
-
-	/**
-	 * Performs C |= Operand.
-	 * 
-	 * \tparam _bNotBit If true, !Operand is OR’d instead of Operand.
-	 **/
-	template <bool _bNotBit>
-	inline void CSpc700::Or1() {
-		LSN_SPC700_INSTR_START_PHI1( false );
-		const bool bC = (m_fsState.rRegs.ui8Status & C());// != 0;
-		const uint8_t ui8Bit = (m_fsState.ui16Address >> 13);
-		
-		if constexpr ( !_bNotBit ) {
-			const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
-			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) | uint8_t( bO ) );
-		}
-		else {
-			const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) == 0;
-			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) | uint8_t( bO ) );
-		}
-		
-
-#ifdef LSN_SPC700_CYCLES_DOC
-		lsn::DebugA( "\t" );
-		if constexpr ( !_bNotBit ) {
-			lsn::DebugA( "Bit = Address >> 13.\r\n\t\tC flag |= ((Operand & (1 << Bit)) != 0)." );
-		}
-		else {
-			lsn::DebugA( "Bit = Address >> 13.\r\n\t\tC flag |= ((Operand & (1 << Bit)) == 0)." );
-		}
-#endif	// #ifdef LSN_SPC700_CYCLES_DOC
-
-		LSN_SPC700_NEXT_FUNCTION;
-
-		LSN_SPC700_INSTR_END_PHI1;
 	}
 
 	/**
@@ -1583,6 +1611,51 @@ namespace lsn {
 		LSN_SPC700_NEXT_FUNCTION;
 
 		LSN_SPC700_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Performs ((Operand <<= 1) | C), sets N, Z, and C.
+	 * 
+	 * \tparam _bOnA If true, A is modified in-place instead of Operand.
+	 **/
+	template <bool _bOnA>
+	inline void CSpc700::Rol() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+
+		if constexpr ( _bOnA ) {
+			uint8_t ui8C = uint8_t( m_fsState.rRegs.ui8Status & C() );
+			SetBit<C()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+
+			m_fsState.rRegs.ui8A <<= 1;
+			m_fsState.rRegs.ui8A |= ui8C;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "\tTmp = C flag. C flag = (A & $80). A = (A << 1) | Tmp. N flag = (A & $80), Z flag = !A." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+			BeginInst<false, false, false>();
+		}
+		else {
+			uint8_t ui8C = uint8_t( m_fsState.rRegs.ui8Status & C() );
+			SetBit<C()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand & 0x80 );
+
+			m_fsState.ui8Operand <<= 1;
+			m_fsState.ui8Operand |= ui8C;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "\tTmp = C flag. C flag = (Operand & $80). Operand = (Operand << 1) | Tmp. N flag = (Operand & $80), Z flag = !Operand." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+			LSN_SPC700_NEXT_FUNCTION;
+
+			LSN_SPC700_INSTR_END_PHI1;
+		}
 	}
 
 	/**

@@ -102,7 +102,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 #undef LSN_TMP_INST
 	},
 	{	// 0A
-		LSN_ABSOLUTE_BIT( OR1, OR1, Or1<false> )
+		LSN_ABSOLUTE_BIT( OR1, OR1, AbsBitModify<LSN_BM_OR> )
 	},
 	{	// 0B
 		LSN_DIRECT_PAGE_RMW( ASL, ASL, Asl )
@@ -290,7 +290,36 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 #undef LSN_TMP_INST
 	},
 	{	// 2A
-		LSN_ABSOLUTE_BIT( OR1, OR1, Or1<true> )
+		LSN_ABSOLUTE_BIT( OR1, OR1, AbsBitModify<LSN_BM_NOR> )
+	},
+	{	// 2B
+		LSN_DIRECT_PAGE_RMW( ROL, ROL, Rol )
+	},
+	{	// 2C
+		LSN_ABSOLUTE_RMW( ROL, ROL, Rol )
+	},
+	{	// 2D
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
+			&CSpc700::Null<LSN_W>,															&CSpc700::Push_Phi2<CSpc700::LSN_RT_A, 0>,
+			&CSpc700::Null<LSN_N, false, true>,												&CSpc700::Null_Phi2,
+			&CSpc700::BeginInst
+		},
+		4, LSN_AM_IMPLIED, 1, LSN_I_PUSH, "PUSH", "Implied", "PHA"
+	},
+	{	// 2E
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::Operand_To_DirectPage<LSN_TO_A, true>,								&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::Bbc<BIT, VALUE>,														&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_R>,															&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::EndIfNotJmp_BeginInst,												&CSpc700::Null_Phi2,
+			&CSpc700::Branch_UpdatePc_L,													&CSpc700::Null_Phi2,
+			&CSpc700::Branch_UpdatePc_H_BeginInst
+		},
+		5, LSN_AM_DIRECT_PAGE_BIT_RELATIVE, 3, LSN_I_CBNE, "CBNE", "Direct Page Bit Relative d.b, r", "CBNE"
 	},
 };
 
