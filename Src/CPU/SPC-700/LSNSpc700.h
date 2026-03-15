@@ -416,12 +416,33 @@ namespace lsn {
 		void																	Brk();
 
 		/**
+		 * Sets Jump if A != Operand.
+		 **/
+		void																	Cbne();
+
+		/**
 		 * Performs a comparison between X and Operand.
 		 * 
 		 * \tparam _rtRegType The left operand.
 		 **/
 		template <LSN_REG_TYPE _rtRegType = LSN_RT_X>
 		void																	Cmp_BeginInst();
+
+		/**
+		 * Copies Address.L or Pointer.L to PC.L.
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the copy comes from Address.L, otherwise from Pointer.L.
+		 **/
+		template <bool _bFrom = LSN_FROM_A>
+		void																	Copy_AddrOrPtr_To_Pc_L();
+
+		/**
+		 * Copies Address.H or Pointer.H to PC.H.
+		 * 
+		 * \tparam _bFrom If LSN_FROM_A, the copy comes from Address.H, otherwise from Pointer.H.
+		 **/
+		template <bool _bFrom = LSN_FROM_A>
+		void																	Copy_AddrOrPtr_To_Pc_H_BeginInst();
 
 		/**
 		 * Decreases X by one.  Sets N and Z.
@@ -453,6 +474,21 @@ namespace lsn {
 		 **/
 		template <LSN_REG_TYPE _rtRegType = LSN_RT_OPERAND>
 		void																	Fetch_IncPc_Phi2();
+
+		/**
+		 * Increases X by one.  Sets N and Z.
+		 **/
+		void																	Inc_BeginInst();
+
+		/**
+		 * Increases Operand by 1.  On overflow, sets Operand0 to 1, otherwise sets Operand0 to 0.
+		 **/
+		void																	IncW_L();
+
+		/**
+		 * Increases Operand by Operand0.  Sets N and Z.
+		 **/
+		void																	IncW_H();
 
 		/**
 		 * Generic null operation.
@@ -863,12 +899,22 @@ namespace lsn {
 	inline void CSpc700::Branch() {
 		LSN_SPC700_INSTR_START_PHI1( true );
 
-		m_fsState.bTakeJump = (m_fsState.rRegs.ui8Status & _uBit) == (_uVal * _uBit);
+		if constexpr ( _uBit ) {
+			m_fsState.bTakeJump = (m_fsState.rRegs.ui8Status & _uBit) == (_uVal * _uBit);
+		}
+		else {
+			m_fsState.bTakeJump = !_uVal;
+		}
 
 #ifdef LSN_SPC700_CYCLES_DOC
 		lsn::DebugA( std::format( "\t" ).c_str() );
 		LSN_SPC700_PRINT_PC;
-		lsn::DebugA( std::format( "Set Jump to (PSW & ${:02X}) == ${:02X}.", _uBit, _uVal * _uBit ).c_str() );
+		if constexpr ( _uBit ) {
+			lsn::DebugA( std::format( "Set Jump to (PSW & ${:02X}) == ${:02X}.", _uBit, _uVal * _uBit ).c_str() );
+		}
+		else {
+			lsn::DebugA( std::format( "Set Jump to {}.", !_uVal ).c_str() );
+		}
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		
 		LSN_SPC700_UPDATE_PC;
@@ -901,6 +947,23 @@ namespace lsn {
 	}
 
 	/**
+	 * Sets Jump if A != Operand.
+	 **/
+	inline void CSpc700::Cbne() {
+		LSN_SPC700_INSTR_START_PHI1( false );
+
+		m_fsState.bTakeJump = m_fsState.rRegs.ui8A != m_fsState.ui8Operand;
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "\tSet Jump to (A != Operand)." ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI1;
+	}
+
+	/**
 	 * Performs a comparison between X and Operand.
 	 * 
 	 * \tparam _rtRegType The left operand.
@@ -924,6 +987,62 @@ namespace lsn {
 		lsn::DebugA( "\t" );
 		lsn::DebugA( std::format( "Tmp = {} - Operand. C flag = (Tmp >= 0), N flag = (Tmp & $80), Z = !Tmp.", RegTypeToString( _rtRegType ) ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
+	/**
+	 * Copies Address.L or Pointer.L to PC.L.
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the copy comes from Address.L, otherwise from Pointer.L.
+	 **/
+	template <bool _bFrom>
+	inline void CSpc700::Copy_AddrOrPtr_To_Pc_L() {
+		LSN_SPC700_INSTR_START_PHI1( false );
+		
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			m_fsState.rRegs.ui8Pc[0] = m_fsState.ui8Address[0];
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "\tPC.L = Address.L." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+		else {
+			m_fsState.rRegs.ui8Pc[0] = m_fsState.ui8Pointer[0];
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "\tPC.L = Pointer.L." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Copies Address.H or Pointer.H to PC.H.
+	 * 
+	 * \tparam _bFrom If LSN_FROM_A, the copy comes from Address.H, otherwise from Pointer.H.
+	 **/
+	template <bool _bFrom>
+	inline void CSpc700::Copy_AddrOrPtr_To_Pc_H_BeginInst() {
+		LSN_SPC700_INSTR_START_PHI1( false );
+		
+		if constexpr ( _bFrom == LSN_FROM_A ) {
+			m_fsState.rRegs.ui8Pc[1] = m_fsState.ui8Address[1];
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "\tPC.H = Address.H." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+		else {
+			m_fsState.rRegs.ui8Pc[1] = m_fsState.ui8Pointer[1];
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "\tPC.H = Pointer.H." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
 
 		BeginInst<false, false, false>();
 	}
@@ -1063,6 +1182,64 @@ namespace lsn {
 		LSN_SPC700_NEXT_FUNCTION;
 
 		LSN_SPC700_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Increases X by one.  Sets N and Z.
+	 **/
+	inline void CSpc700::Inc_BeginInst() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+
+		++m_fsState.rRegs.ui8X;
+
+		SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X & 0x80 );
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8X );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\tX += 1. N flag = (X & $80), Z flag = !X." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+
+		BeginInst<false, false, false>();
+	}
+
+	/**
+	 * Increases Operand by 1.  On overflow, sets Operand0 to 1, otherwise sets Operand0 to 0.
+	 **/
+	inline void CSpc700::IncW_L() {
+		LSN_SPC700_INSTR_START_PHI1( false );
+
+		m_fsState.ui8Temp[0] = uint8_t( m_fsState.ui8Operand == 0xFF );
+		++m_fsState.ui8Operand;
+		m_fsState.ui8Temp[1] = uint8_t( m_fsState.ui8Operand == 0 );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\tOverflow = (Operand == $FF).\r\n\t\tOperand += 1.\r\n\t\tLowZero = (Operand == 0)." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Increases Operand by Operand0.  Sets N and Z.
+	 **/
+	inline void CSpc700::IncW_H() {
+		LSN_SPC700_INSTR_START_PHI1( false );
+
+		m_fsState.ui8Operand += m_fsState.ui8Temp[0];
+
+		SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand & 0x80 );
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Temp[1] && !m_fsState.ui8Operand );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\tOperand += Overflow. N flag = (Operand & $80), Z flag = (LowZero && !Operand)." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		LSN_SPC700_NEXT_FUNCTION;
+
+		LSN_SPC700_INSTR_END_PHI1;
 	}
 
 	/**
@@ -1670,7 +1847,7 @@ namespace lsn {
 		m_fsState.ui8Operand = (m_fsState.ui8Operand & ~(1 << _ui8Bit)) | (_ui8Val << _ui8Bit);
 
 #ifdef LSN_SPC700_CYCLES_DOC
-		lsn::DebugA( std::format( "\tOperand = (Operand & ~{}) | {}.", (1 << _ui8Bit), _ui8Val << _ui8Bit ).c_str() );
+		lsn::DebugA( std::format( "\tOperand = (Operand & ~${:02X}) | ${:02X}.", (1 << _ui8Bit), _ui8Val << _ui8Bit ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
 		LSN_SPC700_NEXT_FUNCTION;
