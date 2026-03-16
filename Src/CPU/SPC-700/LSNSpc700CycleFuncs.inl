@@ -389,6 +389,29 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 43
 		LSN_PAGE_BIT_RELATIVE( BBS, 2, 1 )
 	},
+	{	// 44
+		LSN_DIRECT_PAGE_R( EOR, EOR, Eor_BeginInst<false> )
+	},
+	{	// 45
+		LSN_ABSOLUTE_R( EOR, EOR, Eor_BeginInst<false> )
+	},
+	{	// 46
+		LSN_INDIRECT_X_R( EOR, EOR, Eor_BeginInst<false> )
+	},
+	{	// 47
+		LSN_DIRECT_PAGE_INDEXED_INDIRECT_X_R( EOR, EOR, Eor_BeginInst<false> )
+	},
+
+
+	/** 48-4F */
+	{	// 48
+		LSN_IMMEDIATE_R( EOR, EOR, Eor_BeginInst<true> )
+	},
+	{	// 49
+#define LSN_TMP_INST	Eor_BeginInst<false, true>
+		LSN_DIRECT_PAGE_DIRECT_PAGE_RMW( EOR, EOR, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
 };
 
 #undef LSN_R

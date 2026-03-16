@@ -468,6 +468,15 @@ namespace lsn {
 		void																	EndIfNotJmp_BeginInst();
 
 		/**
+		 * Performs A ^= Operand, sets N and Z.
+		 *
+		 * \tparam _bIncPc If true, PC is updated.
+		 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand.
+		 **/
+		template <bool _bIncPc = false, bool _bOperandPair = false>
+		void																	Eor_BeginInst();
+
+		/**
 		 * Fetches the target and increments PC.
 		 * 
 		 * \tparam _rtRegType The fetch target.
@@ -1126,6 +1135,49 @@ namespace lsn {
 		}
 #ifdef LSN_SPC700_CYCLES_DOC
 		lsn::DebugA( std::format( "\tInc. PC. If !Jump, end instruction (next half-cycle is {}.2).", _ui8DocJumpCycle ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+	}
+
+	/**
+	 * Performs A ^= Operand, sets N and Z.
+	 *
+	 * \tparam _bIncPc If true, PC is updated.
+	 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand.
+	 **/
+	template <bool _bIncPc, bool _bOperandPair>
+	inline void CSpc700::Eor_BeginInst() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+
+		if constexpr ( !_bOperandPair ) {
+			m_fsState.rRegs.ui8A ^= m_fsState.ui8Operand;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A );
+
+			BeginInst<_bIncPc, false, false>();
+		}
+		else {
+			m_fsState.ui8Operand0 ^= m_fsState.ui8Operand1;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand0 & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand0 );
+
+			LSN_SPC700_NEXT_FUNCTION;
+
+			LSN_SPC700_INSTR_END_PHI1;
+		}
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\t" );
+		if constexpr ( _bIncPc && !_bOperandPair ) {
+			lsn::DebugA( "Inc. PC. " );
+		}
+		if constexpr ( !_bOperandPair ) {
+			lsn::DebugA( "A ^= Operand. N flag = (A & $80), Z flag = !A." );
+		}
+		else {
+			lsn::DebugA( "Operand0 ^= Operand1. N flag = (Operand0 & $80), Z flag = !Operand0." );
+		}
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 	}
 
