@@ -530,6 +530,171 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_MOV, "MOV", "Implied", "TAX"
 	},
+	{	// 5E
+		LSN_ABSOLUTE_R( CMP, CPY, Cmp_BeginInst<CSpc700::LSN_RT_Y> )
+	},
+	{	// 5F
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_L>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_ADDR_H>,
+			&CSpc700::Transfer<CSpc700::LSN_RT_ADDR, CSpc700::LSN_RT_PC, false, true>
+		},
+		3, LSN_AM_ABSOLUTE, 3, LSN_I_JMP, "JMP", "Absolute !a", "JMP"
+	},
+
+
+	/** 60-67 */
+	{	// 60
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::SetBit_BeginInst<C(), 0>
+		},
+		2, LSN_AM_IMPLIED, 1, LSN_I_CLRC, "CLRC", "Implied", "CLC"
+	},
+	{	// 61
+		LSN_IMPLIED_BCC( 6 )
+	},
+	{	// 62
+		LSN_DIRECT_PAGE_BIT_RMW( SET1, SET1, 3, 1 )
+	},
+	{	// 63
+		LSN_PAGE_BIT_RELATIVE( BBS, 3, 1 )
+	},
+	{	// 64
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_A, false>
+		LSN_DIRECT_PAGE_R( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// 65
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_A, false>
+		LSN_ABSOLUTE_R( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// 66
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_A, false>
+		LSN_INDIRECT_X_R( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// 67
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_A, false>
+		LSN_DIRECT_PAGE_INDEXED_INDIRECT_X_R( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+
+
+	/** 68-6F */
+	{	// 68
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_A, true>
+		LSN_IMMEDIATE_R( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// 69
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_DUMMY, false>
+		LSN_DIRECT_PAGE_DIRECT_PAGE_RMW( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// 6A
+		LSN_ABSOLUTE_BIT_4( AND1, ANDC, LSN_BM_NAND )
+	},
+	{	// 6B
+		LSN_DIRECT_PAGE_RMW( ROR, ROR, Ror )
+	},
+	{	// 6C
+		LSN_ABSOLUTE_RMW( ROR, ROR, Ror )
+	},
+	{	// 6D
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
+			&CSpc700::Null<LSN_W>,															&CSpc700::Push_Phi2<CSpc700::LSN_RT_Y, 0>,
+			&CSpc700::Null<LSN_N, false, true>,												&CSpc700::Null_Phi2,
+			&CSpc700::BeginInst
+		},
+		4, LSN_AM_IMPLIED, 1, LSN_I_PUSH, "PUSH", "Implied", "PHY"
+	},
+	{	// 6E
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::Operand_To_DirectPage<LSN_TO_A, true>,								&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::Dbnz,																	&CSpc700::Write_PtrOrAddr_L_Phi2<LSN_TO_A, CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::Null<LSN_R>,															&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::EndIfNotJmp_BeginInst,												&CSpc700::Null_Phi2,
+			&CSpc700::Branch_UpdatePc_L,													&CSpc700::Null_Phi2,
+			&CSpc700::Branch_UpdatePc_H_BeginInst
+		},
+		5, LSN_AM_DIRECT_PAGE_RELATIVE, 3, LSN_I_DBNZ, "DBNZ", "Direct Page Relative d, r", "DBNZ"
+	},
+	{	// 6F
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
+			&CSpc700::Null<LSN_R>,															&CSpc700::Null_Phi2<1>,
+			&CSpc700::Null<LSN_R, false, true>,												&CSpc700::Pull_Phi2<CSpc700::LSN_RT_PC_L, 0>,
+			&CSpc700::Null<LSN_R>,															&CSpc700::Pull_Phi2<CSpc700::LSN_RT_PC_H, 1>,
+			&CSpc700::BeginInst<false, true>
+		},
+		5, LSN_AM_IMPLIED, 1, LSN_I_RET, "RET", "Implied", "RTS"
+	},
+
+
+	/** 70-77 */
+	{	// 70
+		LSN_RELATIVE( BVS, V(), 1 )
+	},
+	{	// 71
+		LSN_IMPLIED_BCC( 7 )
+	},
+	{	// 72
+		LSN_DIRECT_PAGE_BIT_RMW( CLR1, CLR1, 3, 0 )
+	},
+	{	// 73
+		LSN_PAGE_BIT_RELATIVE( BBC, 3, 0 )
+	},
+	{	// 74
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_A, false>
+		LSN_DIRECT_PAGE_INDEXED_X_R( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// 75
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_A, false>
+		LSN_ABSOLUTE_X_R( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// 76
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_A, false>
+		LSN_ABSOLUTE_Y_R( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// 77
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_A, false>
+		LSN_DIRECT_PAGE_INDIRECT_INDEXED_Y_R( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+
+
+	/** 78-7F */
+	{	// 78
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_DUMMY, false>
+		LSN_DIRECT_PAGE_IMMEDIATE_RMW( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// 79
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_DUMMY, false>
+		LSN_INDIRECT_X_INDIRECT_Y_RMW( CMP, CMP, LSN_TMP_INST )
+#undef LSN_TMP_INST
+		//{
+		//	/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+		//	&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
+		//	&CSpc700::Null<LSN_R, false>,													&CSpc700::Read_Y_Phi2<CSpc700::LSN_RT_OPERAND0>,
+		//	&CSpc700::Null<LSN_R>,															&CSpc700::Read_X_Phi2<CSpc700::LSN_RT_OPERAND1>,
+		//	&CSpc700::Or_BeginInst<false, true>,											&CSpc700::Write_X_Phi2<CSpc700::LSN_RT_OPERAND0>,
+		//	&CSpc700::BeginInst
+		//},
+		//5, LSN_AM_INDIRECT_X_INDIRECT_Y, 1, LSN_I_ ## NAME0, #NAME0, "Indirect Page to Indirect Page (X), (Y) (Read/Modify/Write)", #NAME1
+	},
 };
 
 #undef LSN_R

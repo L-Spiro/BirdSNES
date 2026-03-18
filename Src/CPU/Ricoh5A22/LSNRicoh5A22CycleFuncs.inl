@@ -1546,19 +1546,6 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	/** D8-DF */
 	{	// D8
 		LSN_IMPLIED_2( CLD, Cld_BeginInst )
-		//{
-		//	{
-		//		/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-		//		&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
-		//		&CRicoh5A22::Cld_BeginInst
-		//	},
-		//	{
-		//		/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-		//		&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
-		//		&CRicoh5A22::Cld_BeginInst
-		//	},
-		//},
-		//2, 2, LSN_AM_IMPLIED, 1, 1, LSN_I_CLD, "CLD", "Implied"
 	},
 	{	// D9
 		LSN_ABSOLUTE_INDEXED_Y_R( CMP, Cmp_BeginInst, true )
