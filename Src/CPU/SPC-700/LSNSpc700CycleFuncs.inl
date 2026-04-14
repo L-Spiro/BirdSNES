@@ -695,6 +695,17 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 		//},
 		//5, LSN_AM_INDIRECT_X_INDIRECT_Y, 1, LSN_I_ ## NAME0, #NAME0, "Indirect Page to Indirect Page (X), (Y) (Read/Modify/Write)", #NAME1
 	},
+	{	// 7A
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::Operand_To_DirectPage<LSN_TO_A, true>,								&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND16_L>,
+			&CSpc700::Null<LSN_R>,															&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_R>,															&CSpc700::Read_PtrOrAddr_H_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND16_H, 0xFF>,
+			&CSpc700::AddW_BeginInst
+		},
+		5, LSN_AM_DIRECT_PAGE, 2, LSN_I_ADDW, "ADDW", "Direct Page d (Read 16)", "ADW"
+	},
 };
 
 #undef LSN_R

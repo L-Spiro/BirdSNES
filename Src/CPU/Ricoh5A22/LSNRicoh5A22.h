@@ -145,7 +145,7 @@ namespace lsn {
 		/** An instruction. The micro-functions (pfHandler) that make up each cycle of each instruction are programmed to know what to do and can correctly pass the cycles without
 		 *	using ui8TotalCycles or amAddrMode. This means pcName, ui8TotalCycles, and amAddrMode are only used for debugging, verification, printing things, etc.
 		 * Since we are adding work by increasing the number of functions calls per instruction, we get that time back by not checking for addressing modes or referencing any other
-		 *	tables or data.  For the sake of performance, each micro-function just knows what to do and does so in the most efficient manner possible, free from any unnecessary
+		 *	tables or data. For the sake of performance, each micro-function just knows what to do and does so in the most efficient manner possible, free from any unnecessary
 		 *	branching etc.
 		 * pfHandler points to an array of functions that can handle all possible cycles for a given instruction, and we use a subtractive process for eliminating optional cycles
 		 *	rather than using the additive approach most commonly found in emulators.
@@ -303,7 +303,7 @@ namespace lsn {
 		PfTicks															m_pfTickFuncCopy = nullptr;															/**< A copy of the current tick, used to restore the intended original tick when control flow is changed by DMA transfers. */
 		CBusA &															m_baBusA;																			/**< Bus A. */
 		
-		LSN_FULL_STATE													m_fsState;																			/**< Everything a standard instruction-cycle function can modify.  Backed up at the start of the first DMA read cycle and restored at the end after the read address for that cycle has been calculated. */
+		LSN_FULL_STATE													m_fsState;																			/**< Everything a standard instruction-cycle function can modify. Backed up at the start of the first DMA read cycle and restored at the end after the read address for that cycle has been calculated. */
 		LSN_FULL_STATE													m_fsStateBackup;																	/**< The backup of the state for the cycle that first gets interrupted by DMA and is then executed at the end of DMA. */
 		static LSN_INSTR												m_iInstructionSet[256];																/**< The instruction set. */
 
@@ -461,7 +461,7 @@ namespace lsn {
 		void															And();
 
 		/**
-		 * Performs Performs m_fsState.ui16Operand <<= 1.  Sets C, N, and V, optionally increases PC.
+		 * Performs Performs m_fsState.ui16Operand <<= 1. Sets C, N, and V, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
@@ -469,7 +469,7 @@ namespace lsn {
 		void															Asl();
 
 		/**
-		 * Performs Performs m_fsState.rRegs.ui8A[0] <<= 1 or m_fsState.rRegs.ui16A <<= 1.  Sets C, N, and V, optionally increases PC.
+		 * Performs Performs m_fsState.rRegs.ui8A[0] <<= 1 or m_fsState.rRegs.ui16A <<= 1. Sets C, N, and V, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
@@ -477,7 +477,7 @@ namespace lsn {
 		void															AslOnA_BeginInst();
 
 		/** 
-		 * Performs BIT between A and Operand.  Sets Z, N, and V.
+		 * Performs BIT between A and Operand. Sets Z, N, and V.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
@@ -720,7 +720,7 @@ namespace lsn {
 		void															Jsr_Absolute_BeginInst();
 
 		/**
-		 * Performs Operand >>= 1.  Sets C, N, and Z, optionally increases PC.
+		 * Performs Operand >>= 1. Sets C, N, and Z, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
@@ -752,7 +752,7 @@ namespace lsn {
 		void															Ldy_BeginInst();
 
 		/**
-		 * Performs A >>= 1.  Sets C, N, and Z, optionally increases PC.
+		 * Performs A >>= 1. Sets C, N, and Z, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
@@ -784,7 +784,7 @@ namespace lsn {
 		void															Null();
 
 		/**
-		 * Generic null operation on PHI2.  Sets the bus access speed to Fast.
+		 * Generic null operation on PHI2. Sets the bus access speed to Fast.
 		 * 
 		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 		 * \tparam _i8SOff If not INT8_MIN, S is scheduled to be adjusted by the given amount on the next PHI1.
@@ -818,13 +818,13 @@ namespace lsn {
 		/** Sets m_fsState.ui8Operand[0] to the status byte with Break (X) and Reserved (M) set. */
 		void															Php();
 
-		/** Pull to A.  Sets N and Z based on A. */
+		/** Pull to A. Sets N and Z based on A. */
 		void															Pla_BeginInst();
 
 		/** Pull to DB, updates N and Z based on DB. */
 		void															Plb_BeginInst();
 
-		/** Pull to D.  Sets N and Z based on D. */
+		/** Pull to D. Sets N and Z based on D. */
 		void															Pld_BeginInst();
 
 		/** Performs PLP and begins the next instruction. */
@@ -1182,7 +1182,7 @@ namespace lsn {
 		void															Rep_BeginInst();
 
 		/**
-		 * Performs Operand = (Operand << 1) | C.  Sets C, N, and Z, optionally increases PC.
+		 * Performs Operand = (Operand << 1) | C. Sets C, N, and Z, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
@@ -1190,7 +1190,7 @@ namespace lsn {
 		void															Rol();
 		
 		/**
-		 * Performs A = (A << 1) | C.  Sets C, N, and Z, optionally increases PC.
+		 * Performs A = (A << 1) | C. Sets C, N, and Z, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
@@ -1198,7 +1198,7 @@ namespace lsn {
 		void															RolOnA_BeginInst();
 
 		/**
-		 * Performs Operand = (Operand >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
+		 * Performs Operand = (Operand >> 1) | (C << 7/15). Sets C, N, and Z, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
@@ -1206,7 +1206,7 @@ namespace lsn {
 		void															Ror();
 
 		/**
-		 * Performs A = (A >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
+		 * Performs A = (A >> 1) | (C << 7/15). Sets C, N, and Z, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
 		 **/
@@ -1219,7 +1219,7 @@ namespace lsn {
 		/** Pulls the PBR and PC from the stack for RTL. */
 		void															Rtl_BeginInst();
 
-		/** Returns from subroutine.  Pulls PC from stack, adds 1, begins next instruction. */
+		/** Returns from subroutine. Pulls PC from stack, adds 1, begins next instruction. */
 		void															Rts_BeginInst();
 
 		/**
@@ -1308,22 +1308,22 @@ namespace lsn {
 		/** Performs Y = A. Sets N and Z. */
 		void															Tay_BeginInst();
 
-		/** Transfer 16 bit A to D.  Sets N and Z. */
+		/** Transfer 16 bit A to D. Sets N and Z. */
 		void															Tcd_BeginInst();
 
-		/** Transfer 16 bit A to S.  Sets N and Z. */
+		/** Transfer 16 bit A to S. Sets N and Z. */
 		void															Tcs_BeginInst();
 
-		/** Transfer 16-bit D to A.  Sets N and Z. */
+		/** Transfer 16-bit D to A. Sets N and Z. */
 		void															Tdc_BeginInst();
 
-		/** Performs m_ui16Operand &= ~A.  Sets Z. */
+		/** Performs m_ui16Operand &= ~A. Sets Z. */
 		void															Trb();
 
-		/** Performs m_ui16Operand |= A.  Sets Z. */
+		/** Performs m_ui16Operand |= A. Sets Z. */
 		void															Tsb();
 
-		/** Transfer 16-bit S to A.  Sets N and Z. */
+		/** Transfer 16-bit S to A. Sets N and Z. */
 		void															Tsc_BeginInst();
 
 		/** Performs X = S. Sets N and Z. */
@@ -1344,7 +1344,7 @@ namespace lsn {
 		/** Performs X = Y. Sets N and Z. */
 		void															Tyx_BeginInst();
 
-		/** Executes WDM (reserved).  Consumes the immediate byte; no architecturally visible effects. */
+		/** Executes WDM (reserved). Consumes the immediate byte; no architecturally visible effects. */
 		void															Wdm_BeginInst();
 
 		/** Puts the CPU into a waiting state. */
@@ -2327,7 +2327,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs Performs m_fsState.ui16Operand <<= 1.  Sets C, N, and V, optionally increases PC.
+	 * Performs Performs m_fsState.ui16Operand <<= 1. Sets C, N, and V, optionally increases PC.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
 	 **/
@@ -2380,7 +2380,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs Performs m_fsState.rRegs.ui8A[0] <<= 1 or m_fsState.rRegs.ui16A <<= 1.  Sets C, N, and V, optionally increases PC.
+	 * Performs Performs m_fsState.rRegs.ui8A[0] <<= 1 or m_fsState.rRegs.ui16A <<= 1. Sets C, N, and V, optionally increases PC.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
 	 **/
@@ -2433,7 +2433,7 @@ namespace lsn {
 	}
 
 	/** 
-	 * Performs BIT between A and Operand.  Sets Z, N, and V.
+	 * Performs BIT between A and Operand. Sets Z, N, and V.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
 	 **/
@@ -2706,7 +2706,7 @@ namespace lsn {
 		m_fsState.bAllowWritingToPc = true;
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tEnable writes to PC (disabled by NMI/IRQ).  Copy Address to PC.  Set PB to 0." );
+		lsn::DebugA( "\tEnable writes to PC (disabled by NMI/IRQ). Copy Address to PC. Set PB to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		BeginInst<false, false, false>();
@@ -3276,7 +3276,7 @@ namespace lsn {
 				}
 			}
 			else {
-				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				// If the next cycle is skippable, it can't be the last PHI2 in the series. Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
 				LSN_NEXT_FUNCTION;
 			}
 #ifdef LSN_CYCLES_DOC
@@ -3295,7 +3295,7 @@ namespace lsn {
 				}
 			}
 			else {
-				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				// If the next cycle is skippable, it can't be the last PHI2 in the series. Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
 				LSN_NEXT_FUNCTION;
 			}
 #ifdef LSN_CYCLES_DOC
@@ -3669,7 +3669,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs Operand >>= 1.  Sets C, N, and Z, optionally increases PC.
+	 * Performs Operand >>= 1. Sets C, N, and Z, optionally increases PC.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
 	 **/
@@ -3853,7 +3853,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs A >>= 1.  Sets C, N, and Z, optionally increases PC.
+	 * Performs A >>= 1. Sets C, N, and Z, optionally increases PC.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
 	 **/
@@ -4015,7 +4015,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Generic null operation on PHI2.  Sets the bus access speed to Fast.
+	 * Generic null operation on PHI2. Sets the bus access speed to Fast.
 	 * 
 	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 	 * \tparam _i8SOff If not INT8_MIN, S is scheduled to be adjusted by the given amount on the next PHI1.
@@ -4203,7 +4203,7 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Pull to A.  Sets N and Z based on A. */
+	/** Pull to A. Sets N and Z based on A. */
 	inline void CRicoh5A22::Pla_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -4248,7 +4248,7 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 	}
 
-	/** Pull D.  Sets N and Z based on D. */
+	/** Pull D. Sets N and Z based on D. */
 	inline void CRicoh5A22::Pld_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -5070,7 +5070,7 @@ namespace lsn {
 				}
 			}
 			else {
-				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				// If the next cycle is skippable, it can't be the last PHI2 in the series. Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
 				LSN_NEXT_FUNCTION;
 			}
 #ifdef LSN_CYCLES_DOC
@@ -5163,7 +5163,7 @@ namespace lsn {
 				}
 			}
 			else {
-				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				// If the next cycle is skippable, it can't be the last PHI2 in the series. Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
 				LSN_NEXT_FUNCTION;
 			}
 #ifdef LSN_CYCLES_DOC
@@ -5182,7 +5182,7 @@ namespace lsn {
 				}
 			}
 			else {
-				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				// If the next cycle is skippable, it can't be the last PHI2 in the series. Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
 				LSN_NEXT_FUNCTION;
 			}
 #ifdef LSN_CYCLES_DOC
@@ -5305,7 +5305,7 @@ namespace lsn {
 				}
 			}
 			else {
-				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				// If the next cycle is skippable, it can't be the last PHI2 in the series. Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
 				LSN_NEXT_FUNCTION;
 			}
 #ifdef LSN_CYCLES_DOC
@@ -5324,7 +5324,7 @@ namespace lsn {
 				}
 			}
 			else {
-				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				// If the next cycle is skippable, it can't be the last PHI2 in the series. Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
 				LSN_NEXT_FUNCTION;
 			}
 #ifdef LSN_CYCLES_DOC
@@ -5468,7 +5468,7 @@ namespace lsn {
 				}
 			}
 			else {
-				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				// If the next cycle is skippable, it can't be the last PHI2 in the series. Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
 				LSN_NEXT_FUNCTION;
 			}
 #ifdef LSN_CYCLES_DOC
@@ -5487,7 +5487,7 @@ namespace lsn {
 				}
 			}
 			else {
-				// If the next cycle is skippable, it can't be the last PHI2 in the series.  Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
+				// If the next cycle is skippable, it can't be the last PHI2 in the series. Ignore _bEndInstr, as it will also be present on the following cycle's PHI2 function.
 				LSN_NEXT_FUNCTION;
 			}
 #ifdef LSN_CYCLES_DOC
@@ -5938,7 +5938,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs A = (A << 1) | C.  Sets C, N, and Z, optionally increases PC.
+	 * Performs A = (A << 1) | C. Sets C, N, and Z, optionally increases PC.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
 	 **/
@@ -5989,7 +5989,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs Operand = (Operand >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
+	 * Performs Operand = (Operand >> 1) | (C << 7/15). Sets C, N, and Z, optionally increases PC.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
 	 **/
@@ -6045,7 +6045,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs A = (A >> 1) | (C << 7/15).  Sets C, N, and Z, optionally increases PC.
+	 * Performs A = (A >> 1) | (C << 7/15). Sets C, N, and Z, optionally increases PC.
 	 * * \tparam _bIncPc If true, PC is updated.
 	 **/
 	template <bool _bIncPc>
@@ -6139,7 +6139,7 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 	}
 
-	/** Returns from subroutine.  Pulls PC from stack, adds 1, begins next instruction. */
+	/** Returns from subroutine. Pulls PC from stack, adds 1, begins next instruction. */
 	inline void CRicoh5A22::Rts_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -6265,7 +6265,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs Operand = (Operand << 1) | C.  Sets C, N, and Z, optionally increases PC.
+	 * Performs Operand = (Operand << 1) | C. Sets C, N, and Z, optionally increases PC.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
 	 **/
@@ -6696,7 +6696,7 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
-	/** Transfer 16 bit A to D.  Sets N and Z. */
+	/** Transfer 16 bit A to D. Sets N and Z. */
 	inline void CRicoh5A22::Tcd_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -6713,7 +6713,7 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
-	/** Transfer 16 bit A to S.  Sets N and Z. */
+	/** Transfer 16 bit A to S. Sets N and Z. */
 	inline void CRicoh5A22::Tcs_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -6734,7 +6734,7 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
-	/** Transfer 16-bit D to A.  Sets N and Z. */
+	/** Transfer 16-bit D to A. Sets N and Z. */
 	inline void CRicoh5A22::Tdc_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -6751,7 +6751,7 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
-	/** Performs m_ui16Operand &= ~A.  Sets Z. */
+	/** Performs m_ui16Operand &= ~A. Sets Z. */
 	inline void CRicoh5A22::Trb() {
 		LSN_INSTR_START_PHI1( false );
 
@@ -6780,7 +6780,7 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Performs m_ui16Operand |= A.  Sets Z. */
+	/** Performs m_ui16Operand |= A. Sets Z. */
 	inline void CRicoh5A22::Tsb() {
 		LSN_INSTR_START_PHI1( false );
 
@@ -6809,7 +6809,7 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Transfer 16-bit S to A.  Sets N and Z. */
+	/** Transfer 16-bit S to A. Sets N and Z. */
 	inline void CRicoh5A22::Tsc_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -6990,7 +6990,7 @@ namespace lsn {
 		BeginInst<false, false, false>();
 	}
 
-	/** Executes WDM (reserved).  Consumes the immediate byte; no architecturally visible effects. */
+	/** Executes WDM (reserved). Consumes the immediate byte; no architecturally visible effects. */
 	inline void CRicoh5A22::Wdm_BeginInst() {
 		LSN_INSTR_START_PHI1( true );
 
@@ -7008,7 +7008,7 @@ namespace lsn {
 		LSN_NEXT_FUNCTION_BY( uint8_t( -1 ) );
 
 #ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tEnter waiting state.  Repeat this cycle forever." );
+		lsn::DebugA( "\tEnter waiting state. Repeat this cycle forever." );
 #endif	// LSN_CYCLES_DOC
 
 		LSN_FINISH_INST( true );
