@@ -269,6 +269,8 @@ namespace lsn {
 		struct LSN_FULL_STATE {
 			const PfCycle *														pfCurInstruction = nullptr;															/**< The current instruction being executed. */
 			LSN_REGISTERS														rRegs;																				/**< Registers. */
+			uint32_t															ui32DivYa = 0;																		/**< For handling internal DIV work. */
+			uint32_t															ui32DivShiftedX = 0;																/**< For handling internal DIV work. */
 			uint16_t															ui16OpCode = 0;																		/**< The current opcode. */
 			uint16_t															ui16PcModify = 0;																	/**< The amount by which to modify PC during the next Phi1. */
 			union {
@@ -373,15 +375,15 @@ namespace lsn {
 
 		/**
 		 * Performs A += Operand, sets N and Z.
-		 *
+		 * 
+		 * \tparam _rtRegType The right operand.
 		 * \tparam _bIncPc If true, PC is updated.
-		 * \tparam _bOperandPair If true, the function operands on Operand0 and Operand1 and is RMW, otherwise it operates on A and Operand.
 		 **/
-		/*template <bool _bIncPc = false, bool _bOperandPair = false>
-		void																	Adc_BeginInst();*/
+		template <LSN_REG_TYPE _rtRegType = LSN_RT_OPERAND, bool _bIncPc = false>
+		void																	Adc_BeginInst();
 
 		/**
-		 * Performs an add between YA and Operand.
+		 * Performs an add between YA and Operand16.
 		 **/
 		void																	AddW_BeginInst();
 
@@ -450,7 +452,7 @@ namespace lsn {
 		void																	Cmp_BeginInst();
 
 		/**
-		 * Performs a comparison between YA and Operand.
+		 * Performs a comparison between YA and Operand16.
 		 **/
 		void																	CmpW_BeginInst();
 
@@ -485,7 +487,11 @@ namespace lsn {
 
 		/**
 		 * Decreases X by one.  Sets N and Z.
+		 * 
+		 * \tparam _rtRegType The fetch target.
+		 * \tparam _bBeginInstr If true, BeginInst() is called.
 		 **/
+		template <LSN_REG_TYPE _rtRegType = LSN_RT_OPERAND, bool _bBeginInstr = true>
 		void																	Dec_BeginInst();
 
 		/**
@@ -497,6 +503,14 @@ namespace lsn {
 		 * Decreases Operand by Operand0.  Sets N and Z.
 		 **/
 		void																	DecW_H();
+
+		/**
+		 * Performs a DIV cycle.  The work done depends on _uCycle.
+		 * 
+		 * \tparam _uCycle The DIV cycle.
+		 **/
+		template <unsigned _uCycle>
+		void																	Div();
 
 		/**
 		 * Ends the instruction if m_fsState.bTakeJump is not set.
@@ -663,6 +677,20 @@ namespace lsn {
 		void																	Ror();
 
 		/**
+		 * Performs A -= Operand, sets N and Z.
+		 * 
+		 * \tparam _rtRegType The right operand.
+		 * \tparam _bIncPc If true, PC is updated.
+		 **/
+		template <LSN_REG_TYPE _rtRegType = LSN_RT_OPERAND, bool _bIncPc = false>
+		void																	Sbc_BeginInst();
+
+		/**
+		 * Performs a subtract between YA and Operand16.
+		 **/
+		void																	SubW_BeginInst();
+
+		/**
 		 * Sets a bit in Operand to the given value.
 		 * 
 		 * \tparam _ui8Bit The bit to set to 0 or 1.
@@ -758,7 +786,7 @@ namespace lsn {
 		inline void																BeginInst();
 
 		/**
-		 * Performs an 8-bit add-with-carry with an operand, optionally setting flags N, V, and Z, and always setting flag C.
+		 * Performs an 8-bit subtract-with-carry with an operand, optionally setting flags N, V, and Z, and always setting flag C.
 		 *
 		 * \param _ui8RegVal The register value used in the operation.
 		 * \param _ui8OpVal The operand value used in the operation.
@@ -769,6 +797,19 @@ namespace lsn {
 		 */
 		template <LSN_REG_TYPE _rtRegL, LSN_REG_TYPE _rtRegR, bool _bSetFlags = true, bool _bAssumeCflagIsZero = false>
 		inline uint8_t															Adc_8( uint8_t _ui8RegVal, uint8_t _ui8OpVal );
+
+		/**
+		 * Performs an 8-bit subtract-with-carry with an operand, optionally setting flags N, V, and Z, and always setting flag C.
+		 *
+		 * \param _ui8RegVal The register value used in the operation.
+		 * \param _ui8OpVal The operand value used in the operation.
+		 * \tparam _rtRegL The left operand type (for debug printing).
+		 * \tparam _rtRegR The right operand type (for debug printing).
+		 * \tparam _bSetFlags If true, all flags are updated, otherwise only C is updated.
+		 * \tparam _bAssumeCflagIsOne If true, C is assumed to be 0.
+		 */
+		template <LSN_REG_TYPE _rtRegL, LSN_REG_TYPE _rtRegR, bool _bSetFlags = true, bool _bAssumeCflagIsOne = false>
+		inline uint8_t															Sbc_8( uint8_t _ui8RegVal, uint8_t _ui8OpVal );
 
 		/**
 		 * Performs a compare against a register and an operand by setting flags.
@@ -843,6 +884,11 @@ namespace lsn {
 			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) & uint8_t( bO ) );
 			LSN_CYCLES_DOC_TMP( "C flag &= ((Operand & (1 << Bit)) == 0)." );
 		}
+		else if constexpr ( _bmBitMod == LSN_BM_EOR ) {
+			const bool bO = (m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
+			SetBit<C()>( m_fsState.rRegs.ui8Status, uint8_t( bC ) ^ uint8_t( bO ) );
+			LSN_CYCLES_DOC_TMP( "C flag ^= ((Operand & (1 << Bit)) != 0)." );
+		}
 		
 
 #undef LSN_CYCLES_DOC_TMP
@@ -858,7 +904,42 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs an add between YA and Operand.
+	 * Performs A += Operand, sets N and Z.
+	 * 
+	 * \tparam _rtRegType The right operand.
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <CSpc700::LSN_REG_TYPE _rtRegType, bool _bIncPc>
+	inline void CSpc700::Adc_BeginInst() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "\t" ).c_str() );
+		if constexpr ( _bIncPc ) {
+			LSN_SPC700_PRINT_PC;
+		}
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		if constexpr ( _rtRegType == CSpc700::LSN_RT_OPERAND ) {
+			m_fsState.rRegs.ui8A = Adc_8<LSN_RT_A, _rtRegType>( m_fsState.rRegs.ui8A, m_fsState.ui8Operand );
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( std::format( "A = u8(Tmp)." ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+			BeginInst<_bIncPc, false, false>();
+		}
+		else if constexpr ( _rtRegType == CSpc700::LSN_RT_DUMMY ) {
+			m_fsState.ui8Operand0 = Adc_8<LSN_RT_OPERAND0, LSN_RT_OPERAND1>( m_fsState.ui8Operand0, m_fsState.ui8Operand1 );
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( std::format( "Operand0 = u8(Tmp)." ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+			LSN_SPC700_NEXT_FUNCTION;
+
+			LSN_SPC700_INSTR_END_PHI1;
+		}
+	}
+
+	/**
+	 * Performs an add between YA and Operand16.
 	 **/
 	inline void CSpc700::AddW_BeginInst() {
 		LSN_SPC700_INSTR_START_PHI1( true );
@@ -868,14 +949,14 @@ namespace lsn {
 
 		m_fsState.rRegs.ui8A = Adc_8<LSN_RT_A, LSN_RT_OPERAND16_L, false, true>( m_fsState.rRegs.ui8A, m_fsState.ui8Operand16[0] );
 #ifdef LSN_SPC700_CYCLES_DOC
-		lsn::DebugA( std::format( "A = u8(Z).\r\n\t\t" ).c_str() );
+		lsn::DebugA( std::format( "A = u8(Tmp).\r\n\t\t" ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		m_fsState.rRegs.ui8Y = Adc_8<LSN_RT_Y, LSN_RT_OPERAND16_H, true, false>( m_fsState.rRegs.ui8Y, m_fsState.ui8Operand16[1] );
 
 		SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16Ya == 0x0000 );
 
 #ifdef LSN_SPC700_CYCLES_DOC
-		lsn::DebugA( std::format( "Y = u8(Z).\r\n\t\t" ).c_str() );
+		lsn::DebugA( std::format( "Y = u8(Tmp).\r\n\t\t" ).c_str() );
 		lsn::DebugA( std::format( "Z flag = (YA == $0000)." ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
@@ -1143,7 +1224,7 @@ namespace lsn {
 	}
 
 	/**
-	 * Performs a comparison between YA and Operand.
+	 * Performs a comparison between YA and Operand16.
 	 **/
 	inline void CSpc700::CmpW_BeginInst() {
 		LSN_SPC700_INSTR_START_PHI1( true );
@@ -1262,21 +1343,51 @@ namespace lsn {
 
 	/**
 	 * Decreases X by one.  Sets N and Z.
+	 * 
+	 * \tparam _rtRegType The fetch target.
+	 * \tparam _bBeginInstr If true, BeginInst() is called.
 	 **/
+	template <CSpc700::LSN_REG_TYPE _rtRegType, bool _bBeginInstr>
 	inline void CSpc700::Dec_BeginInst() {
 		LSN_SPC700_INSTR_START_PHI1( true );
 
-		--m_fsState.rRegs.ui8X;
+		if constexpr ( LSN_RT_A == _rtRegType ) {
+			--m_fsState.rRegs.ui8A;
 
-		SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X & 0x80 );
-		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8X );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A );
+		}
+		else if constexpr ( LSN_RT_X == _rtRegType ) {
+			--m_fsState.rRegs.ui8X;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8X );
+		}
+		else if constexpr ( LSN_RT_Y == _rtRegType ) {
+			--m_fsState.rRegs.ui8Y;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8Y );
+		}
+		else if constexpr ( LSN_RT_OPERAND == _rtRegType ) {
+			--m_fsState.ui8Operand;
+
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand );
+		}
 
 #ifdef LSN_SPC700_CYCLES_DOC
-		lsn::DebugA( "\tX -= 1. N flag = (X & $80), Z flag = !X." );
+		lsn::DebugA( std::format( "\t{0} -= 1. N flag = ({0} & $80), Z flag = !{0}.", RegTypeToString( _rtRegType ) ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 
+		if constexpr ( _bBeginInstr ) {
+			BeginInst<false, false, false>();
+		}
+		else {
+			LSN_SPC700_NEXT_FUNCTION;
 
-		BeginInst<false, false, false>();
+			LSN_SPC700_INSTR_END_PHI1;
+		}
 	}
 
 	/**
@@ -1316,6 +1427,81 @@ namespace lsn {
 		LSN_SPC700_NEXT_FUNCTION;
 
 		LSN_SPC700_INSTR_END_PHI1;
+	}
+
+	/**
+	 * Performs a DIV cycle.  The work done depends on _uCycle.
+	 * 
+	 * \tparam _uCycle The DIV cycle.
+	 **/
+	template <unsigned _uCycle>
+	inline void CSpc700::Div() {
+		LSN_SPC700_INSTR_START_PHI1( false );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\t" );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		if constexpr ( _uCycle == 1 ) {
+			// Load the ALU.
+			// Increase PC.
+			LSN_SPC700_PRINT_PC
+
+			LSN_SPC700_UPDATE_PC;
+		}
+		else if constexpr ( _uCycle == 2 ) {
+			// Set V and H registers.
+			SetBit<H()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8Y & 15) >= (m_fsState.rRegs.ui8X & 15) );
+			SetBit<V()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y >= m_fsState.rRegs.ui8X );
+
+			m_fsState.ui32DivYa = m_fsState.rRegs.ui16Ya;	// Prepare for the iterations.
+			m_fsState.ui32DivShiftedX = uint32_t( m_fsState.rRegs.ui8X ) << 9;
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "H flag = ((Y & 15) >= (X & 15)), V flag = (Y >= X).\r\n\t\t" );
+			lsn::DebugA( "DivYa = u32(YA), ShiftedX = u32(X) << 9." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+		else if constexpr ( _uCycle >= 3 && _uCycle <= 11 ) {
+			m_fsState.ui32DivYa <<= 1;
+			if ( m_fsState.ui32DivYa & 0x20000 ) {
+				m_fsState.ui32DivYa ^= 0x20001;
+			}
+			if ( m_fsState.ui32DivYa >= m_fsState.ui32DivShiftedX ) {
+				m_fsState.ui32DivYa ^= 1;
+			}
+			if ( m_fsState.ui32DivYa & 1 ) {
+				m_fsState.ui32DivYa = (m_fsState.ui32DivYa - m_fsState.ui32DivShiftedX) & 0x1FFFF;
+			}
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "DivYa <<= 1.\r\n\t\t" );
+			lsn::DebugA( "If DivYa & $20000: DivYa ^= $20001.\r\n\t\t" );
+			lsn::DebugA( "If DivYa >= ShiftedX: DivYa ^= 1.\r\n\t\t" );
+			lsn::DebugA( "If DivYa & 1: DivYa = (DivYa - ShiftedX) & $1FFFF." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+		else if constexpr ( _uCycle == 12 ) {
+			// Consolidate.
+			m_fsState.rRegs.ui8Y = uint8_t( m_fsState.ui32DivYa >> 9 );
+			m_fsState.rRegs.ui8A = uint8_t( m_fsState.ui32DivYa );
+
+			// Set registers.
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A );
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "Y = u8(DivYa >> 9), A = u8(DivYa).\r\n\t\t" );
+			lsn::DebugA( "N flag = (A & $80), Z flag = !A." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+
+		if constexpr ( _uCycle == 12 ) {
+			BeginInst<false, false, false>();
+		}
+		else {
+			LSN_SPC700_NEXT_FUNCTION;
+
+			LSN_SPC700_INSTR_END_PHI1;
+		}
 	}
 
 	/**
@@ -2287,6 +2473,66 @@ namespace lsn {
 	}
 
 	/**
+	 * Performs A -= Operand, sets N and Z.
+	 * 
+	 * \tparam _rtRegType The right operand.
+	 * \tparam _bIncPc If true, PC is updated.
+	 **/
+	template <CSpc700::LSN_REG_TYPE _rtRegType, bool _bIncPc>
+	inline void CSpc700::Sbc_BeginInst() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "\t" ).c_str() );
+		if constexpr ( _bIncPc ) {
+			LSN_SPC700_PRINT_PC;
+		}
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		if constexpr ( _rtRegType == CSpc700::LSN_RT_OPERAND ) {
+			m_fsState.rRegs.ui8A = Sbc_8<LSN_RT_A, _rtRegType>( m_fsState.rRegs.ui8A, m_fsState.ui8Operand );
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( std::format( "A = u8(Tmp)." ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+			BeginInst<_bIncPc, false, false>();
+		}
+		else if constexpr ( _rtRegType == CSpc700::LSN_RT_DUMMY ) {
+			m_fsState.ui8Operand0 = Sbc_8<LSN_RT_OPERAND0, LSN_RT_OPERAND1>( m_fsState.ui8Operand0, m_fsState.ui8Operand1 );
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( std::format( "Operand0 = u8(Tmp)." ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+			LSN_SPC700_NEXT_FUNCTION;
+
+			LSN_SPC700_INSTR_END_PHI1;
+		}
+	}
+
+	/**
+	 * Performs a subtract between YA and Operand16.
+	 **/
+	inline void CSpc700::SubW_BeginInst() {
+		LSN_SPC700_INSTR_START_PHI1( true );
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "\t" ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		m_fsState.rRegs.ui8A = Sbc_8<LSN_RT_A, LSN_RT_OPERAND16_L, false, true>( m_fsState.rRegs.ui8A, m_fsState.ui8Operand16[0] );
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "A = u8(Tmp).\r\n\t\t" ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		m_fsState.rRegs.ui8Y = Sbc_8<LSN_RT_Y, LSN_RT_OPERAND16_H, true, false>( m_fsState.rRegs.ui8Y, m_fsState.ui8Operand16[1] );
+
+		SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16Ya == 0x0000 );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "Y = u8(Tmp).\r\n\t\t" ).c_str() );
+		lsn::DebugA( std::format( "Z flag = (YA == $0000)." ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		BeginInst<false, false, false>();
+	}
+
+	/**
 	 * Sets a bit in Operand to the given value.
 	 * 
 	 * \tparam _ui8Bit The bit to set to 0 or 1.
@@ -2346,6 +2592,30 @@ namespace lsn {
 			if constexpr ( _rtDstRegType == LSN_RT_X ) {
 				// TAX.
 				m_fsState.rRegs.ui8X = m_fsState.rRegs.ui8A;
+			}
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X == 0 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X & 0x80 );
+		}
+		else if constexpr ( _rtSrcRegType == LSN_RT_X ) {
+			if constexpr ( _rtDstRegType == LSN_RT_A ) {
+				// TXA.
+				m_fsState.rRegs.ui8A = m_fsState.rRegs.ui8X;
+			}
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A == 0 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+		}
+		else if constexpr ( _rtSrcRegType == LSN_RT_Y ) {
+			if constexpr ( _rtDstRegType == LSN_RT_OPERAND ) {
+				// LDY.
+				m_fsState.rRegs.ui8Y = m_fsState.ui8Operand;
+			}
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y == 0 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y & 0x80 );
+		}
+		else if constexpr ( _rtSrcRegType == LSN_RT_SP ) {
+			if constexpr ( _rtDstRegType == LSN_RT_X ) {
+				// TSX.
+				m_fsState.rRegs.ui8X = m_fsState.rRegs.ui8Sp;
 			}
 			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X == 0 );
 			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X & 0x80 );
@@ -2772,9 +3042,67 @@ namespace lsn {
 			SetBit<N()>( m_fsState.rRegs.ui8Status, ui8Final & 0x80 );
 
 #ifdef LSN_SPC700_CYCLES_DOC
-			lsn::DebugA( std::format( "Tmp flag = (u8(Tmp) == $00).\r\n\t\t" ).c_str() );
+			lsn::DebugA( std::format( "Z flag = (u8(Tmp) == $00).\r\n\t\t" ).c_str() );
 			lsn::DebugA( std::format( "H flag = (({} ^ {} ^ u8(Tmp)) & $10).\r\n\t\t", RegTypeToString( _rtRegL ), RegTypeToString( _rtRegR ) ).c_str() );
 			lsn::DebugA( std::format( "V flag = (~({} ^ {}) & ({} ^ u8(Tmp)) & $80).\r\n\t\t", RegTypeToString( _rtRegL ), RegTypeToString( _rtRegR ), RegTypeToString( _rtRegL ) ).c_str() );
+			lsn::DebugA( std::format( "N flag = (u8(Tmp) & $80).\r\n\t\t" ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+		return ui8Final;
+	}
+
+	/**
+	 * Performs an 8-bit subtract-with-carry with an operand, optionally setting flags N, V, and Z, and always setting flag C.
+	 *
+	 * \param _ui8RegVal The register value used in the operation.
+	 * \param _ui8OpVal The operand value used in the operation.
+	 * \tparam _rtRegL The left operand type (for debug printing).
+	 * \tparam _rtRegR The right operand type (for debug printing).
+	 * \tparam _bSetFlags If true, all flags are updated, otherwise only C is updated.
+	 * \tparam _bAssumeCflagIsOne If true, C is assumed to be 0.
+	 */
+	template <CSpc700::LSN_REG_TYPE _rtRegL, CSpc700::LSN_REG_TYPE _rtRegR, bool _bSetFlags, bool _bAssumeCflagIsOne>
+	inline uint8_t CSpc700::Sbc_8( uint8_t _ui8RegVal, uint8_t _ui8OpVal ) {
+		_ui8OpVal = ~_ui8OpVal;
+		uint32_t ui32Z = uint32_t( _ui8RegVal ) + uint32_t( _ui8OpVal );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "TmpR = ~{}.\r\n\t\t", RegTypeToString( _rtRegR ) ).c_str() );
+		lsn::DebugA( std::format( "Tmp = u32({}) + u32({})", RegTypeToString( _rtRegL ), "TmpR" ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		if constexpr ( !_bAssumeCflagIsOne ) {
+			ui32Z += (m_fsState.rRegs.ui8Status & C());
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( std::format( " + u32(C flag)" ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+		else {
+			ui32Z += 1;
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( std::format( " + 1" ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( ".\r\n\t\t" ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		uint8_t ui8Final = uint8_t( ui32Z );
+		SetBit<C()>( m_fsState.rRegs.ui8Status, ui32Z > 0xFF );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( std::format( "C flag = (Tmp > $FF).\r\n\t\t" ).c_str() );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		if constexpr ( _bSetFlags ) {
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, ui8Final == 0x00 );
+			uint8_t ui8XxorY = _ui8RegVal ^ _ui8OpVal;
+			SetBit<H()>( m_fsState.rRegs.ui8Status, (ui8XxorY ^ ui8Final) & 0x10 );
+			SetBit<V()>( m_fsState.rRegs.ui8Status, (~ui8XxorY & (_ui8RegVal ^ ui8Final)) & 0x80 );
+			SetBit<N()>( m_fsState.rRegs.ui8Status, ui8Final & 0x80 );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( std::format( "Z flag = (u8(Tmp) == $00).\r\n\t\t" ).c_str() );
+			lsn::DebugA( std::format( "H flag = (({} ^ {} ^ u8(Tmp)) & $10).\r\n\t\t", RegTypeToString( _rtRegL ), "TmpR" ).c_str() );
+			lsn::DebugA( std::format( "V flag = (~({} ^ {}) & ({} ^ u8(Tmp)) & $80).\r\n\t\t", RegTypeToString( _rtRegL ), "TmpR", RegTypeToString( _rtRegL ) ).c_str() );
 			lsn::DebugA( std::format( "N flag = (u8(Tmp) & $80).\r\n\t\t" ).c_str() );
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		}
