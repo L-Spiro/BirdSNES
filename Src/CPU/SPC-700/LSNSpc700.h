@@ -757,6 +757,14 @@ namespace lsn {
 		void																	Write_X_Phi2();
 
 		/**
+		 * Exchanges the 4-bit nibbles of A.
+		 * 
+		 * \tparam _uCycle The cycle number.
+		 **/
+		template <unsigned _uCycle>
+		void																	Xcn();
+
+		/**
 		 * Calculates the X- or Y- indexed indirect address, stores to either Address or Pointer.
 		 * 
 		 * \tparam _rtRegType The register (X or Y) to add to Operand.
@@ -1436,7 +1444,7 @@ namespace lsn {
 	 **/
 	template <unsigned _uCycle>
 	inline void CSpc700::Div() {
-		LSN_SPC700_INSTR_START_PHI1( false );
+		LSN_SPC700_INSTR_START_PHI1( _uCycle == 12 );
 
 #ifdef LSN_SPC700_CYCLES_DOC
 		lsn::DebugA( "\t" );
@@ -2879,6 +2887,50 @@ namespace lsn {
 		LSN_SPC700_NEXT_FUNCTION;
 
 		LSN_SPC700_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Exchanges the 4-bit nibbles of A.
+	 * 
+	 * \tparam _uCycle The cycle number.
+	 **/
+	template <unsigned _uCycle>
+	inline void CSpc700::Xcn() {
+		LSN_SPC700_INSTR_START_PHI1( _uCycle == 5 );
+
+#ifdef LSN_SPC700_CYCLES_DOC
+		lsn::DebugA( "\t" );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+		if constexpr ( _uCycle == 1 ) {
+			// Load the ALU.
+			// Increase PC.
+			LSN_SPC700_PRINT_PC
+
+			LSN_SPC700_UPDATE_PC;
+		}
+		else if constexpr ( _uCycle >= 2 && _uCycle <= 5 ) {
+			m_fsState.rRegs.ui8A = (m_fsState.rRegs.ui8A >> 7) | (m_fsState.rRegs.ui8A << 1);
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( "A = (A >> 7) | (A << 1)." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+		}
+
+		if constexpr ( _uCycle == 5 ) {
+			// Set registers.
+			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A & 0x80 );
+			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A );
+#ifdef LSN_SPC700_CYCLES_DOC
+			lsn::DebugA( " N flag = (A & $80), Z flag = !A." );
+#endif	// #ifdef LSN_SPC700_CYCLES_DOC
+
+			BeginInst<false, false, false>();
+		}
+		else {
+			LSN_SPC700_NEXT_FUNCTION;
+
+			LSN_SPC700_INSTR_END_PHI1;
+		}
 	}
 
 	/**

@@ -916,6 +916,17 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 		},
 		12, LSN_AM_IMPLIED, 1, LSN_I_DIV, "DIV", "Implied", "DIV"
 	},
+	{	// 9F
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Xcn<1>,																&CSpc700::Null_Phi2,
+			&CSpc700::Xcn<2>,																&CSpc700::Null_Phi2,
+			&CSpc700::Xcn<3>,																&CSpc700::Null_Phi2,
+			&CSpc700::Xcn<4>,																&CSpc700::Null_Phi2,
+			&CSpc700::Xcn<5>
+		},
+		5, LSN_AM_IMPLIED, 1, LSN_I_XCN, "XCN", "Accumulator A", "XCN"
+	},
 };
 
 #undef LSN_R
