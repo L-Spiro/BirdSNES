@@ -54,7 +54,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 00
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::BeginInst
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_NOP, "NOP", "Implied", "NOP"
@@ -179,13 +179,13 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 1D
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::Dec_BeginInst<CSpc700::LSN_RT_X>
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_DEC, "DEC", "Implied", "DEX"
 	},
 	{	// 1E
-		LSN_ABSOLUTE_R( CMP, CPX, Cmp_BeginInst )
+		LSN_ABSOLUTE_R( CMP, CPX, Cmp_BeginInst<CSpc700::LSN_RT_X> )
 	},
 	{	// 1F
 		{
@@ -205,7 +205,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 20
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::SetBit_BeginInst<P(), 0>
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_CLRP, "CLRP", "Implied", "CLP"
@@ -348,8 +348,8 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 3D
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
-			&CSpc700::Inc_BeginInst
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Inc_BeginInst<CSpc700::LSN_RT_X, true>
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_INC, "INC", "Implied", "INX"
 	},
@@ -364,7 +364,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::Null<LSN_W>,															&CSpc700::Push_Phi2<CSpc700::LSN_RT_PC_H, 0>,
 			&CSpc700::Null<LSN_W>,															&CSpc700::Push_Phi2<CSpc700::LSN_RT_PC_L, -1>,
-			&CSpc700::Null<LSN_R, false, true>,												&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, false, true>,												&CSpc700::Null_Phi2,
 			&CSpc700::Copy_AddrOrPtr_To_Pc_L<LSN_FROM_A>,									&CSpc700::Null_Phi2,
 			&CSpc700::Copy_AddrOrPtr_To_Pc_H_BeginInst<LSN_FROM_A>
 		},
@@ -376,7 +376,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 40
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::SetBit_BeginInst<P(), 1>
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_SETP, "SETP", "Implied", "SEP"
@@ -442,7 +442,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::Null<LSN_W>,															&CSpc700::Push_Phi2<CSpc700::LSN_RT_PC_H, 0>,
 			&CSpc700::Null<LSN_W>,															&CSpc700::Push_Phi2<CSpc700::LSN_RT_PC_L, -1>,
-			&CSpc700::Null<LSN_R, false, true>,												&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, false, true>,												&CSpc700::Null_Phi2,
 			&CSpc700::Copy_AddrOrPtr_To_Pc_L_FF_To_Pc_H_BeginInst<LSN_FROM_A>
 		},
 		6, LSN_AM_ABSOLUTE, 2, LSN_I_PCALL, "PCALL", "Absolute Call !a", "JSP"
@@ -525,7 +525,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 5D
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::Transfer<CSpc700::LSN_RT_A, CSpc700::LSN_RT_X, false, true>
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_MOV, "MOV", "Implied", "TAX"
@@ -548,7 +548,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 60
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::SetBit_BeginInst<C(), 0>
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_CLRC, "CLRC", "Implied", "CLC"
@@ -631,7 +631,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
 			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
-			&CSpc700::Null<LSN_W>,															&CSpc700::Null_Phi2<1>,
+			&CSpc700::Null<LSN_N>,															&CSpc700::Null_Phi2<1>,
 			&CSpc700::Null<LSN_R, false, true>,												&CSpc700::Pull_Phi2<CSpc700::LSN_RT_PC_L, 0>,
 			&CSpc700::Null<LSN_R>,															&CSpc700::Pull_Phi2<CSpc700::LSN_RT_PC_H, 1>,
 			&CSpc700::BeginInst<false, true>
@@ -700,7 +700,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
 			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
 			&CSpc700::Operand_To_DirectPage<LSN_TO_A, true>,								&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND16_L>,
-			&CSpc700::Null<LSN_R>,															&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N>,															&CSpc700::Null_Phi2,
 			&CSpc700::Null<LSN_R>,															&CSpc700::Read_PtrOrAddr_H_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND16_H, 0xFF>,
 			&CSpc700::AddW_BeginInst
 		},
@@ -715,7 +715,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 7D
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::Transfer<CSpc700::LSN_RT_X, CSpc700::LSN_RT_A, false, true>
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_MOV, "MOV", "Implied", "TXA"
@@ -727,7 +727,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
 			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
-			&CSpc700::Null<LSN_W>,															&CSpc700::Null_Phi2<1>,
+			&CSpc700::Null<LSN_N>,															&CSpc700::Null_Phi2<1>,
 			&CSpc700::Null<LSN_R, false, true>,												&CSpc700::Pull_Phi2<CSpc700::LSN_RT_STATUS, 0>,
 			&CSpc700::Null<LSN_R>,															&CSpc700::Pull_Phi2<CSpc700::LSN_RT_PC_L, 1>,
 			&CSpc700::Null<LSN_R>,															&CSpc700::Pull_Phi2<CSpc700::LSN_RT_PC_H, 2>,
@@ -741,7 +741,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 80
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::SetBit_BeginInst<C(), 1>
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_CLRC, "SETC", "Implied", "SEC"
@@ -810,7 +810,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
 			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
-			&CSpc700::Null<LSN_W>,															&CSpc700::Null_Phi2<1>,
+			&CSpc700::Null<LSN_N>,															&CSpc700::Null_Phi2<1>,
 			&CSpc700::Null<LSN_R, false, true>,												&CSpc700::Pull_Phi2<CSpc700::LSN_RT_STATUS, 0>,
 			&CSpc700::BeginInst<false, true>
 		},
@@ -874,7 +874,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
 			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
 			&CSpc700::Operand_To_DirectPage<LSN_TO_A, true>,								&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND16_L>,
-			&CSpc700::Null<LSN_R>,															&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N>,															&CSpc700::Null_Phi2,
 			&CSpc700::Null<LSN_R>,															&CSpc700::Read_PtrOrAddr_H_Phi2<LSN_FROM_A, CSpc700::LSN_RT_OPERAND16_H, 0xFF>,
 			&CSpc700::SubW_BeginInst
 		},
@@ -893,7 +893,7 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 	{	// 9D
 		{
 			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
-			&CSpc700::Null<LSN_R, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
 			&CSpc700::Transfer<CSpc700::LSN_RT_SP, CSpc700::LSN_RT_X, false, true>
 		},
 		2, LSN_AM_IMPLIED, 1, LSN_I_MOV, "MOV", "Implied", "TSX"
@@ -926,6 +926,194 @@ CSpc700::LSN_INSTR CSpc700::m_iInstructionSet[256] = {										/**< The instruc
 			&CSpc700::Xcn<5>
 		},
 		5, LSN_AM_IMPLIED, 1, LSN_I_XCN, "XCN", "Accumulator A", "XCN"
+	},
+
+
+	/** A0-A7 */
+	{	// A0
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_N>,															&CSpc700::Null_Phi2,
+			&CSpc700::SetBit_BeginInst<I(), 1>
+		},
+		3, LSN_AM_IMPLIED, 1, LSN_I_EI, "EI", "Implied", "CLI"
+	},
+	{	// A1
+		LSN_IMPLIED_BCC( 10 )
+	},
+	{	// A2
+		LSN_DIRECT_PAGE_BIT_RMW( SET1, SET1, 5, 1 )
+	},
+	{	// A3
+		LSN_PAGE_BIT_RELATIVE( BBS, 5, 1 )
+	},
+	{	// A4
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_DIRECT_PAGE_R( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// A5
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_ABSOLUTE_R( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// A6
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_INDIRECT_X_R( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// A7
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_DIRECT_PAGE_INDEXED_INDIRECT_X_R( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+
+
+	/** A8-AF */
+	{	// A8
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_OPERAND, true>
+		LSN_IMMEDIATE_R( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// A9
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_DUMMY, false>
+		LSN_DIRECT_PAGE_DIRECT_PAGE_RMW( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// AA
+		LSN_ABSOLUTE_BIT_4( MOV1, LDC, LSN_BM_LOAD )
+	},
+	{	// AB
+#define LSN_TMP_INST	Inc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_DIRECT_PAGE_RMW( INC, INC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// AC
+#define LSN_TMP_INST	Inc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_ABSOLUTE_RMW( INC, INC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// AD
+#define LSN_TMP_INST	Cmp_BeginInst<CSpc700::LSN_RT_Y, true>
+		LSN_IMMEDIATE_R( CMP, CPY, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// AE
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
+			&CSpc700::Null<LSN_N>,															&CSpc700::Null_Phi2<1>,
+			&CSpc700::Null<LSN_R, false, true>,												&CSpc700::Pull_Phi2<CSpc700::LSN_RT_A, 0>,
+			&CSpc700::BeginInst<false, true>
+		},
+		4, LSN_AM_IMPLIED, 1, LSN_I_POP, "POP", "Implied", "PLA"
+	},
+	{	// AF
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
+			&CSpc700::Transfer<CSpc700::LSN_RT_X_OR_100, CSpc700::LSN_RT_ADDR, false, false>, &CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_W>,															&CSpc700::Write_PtrOrAddr_L_Phi2<LSN_TO_A, CSpc700::LSN_RT_A>,
+			&CSpc700::Auto_Inc_X_BeginInst
+		},
+		4, LSN_AM_INDIRECT_X_AUTO_INC, 1, LSN_I_MOV, "MOV", "Indirect Auto-Increment (X)+ (Write)", "STA"
+	},
+
+
+	/** B0-B7 */
+	{	// B0
+		LSN_RELATIVE( BCS, C(), 1 )
+	},
+	{	// B1
+		LSN_IMPLIED_BCC( 11 )
+	},
+	{	// B2
+		LSN_DIRECT_PAGE_BIT_RMW( CLR1, CLR1, 5, 0 )
+	},
+	{	// B3
+		LSN_PAGE_BIT_RELATIVE( BBC, 5, 0 )
+	},
+	{	// B4
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_DIRECT_PAGE_INDEXED_X_R( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// B5
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_ABSOLUTE_X_R( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// B6
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_ABSOLUTE_Y_R( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// B7
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_DIRECT_PAGE_INDIRECT_INDEXED_Y_R( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+
+
+	/** B8-BF */
+	{	// B8
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_DUMMY, false>
+		LSN_DIRECT_PAGE_IMMEDIATE_RMW( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// B9
+#define LSN_TMP_INST	Sbc_BeginInst<CSpc700::LSN_RT_DUMMY, false>
+		LSN_INDIRECT_X_INDIRECT_Y_RMW( SBC, SBC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// BA
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPERAND>,
+			&CSpc700::Operand_To_DirectPage<LSN_TO_A, true>,								&CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_A>,
+			&CSpc700::Null<LSN_N>,															&CSpc700::Null_Phi2,
+			&CSpc700::Null<LSN_R>,															&CSpc700::Read_PtrOrAddr_H_Phi2<LSN_FROM_A, CSpc700::LSN_RT_Y, 0xFF>,
+			&CSpc700::Set_YaFlags_BeginInst
+		},
+		5, LSN_AM_DIRECT_PAGE, 2, LSN_I_MOVW, "MOVW", "Direct Page d (Read 16)", "LDW"
+	},
+	{	// BB
+#define LSN_TMP_INST	Inc_BeginInst<CSpc700::LSN_RT_OPERAND, false>
+		LSN_DIRECT_PAGE_INDEXED_X_R_RMW( INC, INC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// BC
+#define LSN_TMP_INST	Inc_BeginInst<CSpc700::LSN_RT_A, true>
+		LSN_ACCUMULATOR( INC, INC, LSN_TMP_INST )
+#undef LSN_TMP_INST
+	},
+	{	// BD
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Transfer<CSpc700::LSN_RT_X, CSpc700::LSN_RT_SP, false, true>
+		},
+		2, LSN_AM_IMPLIED, 1, LSN_I_MOV, "MOV", "Implied", "TXS"
+	},
+	{	// BE
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_N, true>,													&CSpc700::Null_Phi2,
+			&CSpc700::Das<1>,																&CSpc700::Null_Phi2,
+			&CSpc700::Das<2>
+		},
+		3, LSN_AM_IMPLIED, 1, LSN_I_DAS, "DAS", "Implied", "DAS"
+	},
+	{	// BF
+		{
+			/* BeginInst() */																&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_OPCODE>,
+			&CSpc700::Null<LSN_R, true>,													&CSpc700::Fetch_IncPc_Phi2<CSpc700::LSN_RT_DUMMY>,
+			&CSpc700::Transfer<CSpc700::LSN_RT_X_OR_100, CSpc700::LSN_RT_ADDR, false, false>, &CSpc700::Read_PtrOrAddr_L_Phi2<LSN_FROM_A, CSpc700::LSN_RT_A>,
+			&CSpc700::Null<LSN_W, false, false, false, true>,								&CSpc700::Null_Phi2,
+			&CSpc700::Auto_Inc_X_BeginInst
+		},
+		4, LSN_AM_INDIRECT_X_AUTO_INC, 1, LSN_I_MOV, "MOV", "Indirect Auto-Increment (X)+ (Read)", "LDA"
 	},
 };
 

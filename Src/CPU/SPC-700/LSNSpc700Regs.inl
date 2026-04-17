@@ -30,4 +30,6 @@ LSN_INST( PTR_L, "Pointer.L" )
 LSN_INST( PTR_H, "Pointer.H" )
 LSN_INST( PTR, "Pointer" )
 
+LSN_INST( X_OR_100, "(X | ((PSW & $20) << 3))" )
+
 LSN_INST( DUMMY, "Discard" )
