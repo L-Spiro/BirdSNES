@@ -16,7 +16,7 @@ namespace lsn {
 #define LSN_1_STR( ENUM, TXT )										LSN_STR( ENUM, TXT, TXT, TXT, TXT, TXT )
 
 	// == Types.
-	/** Error codes. */
+	/** String ID's. */
 	enum LSN_STRINGS : uint32_t {
 #define LSN_STR( ENUM, TXT, JPN, FR, SP, CH )						ENUM,
 #include "LSNStringsEnum.inl"
