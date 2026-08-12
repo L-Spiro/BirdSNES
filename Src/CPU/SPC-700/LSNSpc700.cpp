@@ -123,12 +123,10 @@ namespace lsn {
 		bool bErrored = false;
 		// Verify.
 		if ( m_fsState.ui8FuncIndex != 0 ) {
-			/*if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_WAI &&
-				((m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVP && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_MVN) ||
-				((m_iInstructionSet[m_fsState.ui16OpCode].iInstruction == LSN_I_MVP || m_iInstructionSet[m_fsState.ui16OpCode].iInstruction == LSN_I_MVN) && m_fsState.rRegs.ui16A == 0xFFFF)) ) {*/
+			if ( m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_SLEEP && m_iInstructionSet[m_fsState.ui16OpCode].iInstruction != LSN_I_STOP ) {
 				lsn::DebugA( "\r\nDid not end on BeginInst().\r\n" );
 				bErrored = true;
-			//}
+			}
 		}
 
 #define LSN_VURIFFY( REG )																																											\
