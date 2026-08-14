@@ -1292,14 +1292,26 @@ namespace lsn {
 		static void														Read_Stack_Discard_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
+		 * Reads the stack, stores in m_fsState.ui8Bank.
+		 * 
+		 * \tparam _i8SOff Offset from S to read.
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
+		 * \param _prCpu The CRicoh5A22 instance.
+		 **/
+		template <int8_t _i8SOff = 0, bool _bEndInstr = false, bool _bSpecial = true>
+		static void														Read_Stack_To_Bank_Phi2( CRicoh5A22 * _prCpu );
+
+		/**
 		 * Reads the stack with offset, stores in m_fsState.ui8Operand[1].
 		 * 
 		 * \tparam _i8SOff Offset from S to read.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0, bool _bEndInstr = false, bool _bSpecial = false>
-		void															Read_Stack_To_Operand_High_Phi2();
+		static void														Read_Stack_To_Operand_High_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Reads the stack, stores in m_fsState.ui8Operand[0].
@@ -1309,24 +1321,17 @@ namespace lsn {
 		 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
 		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0, bool _bEndInstr = false, bool _bSpecial = false, bool _bSkipIfM = false, bool _bSkipIfX = false>
-		void															Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2();
-
-		/**
-		 * Reads the stack, stores in m_fsState.ui8Bank.
-		 * 
-		 * \tparam _i8SOff Offset from S to read.
-		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
-		 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
-		 **/
-		template <int8_t _i8SOff = 0, bool _bEndInstr = false, bool _bSpecial = true>
-		void															Read_Stack_To_Bank_Phi2();
+		static void														Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Reads from [m_fsState.rRegs.ui16X:m_fsState.ui8Bank] into m_fsState.ui8Operand[0] for MVP.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
 		 */
-		void															Read_X_And_Bank_To_Operand_Low_Phi2();
+		static void														Read_X_And_Bank_To_Operand_Low_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the high byte in m_fsState.ui8Pointer[1] or m_fsState.ui8Address[1].
@@ -1334,9 +1339,10 @@ namespace lsn {
 		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
 		 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bTo = LSN_TO_A, bool _bLowByteWrap = false, bool _bEndInstr = false>
-		void															ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2();
+		static void														ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the low byte in m_fsState.ui8Pointer[0] or m_fsState.ui8Address[0].
@@ -1345,18 +1351,20 @@ namespace lsn {
 		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bTo = LSN_TO_A, bool _bSkipIfM = false, bool _bEndInstr = false, bool _bSkipIfX = false>
-		void															ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_SkipIfX_Phi2();
+		static void														ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_SkipIfX_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
 		 * 
 		 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
 		 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bFrom = LSN_FROM_A, bool _bLowByteWrap = false>
-		void															ReadBank0_PtrOrAddr_To_Bank_Phi2();
+		static void														ReadBank0_PtrOrAddr_To_Bank_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Reads from m_fsState.ui16Address or m_fsState.ui16Pointer and stores the result in m_fsState.ui8Bank.
@@ -5916,28 +5924,67 @@ namespace lsn {
 	}
 
 	/**
-	 * Reads the stack with offset, stores in m_fsState.ui8Operand[1].
+	 * Reads the stack, stores in m_fsState.ui8Bank.
 	 * 
 	 * \tparam _i8SOff Offset from S to read.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial>
-	inline void CRicoh5A22::Read_Stack_To_Operand_High_Phi2() {
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			if constexpr ( _bSpecial ) {
-				LSN_POP_SPECIAL( m_fsState.ui8Operand[1], m_ui8Speed );
-			}
-			else {
-				LSN_POP( m_fsState.ui8Operand[1], m_ui8Speed );
-			}
+	inline void CRicoh5A22::Read_Stack_To_Bank_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
+			LSN_POP_SPECIAL( _rCpu.m_fsState.ui8Bank, _rCpu.m_ui8Speed );
 		}
 		else {
-			LSN_POP( m_fsState.ui8Operand[1], m_ui8Speed );
+			LSN_POP( _rCpu.m_fsState.ui8Bank, _rCpu.m_ui8Speed );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
+			lsn::DebugA( ("Read ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tStore as Bank.").c_str() );
+		}
+		else {
+			lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ")\tStore as Bank.").c_str() );
+		}
+#endif	// #ifdef LSN_CYCLES_DOC
+		
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
+
+	/**
+	 * Reads the stack with offset, stores in m_fsState.ui8Operand[1].
+	 * 
+	 * \tparam _i8SOff Offset from S to read.
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+	 * \param _prCpu The CRicoh5A22 instance.
+	 **/
+	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial>
+	inline void CRicoh5A22::Read_Stack_To_Operand_High_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
+			if constexpr ( _bSpecial ) {
+				LSN_POP_SPECIAL( _rCpu.m_fsState.ui8Operand[1], _rCpu.m_ui8Speed );
+			}
+			else {
+				LSN_POP( _rCpu.m_fsState.ui8Operand[1], _rCpu.m_ui8Speed );
+			}
+		}
+		else {
+			LSN_POP( _rCpu.m_fsState.ui8Operand[1], _rCpu.m_ui8Speed );
+		}
+
+#ifdef LSN_CYCLES_DOC
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			if constexpr ( _bSpecial ) {
 				lsn::DebugA( ("Read u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tStore as Operand.H.").c_str() );
 			}
@@ -5968,23 +6015,25 @@ namespace lsn {
 	 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
 	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial, bool _bSkipIfM, bool _bSkipIfX>
-	inline void CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2() {
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+	inline void CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			if constexpr ( _bSpecial ) {
-				LSN_POP_SPECIAL( m_fsState.ui8Operand[0], m_ui8Speed );
+				LSN_POP_SPECIAL( _rCpu.m_fsState.ui8Operand[0], _rCpu.m_ui8Speed );
 			}
 			else {
-				LSN_POP( m_fsState.ui8Operand[0], m_ui8Speed );
+				LSN_POP( _rCpu.m_fsState.ui8Operand[0], _rCpu.m_ui8Speed );
 			}
 		}
 		else {
-			LSN_POP( m_fsState.ui8Operand[0], m_ui8Speed );
+			LSN_POP( _rCpu.m_fsState.ui8Operand[0], _rCpu.m_ui8Speed );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			if constexpr ( _bSpecial ) {
 				lsn::DebugA( ("Read u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tStore as Operand.L.").c_str() );
 			}
@@ -5998,7 +6047,7 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 		
 		if constexpr ( _bSkipIfM ) {
-			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
 				LSN_NEXT_FUNCTION_BY( 2 );
 
 				if constexpr ( _bEndInstr ) {
@@ -6017,7 +6066,7 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else if constexpr ( _bSkipIfX ) {
-			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+			if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
 				LSN_NEXT_FUNCTION_BY( 2 );
 
 				if constexpr ( _bEndInstr ) {
@@ -6048,45 +6097,13 @@ namespace lsn {
 	}
 
 	/**
-	 * Reads the stack, stores in m_fsState.ui8Bank.
-	 * 
-	 * \tparam _i8SOff Offset from S to read.
-	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
-	 * \tparam _bSpecial If true, LSN_POP_SPECIAL is used instead of LSN_POP.
-	 **/
-	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial>
-	inline void CRicoh5A22::Read_Stack_To_Bank_Phi2() {
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			LSN_POP_SPECIAL( m_fsState.ui8Bank, m_ui8Speed );
-		}
-		else {
-			LSN_POP( m_fsState.ui8Bank, m_ui8Speed );
-		}
-
-#ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			lsn::DebugA( ("Read ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tStore as Bank.").c_str() );
-		}
-		else {
-			lsn::DebugA( ("Read (S" + std::format( "{:+}", _i8SOff ) + ")\tStore as Bank.").c_str() );
-		}
-#endif	// #ifdef LSN_CYCLES_DOC
-		
-		if constexpr ( _bEndInstr ) {
-			LSN_FINISH_INST( true );
-		}
-		else {
-			LSN_NEXT_FUNCTION;
-		}
-
-		LSN_INSTR_END_PHI2;
-	}
-
-	/**
 	 * Reads from [m_fsState.rRegs.ui16X:m_fsState.ui8Bank] into m_fsState.ui8Operand[0] for MVP.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
 	 */
-	inline void CRicoh5A22::Read_X_And_Bank_To_Operand_Low_Phi2() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16X, m_fsState.ui8Bank, m_fsState.ui8Operand[0], m_ui8Speed );
+	inline void CRicoh5A22::Read_X_And_Bank_To_Operand_Low_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16X, _rCpu.m_fsState.ui8Bank, _rCpu.m_fsState.ui8Operand[0], _rCpu.m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Read X:Bank\tStore as Operand.L." );
@@ -6103,22 +6120,24 @@ namespace lsn {
 	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
 	 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bTo, bool _bLowByteWrap, bool _bEndInstr>	
-	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2() {
+	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_High_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 #ifdef LSN_CYCLES_DOC
 		std::string sDebug;
 #endif	// #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bTo == LSN_TO_A ) {
 			if constexpr ( _bLowByteWrap ) {	// Emulation Mode only.
-				uint16_t ui16Target = (m_fsState.rRegs.ui8D[0]) ? m_fsState.ui16Pointer + 1 : (m_fsState.ui16Pointer & 0xFF00) | uint8_t( m_fsState.ui8Pointer[0] + 1 );
-				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, m_fsState.ui8Address[1], m_ui8Speed );
+				uint16_t ui16Target = (_rCpu.m_fsState.rRegs.ui8D[0]) ? _rCpu.m_fsState.ui16Pointer + 1 : (_rCpu.m_fsState.ui16Pointer & 0xFF00) | uint8_t( _rCpu.m_fsState.ui8Pointer[0] + 1 );
+				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, _rCpu.m_fsState.ui8Address[1], _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 				sDebug += "If D.l is not 0, read (Pointer + 1), otherwise read (Pointer & $FF00) | ui8(Pointer.L + 1)\tStore as Address.H.";
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
-				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 1, m_fsState.ui8Address[1], m_ui8Speed );
+				LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.ui16Pointer + 1, _rCpu.m_fsState.ui8Address[1], _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 				sDebug += "Read Pointer + 1\tStore as Address.H.";
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -6126,14 +6145,14 @@ namespace lsn {
 		}
 		else {
 			if constexpr ( _bLowByteWrap ) {	// Emulation Mode only.
-				uint16_t ui16Target = (m_fsState.rRegs.ui8D[0]) ? m_fsState.ui16Address + 1 : (m_fsState.ui16Address & 0xFF00) | uint8_t( m_fsState.ui8Address[0] + 1 );
-				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, m_fsState.ui8Pointer[1], m_ui8Speed );
+				uint16_t ui16Target = (_rCpu.m_fsState.rRegs.ui8D[0]) ? _rCpu.m_fsState.ui16Address + 1 : (_rCpu.m_fsState.ui16Address & 0xFF00) | uint8_t( _rCpu.m_fsState.ui8Address[0] + 1 );
+				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, _rCpu.m_fsState.ui8Pointer[1], _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 				sDebug += "If D.l is not 0, read (Address + 1), otherwise read (Address & $FF00) | ui8(Address.L + 1)\tStore as Pointer.H.";
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
-				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 1, m_fsState.ui8Pointer[1], m_ui8Speed );
+				LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.ui16Address + 1, _rCpu.m_fsState.ui8Pointer[1], _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 				sDebug += "Read Address + 1\tStore as Pointer.H.";
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -6161,27 +6180,29 @@ namespace lsn {
 	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bTo, bool _bSkipIfM, bool _bEndInstr, bool _bSkipIfX>	
-	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_SkipIfX_Phi2() {
+	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_AddrOrPtr_Low_SkipIfM_SkipIfX_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 #ifdef LSN_CYCLES_DOC
 		std::string sDebug;
 #endif	// #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bTo == LSN_TO_A ) {
-			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer, m_fsState.ui16Address, m_ui8Speed );
+			LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.ui16Pointer, _rCpu.m_fsState.ui16Address, _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 			sDebug += "Read Pointer\tStore as Address.";
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
-			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address, m_fsState.ui16Pointer, m_ui8Speed );
+			LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.ui16Address, _rCpu.m_fsState.ui16Pointer, _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 			sDebug += "Read Address\tStore as Pointer.";
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 
 		if constexpr ( _bSkipIfM ) {
-			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 #ifdef LSN_CYCLES_DOC
@@ -6189,7 +6210,7 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else if constexpr ( _bSkipIfX ) {
-			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+			if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 #ifdef LSN_CYCLES_DOC
@@ -6217,19 +6238,21 @@ namespace lsn {
 	 * 
 	 * \tparam _bFrom If LSN_FROM_A, the final address is calculated using m_fsState.ui16Address, otherwise it is determined using m_fsState.ui16Pointer.
 	 * \tparam _bLowByteWrap If true, when adding 1 to the target address causes overflow, the high bits are unaffected (the low byte wraps only).
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bFrom, bool _bLowByteWrap>
-	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_Phi2() {
+	inline void CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		if constexpr ( _bFrom == LSN_FROM_A ) {
 			if constexpr ( _bLowByteWrap ) {	// Emulation Mode only.
-				uint16_t ui16Target = (m_fsState.rRegs.ui8D[0]) ? m_fsState.ui16Address + 2 : (m_fsState.ui16Address & 0xFF00) | uint8_t( m_fsState.ui8Address[0] + 2 );
-				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, m_fsState.ui8Bank, m_ui8Speed );
+				uint16_t ui16Target = (_rCpu.m_fsState.rRegs.ui8D[0]) ? _rCpu.m_fsState.ui16Address + 2 : (_rCpu.m_fsState.ui16Address & 0xFF00) | uint8_t( _rCpu.m_fsState.ui8Address[0] + 2 );
+				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, _rCpu.m_fsState.ui8Bank, _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 				lsn::DebugA( "If D.l is not 0, read (Address + 2), otherwise read (Address & $FF00) | ui8(Address.L + 2)\tStore as Bank." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
-				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Address + 2, m_fsState.ui8Bank, m_ui8Speed );
+				LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.ui16Address + 2, _rCpu.m_fsState.ui8Bank, _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 				lsn::DebugA( "Read Address + 2\tStore as Bank." );
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -6237,14 +6260,14 @@ namespace lsn {
 		}
 		else {
 			if constexpr ( _bLowByteWrap ) {	// Emulation Mode only.
-				uint16_t ui16Target = (m_fsState.rRegs.ui8D[0]) ? m_fsState.ui16Pointer + 2 : (m_fsState.ui16Pointer & 0xFF00) | uint8_t( m_fsState.ui8Pointer[0] + 2 );
-				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, m_fsState.ui8Bank, m_ui8Speed );
+				uint16_t ui16Target = (_rCpu.m_fsState.rRegs.ui8D[0]) ? _rCpu.m_fsState.ui16Pointer + 2 : (_rCpu.m_fsState.ui16Pointer & 0xFF00) | uint8_t( _rCpu.m_fsState.ui8Pointer[0] + 2 );
+				LSN_INSTR_START_PHI2_READ0_BUSA( ui16Target, _rCpu.m_fsState.ui8Bank, _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 				lsn::DebugA( "If D.l is not 0, read (Pointer + 2), otherwise read (Pointer & $FF00) | ui8(Pointer.L + 2)\tStore as Bank." );
 #endif	// #ifdef LSN_CYCLES_DOC
 			}
 			else {
-				LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.ui16Pointer + 2, m_fsState.ui8Bank, m_ui8Speed );
+				LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.ui16Pointer + 2, _rCpu.m_fsState.ui8Bank, _rCpu.m_ui8Speed );
 #ifdef LSN_CYCLES_DOC
 				lsn::DebugA( "Read Pointer + 2\tStore as Bank." );
 #endif	// #ifdef LSN_CYCLES_DOC
