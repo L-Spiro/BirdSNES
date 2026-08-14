@@ -39,7 +39,7 @@
 #define LSN_SPC700_UPDATE_S														m_fsState.rRegs.ui8Sp += m_fsState.ui8SModify; m_fsState.ui8SModify = 0
 
 #ifdef LSN_SPC700_CPU_VERIFY
-#define LSN_SPC700_CYCLES_DOC													1
+//#define LSN_SPC700_CYCLES_DOC													1
 #endif	// #ifdef LSN_SPC700_CPU_VERIFY
 #ifdef LSN_SPC700_CYCLES_DOC
 #define LSN_SPC700_PRINT_STACK																																	\

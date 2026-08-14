@@ -80,9 +80,9 @@ namespace lsn {
 			}
 		}
 
-		if ( "2b e 42" == cvoVerifyMe.sName ) {
+		/*if ( "2b e 42" == cvoVerifyMe.sName ) {
 			volatile int ghg = 0;
-		}
+		}*/
 		// Tick once for each cycle.
 		m_fsState.ui16Operand = m_baBusA.Read( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Speed );
 		m_fsState.ui16PcModify = 1;

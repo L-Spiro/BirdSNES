@@ -222,13 +222,13 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	{	// 18
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
 				&CRicoh5A22::Clc_BeginInst
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
 				&CRicoh5A22::Clc_BeginInst
 			},
 		},
@@ -261,21 +261,21 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	{	// 20
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_DecPc_Phi2<false>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Push_Pc_High_Phi2<0>,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Push_Pc_Low_Phi2<-1, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_Discard_DecPc_Phi2<false>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Push_Pc_High_Phi2<0>,
+				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::Push_Pc_Low_Phi2<-1, true>,
 				&CRicoh5A22::Jsr_Absolute_BeginInst
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_DecPc_Phi2<false>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Push_Pc_High_Phi2<0>,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Push_Pc_Low_Phi2<-1, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_A, false>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_A, false>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_Discard_DecPc_Phi2<false>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Push_Pc_High_Phi2<0>,
+				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::Push_Pc_Low_Phi2<-1, true>,
 				&CRicoh5A22::Jsr_Absolute_BeginInst
 			},
 		},
@@ -1511,23 +1511,23 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	{	// D4
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>,
-				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>,			&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_SkipIfX_Phi2<LSN_FROM_A, false, false, false>,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_LowByteWrap_Phi2<LSN_FROM_A, false>,
-				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_High_Phi2<0>,
-				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>,
+				&CRicoh5A22::Null<LSN_N, true>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>,				&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_SkipIfX_Phi2<LSN_FROM_A, false, false, false>,
+				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_LowByteWrap_Phi2<LSN_FROM_A, false>,
+				&CRicoh5A22::Null<LSN_W>,														&CRicoh5A22::Push_Operand_High_Phi2<0>,
+				&CRicoh5A22::Null<LSN_W>,														&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
 				&CRicoh5A22::BeginInst<false, true, true>
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>,
-				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>,			&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_SkipIfX_Phi2<LSN_FROM_A, false, false>,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_LowByteWrap_Phi2<LSN_FROM_A, false>,
-				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_High_Phi2<0>,
-				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2<true>,
+				&CRicoh5A22::Null<LSN_N, true>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Add_D_And_Operand_To_AddrOrPtr_IncPc<LSN_TO_A, true>,				&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_SkipIfX_Phi2<LSN_FROM_A, false, false>,
+				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_LowByteWrap_Phi2<LSN_FROM_A, false>,
+				&CRicoh5A22::Null<LSN_W>,														&CRicoh5A22::Push_Operand_High_Phi2<0>,
+				&CRicoh5A22::Null<LSN_W>,														&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
 				&CRicoh5A22::BeginInst<false, true, true>
 			},
 		},
@@ -1554,16 +1554,16 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	{	// DA
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2<false, INT8_MIN, false, true>,
-				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_X_High_Phi2<0>,
-				&CRicoh5A22::Null<LSN_W, false, true>,										&CRicoh5A22::Push_X_Low_Phi2<0, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,													&CRicoh5A22::Null_Phi2<false, INT8_MIN, false, true>,
+				&CRicoh5A22::Null<LSN_W>,														&CRicoh5A22::Push_X_High_Phi2<0>,
+				&CRicoh5A22::Null<LSN_W, false, true>,											&CRicoh5A22::Push_X_Low_Phi2<0, true>,
 				&CRicoh5A22::BeginInst<false, true, true>
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_W, false, true>,										&CRicoh5A22::Push_X_Low_Phi2<0, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_W, false, true>,											&CRicoh5A22::Push_X_Low_Phi2<0, true>,
 				&CRicoh5A22::BeginInst<false, true, true>
 			},
 		},
@@ -1572,17 +1572,17 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	{	// DB
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Stp_BeginInst
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2,
 				&CRicoh5A22::Stp_BeginInst
 			},
 		},
@@ -1591,21 +1591,21 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	{	// DC
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_SkipIfX_Phi2<LSN_FROM_P, false, false>,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_Phi2<LSN_FROM_P, false>,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_LowByteWrap_Phi2<LSN_FROM_P, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_SkipIfX_Phi2<LSN_FROM_P, false, false>,
+				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_Phi2<LSN_FROM_P, false>,
+				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_LowByteWrap_Phi2<LSN_FROM_P, true>,
 				&CRicoh5A22::Jml_Absolute_Indirect_BeginInst,
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_SkipIfX_Phi2<LSN_FROM_P, false, false>,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_Phi2<LSN_FROM_P, false>,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_LowByteWrap_Phi2<LSN_FROM_P, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2<LSN_TO_P>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_Low_SkipIfM_SkipIfX_Phi2<LSN_FROM_P, false, false>,
+				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::ReadBank0_PtrOrAddr_To_Operand_High_Phi2<LSN_FROM_P, false>,
+				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::ReadBank0_PtrOrAddr_To_Bank_LowByteWrap_Phi2<LSN_FROM_P, true>,
 				&CRicoh5A22::Jml_Absolute_Indirect_BeginInst,
 			},
 		},
@@ -1627,20 +1627,24 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 		LSN_IMMEDIATE( CPX, Cpx_BeginInst<true>, false )
 	},
 	{	// E1
-		LSN_DIRECT_PAGE_INDEXED_INDIRECT_X_R( SBC, Sbc_BeginInst<false> )
+		LSN_DIRECT_PAGE_INDEXED_INDIRECT_X_R( SBC, Sbc_BeginInst<false> )						/** * * * TEST FAILURE EXPECTED * * * **/
+		/**
+		 * The Single-Step Tests expect a non-carry of the lower byte when wrapping, but it is wrong.
+		 * 1 test here will fail.
+		 **/
 	},
 	{	// E2
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2<false, false, false>,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2<false, false, false>,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
 				&CRicoh5A22::Sep_BeginInst,
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2<false, false>,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2<false, false>,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
 				&CRicoh5A22::Sep_BeginInst,
 			},
 		},
@@ -1676,15 +1680,15 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	{	// EB
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
 				&CRicoh5A22::Xba_BeginInst
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_N, true>,												&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_N, true>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2<false, INT8_MIN, true>,
 				&CRicoh5A22::Xba_BeginInst
 			},
 		},
@@ -1720,19 +1724,19 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	{	// F4
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2<false, false>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_High_IncPc<false>,
-				&CRicoh5A22::Null<LSN_W, true>,												&CRicoh5A22::Push_Operand_High_Phi2<0>,
-				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2<false, false>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_High_IncPc<false>,
+				&CRicoh5A22::Null<LSN_W, true>,													&CRicoh5A22::Push_Operand_High_Phi2<0>,
+				&CRicoh5A22::Null<LSN_W>,														&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
 				&CRicoh5A22::BeginInst<false, true, true>
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2<false, false>,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_High_IncPc<false>,
-				&CRicoh5A22::Null<LSN_W, true>,												&CRicoh5A22::Push_Operand_High_Phi2<0>,
-				&CRicoh5A22::Null<LSN_W>,													&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2<false, false>,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_High_IncPc<false>,
+				&CRicoh5A22::Null<LSN_W, true>,													&CRicoh5A22::Push_Operand_High_Phi2<0>,
+				&CRicoh5A22::Null<LSN_W>,														&CRicoh5A22::Push_Operand_Low_Phi2<-1, true>,
 				&CRicoh5A22::BeginInst<false, true, true>
 			},
 		},
@@ -1754,13 +1758,13 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 		//LSN_IMPLIED_2( NOP, Nop_BeginInst )
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
 				&CRicoh5A22::Sed_BeginInst
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_Discard_Phi2<true>,
 				&CRicoh5A22::Sed_BeginInst
 			},
 		},
@@ -1772,18 +1776,18 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 	{	// FA
 		{
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
-				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2<0, true, false, false, true>,
-				&CRicoh5A22::Null<LSN_R>,													&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<1, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2<false, 1>,
+				&CRicoh5A22::Null<LSN_R, false, true>,											&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2<0, true, false, false, true>,
+				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::Read_Stack_To_Operand_High_Phi2<1, true>,
 				&CRicoh5A22::Plx_BeginInst,
 			},
 			{
-				/* BeginInst() */															&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
-				&CRicoh5A22::Null<LSN_R, true>,												&CRicoh5A22::Null_Phi2,
-				&CRicoh5A22::Null<LSN_N>,													&CRicoh5A22::Null_Phi2<false, 1>,
-				&CRicoh5A22::Null<LSN_R, false, true>,										&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2<0, true, true>,
+				/* BeginInst() */																&CRicoh5A22::Fetch_Opcode_IncPc_Phi2,
+				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Null_Phi2,
+				&CRicoh5A22::Null<LSN_N>,														&CRicoh5A22::Null_Phi2<false, 1>,
+				&CRicoh5A22::Null<LSN_R, false, true>,											&CRicoh5A22::Read_Stack_To_Operand_Low_SkipIfM_SkipIfX_Phi2<0, true, true>,
 				&CRicoh5A22::Plx_BeginInst,
 			},
 		},

@@ -22,7 +22,7 @@ int WINAPI wWinMain( _In_ HINSTANCE /*_hInstance*/, _In_opt_ HINSTANCE /*_hPrevI
 	auto pRoot = GetThisPath().remove_filename();
 	const std::filesystem::path pTests = std::filesystem::path( ".." ) / ".." / "Research" / "spc700" / "v1";
 	{
-		for ( uint32_t I = 0xFF; I < 0x100; ++I ) {
+		for ( uint32_t I = 0x00; I < 0x100; ++I ) {
 			std::wstring wsFile;
 			lson::CJson jSon;
 			std::vector<uint8_t> vBytes;

@@ -35,15 +35,20 @@ LSN_STR( LSN_STR_POWER__OFF, "Power &Off", "電源オフ(&O)", "Éteindre l’al
 
 // Video sizes.
 LSN_1_STR( LSN_1X, "1\u00D7" )
+LSN_1_STR( LSN_1_75X, "1.75\u00D7" )
 LSN_1_STR( LSN_2X, "2\u00D7" )
 LSN_1_STR( LSN_3X, "3\u00D7" )
+LSN_1_STR( LSN_3_5X, "3.5\u00D7" )
 LSN_1_STR( LSN_4X, "4\u00D7" )
 LSN_1_STR( LSN_5X, "5\u00D7" )
+LSN_1_STR( LSN_5_25X, "5.25\u00D7" )
 LSN_1_STR( LSN_6X, "6\u00D7" )
 LSN_1_STR( LSN_7X, "7\u00D7" )
 LSN_1_STR( LSN_8X, "8\u00D7" )
+LSN_1_STR( LSN_8_75X, "8.75\u00D7" )
 LSN_1_STR( LSN_9X, "9\u00D7" )
 LSN_1_STR( LSN_10X, "10\u00D7" )
+LSN_1_STR( LSN_10_5X, "10.5\u00D7" )
 
 // Errors.
 LSN_STR( LSN_STR_INVALID_ERROR_CODE_, "Invalid error code.", "無効なエラーコードです。", "Code d’erreur invalide.", "Código de error no válido.", "无效的错误代码。" )
