@@ -28,14 +28,14 @@ namespace lsn {
 	 * Performs a single PHI1 update.
 	 */
 	void CSpc700::Tick() {
-		(this->*m_pfTickFunc)();
+		(*m_pfTickFunc)( this );
 	}
 
 	/**
 	 * Performs a single PHI2 update.
 	 **/
 	void CSpc700::TickPhi2() {
-		(this->*m_pfTickFunc)();
+		(*m_pfTickFunc)( this );
 
 		++m_ui64CycleCount;
 	}
