@@ -510,48 +510,101 @@ namespace lsn {
 		 * 
 		 * \tparam _uBit The bit to check.
 		 * \tparam _uVal The value the bit needs to be to for a jump to take place.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <uint8_t _uBit, uint8_t _uVal>
-		void															Branch_Cycle1();
+		static void														Branch_Cycle1( CRicoh5A22 * _prCpu );
 
-		/** 2nd cycle of branch instructions. Fetches opcode of next instruction and performs the check to decide which cycle comes next (or to end the instruction). */
-		void															Branch_Cycle1_Phi2();
+		/**
+		 * 2nd cycle of branch instructions. Fetches opcode of next instruction and performs the check to decide which cycle comes next (or to end the instruction).
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Branch_Cycle1_Phi2( CRicoh5A22 * _prCpu );
 
-		/** 3rd cycle of branch instructions. Increases PC and skips to end if not branching. */
-		void															Branch_Cycle2();
+		/**
+		 * 3rd cycle of branch instructions. Increases PC and skips to end if not branching.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Branch_Cycle2( CRicoh5A22 * _prCpu );
 
-		/** 2nd cycle of branch instructions. Calculates target address if not branching. */
-		void															Branch_Cycle2_Phi2();
+		/**
+		 * 2nd cycle of branch instructions. Calculates target address if not branching.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Branch_Cycle2_Phi2( CRicoh5A22 * _prCpu );
 
-		/** 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary. */
-		void															Branch_Cycle3();
+		/**
+		 * 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Branch_Cycle3( CRicoh5A22 * _prCpu );
 
-		/** 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary. */
-		void															Branch_Cycle3_Phi2();
+		/**
+		 * 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Branch_Cycle3_Native( CRicoh5A22 * _prCpu );
 
-		/** 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary. */
-		void															Branch_Cycle3_Native();
+		/**
+		 * 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Branch_Cycle3_Phi2( CRicoh5A22 * _prCpu );
 
-		/** 4th cycle of branch instructions. Page boundary was crossed. */
-		void															Branch_Cycle4();
+		/**
+		 * 4th cycle of branch instructions. Page boundary was crossed.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Branch_Cycle4( CRicoh5A22 * _prCpu );
 
-		/** Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
-		void															Brk_BeginInst();
+		/**
+		 * Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Brk_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs BRL (Branch Long). Adds 16-bit m_fsState.ui16Operand to m_fsState.rRegs.ui16Pc. **/
-		void															Brl_BeginInst();
+		/**
+		 * Performs BRL (Branch Long). Adds 16-bit m_fsState.ui16Operand to m_fsState.rRegs.ui16Pc.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 **/
+		static void														Brl_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Clears the carry bit. */
-		void															Clc_BeginInst();
+		/**
+		 * Clears the carry bit.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Clc_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Clears the decimal flag (D). */
-		void															Cld_BeginInst();
+		/**
+		 * Clears the decimal flag (D).
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Cld_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Clears the IRQ flag. */
-		void															Cli_BeginInst();
+		/**
+		 * Clears the IRQ flag.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Cli_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Clears the overflow flag (V). */
-		void															Clv_BeginInst();
+		/**
+		 * Clears the overflow flag (V).
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Clv_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs A - Operand (comparison). Sets C, N, and Z.
@@ -2527,23 +2580,25 @@ namespace lsn {
 	 * Performs BIT between A and Operand. Sets Z, N, and V.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Bit_BeginInst() {
+	inline void CRicoh5A22::Bit_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & m_fsState.ui8Operand[0]) == 0 );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8A[0] & _rCpu.m_fsState.ui8Operand[0]) == 0 );
 			if constexpr ( !_bIncPc ) {
-				SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
-				SetBit<V()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x40) != 0 );
+				SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.ui8Operand[0] & 0x80) != 0 );
+				SetBit<V()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.ui8Operand[0] & 0x40) != 0 );
 			}
 		}
 		else {
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & m_fsState.ui16Operand) == 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui16A & _rCpu.m_fsState.ui16Operand) == 0 );
 			if constexpr ( !_bIncPc ) {
-				SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[1] & 0x80) != 0 );
-				SetBit<V()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[1] & 0x40) != 0 );
+				SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.ui8Operand[1] & 0x80) != 0 );
+				SetBit<V()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.ui8Operand[1] & 0x40) != 0 );
 			}
 		}
 
@@ -2557,7 +2612,7 @@ namespace lsn {
 		
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bIncPc ) {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( "Set Z based off (A.L & Operand.L)." );
 			}
 			else {
@@ -2565,7 +2620,7 @@ namespace lsn {
 			}
 		}
 		else {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( "Set Z based off (A.L & Operand.L), set N based off (Operand.L & $80), and set V based off (Operand.L & $40)." );
 			}
 			else {
@@ -2574,7 +2629,7 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<_bIncPc, false, false>();
+		BeginInst<_bIncPc, false, false>( _prCpu );
 	}
 
 	/**
@@ -2582,12 +2637,14 @@ namespace lsn {
 	 * 
 	 * \tparam _uBit The bit to check.
 	 * \tparam _uVal The value the bit needs to be to for a jump to take place.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <uint8_t _uBit, uint8_t _uVal>
-	inline void CRicoh5A22::Branch_Cycle1() {
+	inline void CRicoh5A22::Branch_Cycle1( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		m_fsState.bTakeJump = (m_fsState.rRegs.ui8Status & _uBit) == (_uVal * _uBit);
+		_rCpu.m_fsState.bTakeJump = (_rCpu.m_fsState.rRegs.ui8Status & _uBit) == (_uVal * _uBit);
 
 
 #ifdef LSN_CYCLES_DOC
@@ -2645,12 +2702,17 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** 2nd cycle of branch instructions. Fetches opcode of next instruction and performs the check to decide which cycle comes next (or to end the instruction). */
-	inline void CRicoh5A22::Branch_Cycle1_Phi2() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui16Operand, m_ui8Speed );
-		m_fsState.ui16PcModify = 1;
+	/**
+	 * 2nd cycle of branch instructions. Fetches opcode of next instruction and performs the check to decide which cycle comes next (or to end the instruction).
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Branch_Cycle1_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_fsState.ui16Operand, _rCpu.m_ui8Speed );
+		_rCpu.m_fsState.ui16PcModify = 1;
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Read PC:PB\tStore as Operand. Address = i16(i8(Operand.L)) + PC, BoundaryCrossed = Address.H != PC.H. If not branching or not BoundaryCrossed, poll interrupts." );
 		}
 		else {
@@ -2658,18 +2720,18 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		m_fsState.ui16PcModify = 1;
+		_rCpu.m_fsState.ui16PcModify = 1;
 
-		if ( !m_fsState.bTakeJump ) {
+		if ( !_rCpu.m_fsState.bTakeJump ) {
 			LSN_FINISH_INST( true );
 		}
 		else {
-			m_fsState.rRegs.ui16Pc += m_fsState.ui16PcModify;
-			m_fsState.ui16PcModify = 0;
-			m_fsState.ui16Address = static_cast<int16_t>(static_cast<int8_t>(m_fsState.ui8Operand[0])) + m_fsState.rRegs.ui16Pc;
+			_rCpu.m_fsState.rRegs.ui16Pc += _rCpu.m_fsState.ui16PcModify;
+			_rCpu.m_fsState.ui16PcModify = 0;
+			_rCpu.m_fsState.ui16Address = static_cast<int16_t>(static_cast<int8_t>(_rCpu.m_fsState.ui8Operand[0])) + _rCpu.m_fsState.rRegs.ui16Pc;
 
-			m_fsState.bBoundaryCrossed = m_fsState.ui8Address[1] != m_fsState.rRegs.ui8Pc[1];
-			if ( !m_fsState.bBoundaryCrossed && m_fsState.bEmulationMode ) {
+			_rCpu.m_fsState.bBoundaryCrossed = _rCpu.m_fsState.ui8Address[1] != _rCpu.m_fsState.rRegs.ui8Pc[1];
+			if ( !_rCpu.m_fsState.bBoundaryCrossed && _rCpu.m_fsState.bEmulationMode ) {
 				LSN_CHECK_INTERRUPTS;
 			}
 
@@ -2681,10 +2743,15 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 
-	/** 3rd cycle of branch instructions. Increases PC and skips to end if not branching. */
-	inline void CRicoh5A22::Branch_Cycle2() {
+	/**
+	 * 3rd cycle of branch instructions. Increases PC and skips to end if not branching.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Branch_Cycle2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tInc. PC. If not branching, end (next half-cycle is 4.2)." );
 		}
 		else {
@@ -2693,8 +2760,8 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 		LSN_UPDATE_PC;
 
-		if ( !m_fsState.bTakeJump ) {
-			BeginInst<true, false, false>();
+		if ( !_rCpu.m_fsState.bTakeJump ) {
+			BeginInst<true, false, false>( _prCpu );
 		}
 		else {
 			LSN_NEXT_FUNCTION;
@@ -2703,14 +2770,19 @@ namespace lsn {
 		}
 	}
 
-	/** 2nd cycle of branch instructions. Calculates target address if not branching. */
-	inline void CRicoh5A22::Branch_Cycle2_Phi2() {
-		if ( !m_fsState.bEmulationMode ) {
+	/**
+	 * 2nd cycle of branch instructions. Calculates target address if not branching.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Branch_Cycle2_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		if ( !_rCpu.m_fsState.bEmulationMode ) {
 			LSN_CHECK_INTERRUPTS;
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if ( !m_fsState.bEmulationMode ) {
+		if ( !_rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPoll interrupts." );
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -2720,18 +2792,23 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 
-	/** 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary. */
-	inline void CRicoh5A22::Branch_Cycle3() {
+	/**
+	 * 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Branch_Cycle3( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		m_fsState.rRegs.ui8Pc[0] = m_fsState.ui8Address[0];
+		_rCpu.m_fsState.rRegs.ui8Pc[0] = _rCpu.m_fsState.ui8Address[0];
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tSet PC.L to Address.L. If not BoundaryCrossed, end (next half-cycle is 4.2)." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		if ( !m_fsState.bBoundaryCrossed ) {
-			BeginInst<true, false, false>();
+		if ( !_rCpu.m_fsState.bBoundaryCrossed ) {
+			BeginInst<true, false, false>( _prCpu );
 		}
 		else {
 			LSN_NEXT_FUNCTION;
@@ -2740,8 +2817,36 @@ namespace lsn {
 		}
 	}
 
-	/** 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary. */
-	inline void CRicoh5A22::Branch_Cycle3_Phi2() {
+	/**
+	 * 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Branch_Cycle3_Native( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI1( true );
+
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "\tSet PC to Address." );
+#endif	// #ifdef LSN_CYCLES_DOC
+
+		BeginInst<false, false, false>( _prCpu );
+		if ( _rCpu.m_fsState.bTakeJump ) {
+			_rCpu.m_fsState.rRegs.ui16Pc = _rCpu.m_fsState.ui16Address;
+		}
+
+		/*LSN_NEXT_FUNCTION;
+
+		LSN_INSTR_END_PHI1;*/
+	}
+
+	/**
+	 * 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Branch_Cycle3_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_FINISH_INST( true );
 
 #ifdef LSN_CYCLES_DOC
@@ -2751,35 +2856,22 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 
-	/** 3rd cycle of branch instructions. Branch was taken and might have crossed a page boundary. */
-	inline void CRicoh5A22::Branch_Cycle3_Native() {
-		LSN_INSTR_START_PHI1( true );
-
-#ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "\tSet PC to Address." );
-#endif	// #ifdef LSN_CYCLES_DOC
-
-		BeginInst<false, false, false>();
-		if ( m_fsState.bTakeJump ) {
-			m_fsState.rRegs.ui16Pc = m_fsState.ui16Address;
-		}
-
-		/*LSN_NEXT_FUNCTION;
-
-		LSN_INSTR_END_PHI1;*/
-	}
-
-	/** 4th cycle of branch instructions. Page boundary was crossed. */
-	inline void CRicoh5A22::Branch_Cycle4() {
+	/**
+	 * 4th cycle of branch instructions. Page boundary was crossed.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Branch_Cycle4( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tSet PC.H to Address.H" );
 #endif	// #ifdef LSN_CYCLES_DOC
 		
-		BeginInst<false, false, false>();
-		//if ( m_fsState.bTakeJump ) {
-			m_fsState.rRegs.ui8Pc[1] = m_fsState.ui8Address[1];
+		BeginInst<false, false, false>( _prCpu );
+		//if ( _rCpu.m_fsState.bTakeJump ) {
+			_rCpu.m_fsState.rRegs.ui8Pc[1] = _rCpu.m_fsState.ui8Address[1];
 		//}
 
 		/*LSN_NEXT_FUNCTION;
@@ -2787,85 +2879,115 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;*/
 	}
 
-	/** Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction. */
-	inline void CRicoh5A22::Brk_BeginInst() {
+	/**
+	 * Final touches to BRK (copies m_fsState.ui16Address to m_fsState.rRegs.ui16Pc) and first cycle of the next instruction.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Brk_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 		
-		m_bBrkIsReset = false;
-		m_fsState.rRegs.ui16Pc = m_fsState.ui16Address;
-		m_fsState.rRegs.ui8Pb = 0;
-		m_fsState.bAllowWritingToPc = true;
+		_rCpu.m_bBrkIsReset = false;
+		_rCpu.m_fsState.rRegs.ui16Pc = _rCpu.m_fsState.ui16Address;
+		_rCpu.m_fsState.rRegs.ui8Pb = 0;
+		_rCpu.m_fsState.bAllowWritingToPc = true;
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tEnable writes to PC (disabled by NMI/IRQ). Copy Address to PC. Set PB to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs BRL (Branch Long). Adds 16-bit m_fsState.ui16Operand to m_fsState.rRegs.ui16Pc. **/
-	inline void CRicoh5A22::Brl_BeginInst() {
+	/**
+	 * Performs BRL (Branch Long). Adds 16-bit m_fsState.ui16Operand to m_fsState.rRegs.ui16Pc.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 **/
+	inline void CRicoh5A22::Brl_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		m_fsState.rRegs.ui16Pc += m_fsState.ui16Operand;
+		_rCpu.m_fsState.rRegs.ui16Pc += _rCpu.m_fsState.ui16Operand;
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tPerform PC += Operand." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Clears the carry bit. */
-	inline void CRicoh5A22::Clc_BeginInst() {
+	/**
+	 * Clears the carry bit.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Clc_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 		
-		SetBit<C(), false>( m_fsState.rRegs.ui8Status );
+		SetBit<C(), false>( _rCpu.m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tSet the C flag to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Clears the decimal flag (D). */
-	inline void CRicoh5A22::Cld_BeginInst() {
+	/**
+	 * Clears the decimal flag (D).
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Cld_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 		
-		SetBit<D(), false>( m_fsState.rRegs.ui8Status );
+		SetBit<D(), false>( _rCpu.m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tSet the D flag to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Clears the IRQ flag. */
-	inline void CRicoh5A22::Cli_BeginInst() {
+	/**
+	 * Clears the IRQ flag.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Cli_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 		
-		SetBit<I(), false>( m_fsState.rRegs.ui8Status );
+		SetBit<I(), false>( _rCpu.m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tSet the I flag to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Clears the overflow flag (V). */
-	inline void CRicoh5A22::Clv_BeginInst() {
+	/**
+	 * Clears the overflow flag (V).
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Clv_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 		
-		SetBit<V(), false>( m_fsState.rRegs.ui8Status );
+		SetBit<V(), false>( _rCpu.m_fsState.rRegs.ui8Status );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tSet the V flag to 0." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/**
