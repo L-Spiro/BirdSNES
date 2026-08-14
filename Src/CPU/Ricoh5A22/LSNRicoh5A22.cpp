@@ -29,14 +29,14 @@ namespace lsn {
 		m_bIrqStatusPhi1Flag = m_bIrqSeenLowPhi2;
 		m_bIrqSeenLowPhi2 = false;
 
-		(this->*m_pfTickFunc)();
+		(*m_pfTickFunc)( this );
 	}
 
 	/**
 	 * Performs a single PHI2 update.
 	 **/
 	void CRicoh5A22::TickPhi2() {
-		(this->*m_pfTickFunc)();
+		(*m_pfTickFunc)( this );
 
 		m_bIrqSeenLowPhi2 |= (m_ui8IrqStatusLine != 0);
 
