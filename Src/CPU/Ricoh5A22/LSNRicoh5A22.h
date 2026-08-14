@@ -1032,35 +1032,39 @@ namespace lsn {
 		 * Pushes m_fsState.rRegs.ui8A[1].
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0>
-		void															Push_A_High_Phi2();
+		static void														Push_A_High_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8A[0].
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = -1, bool _bEndInstr = true>
-		void															Push_A_Low_Phi2();
+		static void														Push_A_Low_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8D[1].
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0>
-		void															Push_D_High_Phi2();
+		static void														Push_D_High_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8D[0].
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = -1, bool _bEndInstr = true>
-		void															Push_D_Low_Phi2();
+		static void														Push_D_Low_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8Db.
@@ -1068,26 +1072,29 @@ namespace lsn {
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0, bool _bEndInstr = true, bool _bSpecial = true>
-		void															Push_Db_Phi2();
+		static void														Push_Db_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.ui8Operand[1].
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0>
-		void															Push_Operand_High_Phi2();
+		static void														Push_Operand_High_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.ui8Operand[0].
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0, bool _bEndInstr = true>
-		void															Push_Operand_Low_Phi2();
+		static void														Push_Operand_Low_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8Pb.
@@ -1095,35 +1102,39 @@ namespace lsn {
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = -1, bool _bEndInstr = true, bool _bSpecial = true>
-		void															Push_Pb_Phi2();
+		static void														Push_Pb_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8Pb.
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0>
-		void															Push_Pb_Brk_Phi2();
+		static void														Push_Pb_Brk_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8Pc[1] with the given S offset.
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0, bool _bSpecial = false>
-		void															Push_Pc_High_Phi2();
+		static void														Push_Pc_High_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8Pc[1] with the given S offset.
 		 * 
 		 * \tparam _i8SOff The offset from S to which to write the pushed value.
 		 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <int8_t _i8SOff = 0, bool _bSpecial = false>
-		void															Push_Pc_High_Brk_Phi2();
+		static void														Push_Pc_High_Brk_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Pushes m_fsState.rRegs.ui8Pc[0] with the given S offset.
@@ -1818,43 +1829,9 @@ namespace lsn {
 	};
 
 
-	// * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * *
+	// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	// DEFINITIONS
-	// * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * * 
-		 * *
+	// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	// == Fuctions.
 	/**
 	 * Fetches the next opcode and begins the next instruction.
@@ -4849,13 +4826,15 @@ namespace lsn {
 	 * Pushes m_fsState.rRegs.ui8A[1].
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff>
-	inline void CRicoh5A22::Push_A_High_Phi2() {
-		LSN_PUSH( m_fsState.rRegs.ui8A[1], m_ui8Speed );
+	inline void CRicoh5A22::Push_A_High_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_PUSH( _rCpu.m_fsState.rRegs.ui8A[1], _rCpu.m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush A.H onto stack.").c_str() );
 		}
 		else {
@@ -4873,17 +4852,19 @@ namespace lsn {
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff, bool _bEndInstr>
-	inline void CRicoh5A22::Push_A_Low_Phi2() {
-		LSN_PUSH_SPECIAL( m_fsState.rRegs.ui8A[0], m_ui8Speed );
+	inline void CRicoh5A22::Push_A_Low_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_PUSH_SPECIAL( _rCpu.m_fsState.rRegs.ui8A[0], _rCpu.m_ui8Speed );
 
 		// Needs to use
-		//	((0x100 | m_fsState.rRegs.ui8S[0]) + _i8SOff)
+		//	((0x100 | _rCpu.m_fsState.rRegs.ui8S[0]) + _i8SOff)
 		//	for the stack address??
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush A.L onto stack.").c_str() );
 		}
 		else {
@@ -4905,13 +4886,15 @@ namespace lsn {
 	 * Pushes m_fsState.rRegs.ui8D[1].
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff>
-	inline void CRicoh5A22::Push_D_High_Phi2() {
-		LSN_PUSH( m_fsState.rRegs.ui8D[1], m_ui8Speed );
+	inline void CRicoh5A22::Push_D_High_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_PUSH( _rCpu.m_fsState.rRegs.ui8D[1], _rCpu.m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush D.H onto stack.").c_str() );
 		}
 		else {
@@ -4929,17 +4912,19 @@ namespace lsn {
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff, bool _bEndInstr>
-	inline void CRicoh5A22::Push_D_Low_Phi2() {
-		LSN_PUSH_SPECIAL( m_fsState.rRegs.ui8D[0], m_ui8Speed );
+	inline void CRicoh5A22::Push_D_Low_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_PUSH_SPECIAL( _rCpu.m_fsState.rRegs.ui8D[0], _rCpu.m_ui8Speed );
 
 		// Needs to use
-		//	((0x100 | m_fsState.rRegs.ui8S[0]) + _i8SOff)
+		//	((0x100 | _rCpu.m_fsState.rRegs.ui8S[0]) + _i8SOff)
 		//	for the stack address??
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush D.L onto stack.").c_str() );
 		}
 		else {
@@ -4963,19 +4948,21 @@ namespace lsn {
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial>
-	inline void CRicoh5A22::Push_Db_Phi2() {
+	inline void CRicoh5A22::Push_Db_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		if constexpr ( _bSpecial ) {
-			LSN_PUSH_SPECIAL( m_fsState.rRegs.ui8Db, m_ui8Speed );
+			LSN_PUSH_SPECIAL( _rCpu.m_fsState.rRegs.ui8Db, _rCpu.m_ui8Speed );
 		}
 		else {
-			LSN_PUSH( m_fsState.rRegs.ui8Db, m_ui8Speed );
+			LSN_PUSH( _rCpu.m_fsState.rRegs.ui8Db, _rCpu.m_ui8Speed );
 		}
 
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bSpecial ) {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush DB onto stack.").c_str() );
 			}
 			else {
@@ -4983,7 +4970,7 @@ namespace lsn {
 			}
 		}
 		else {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush DB onto stack.").c_str() );
 			}
 			else {
@@ -5006,13 +4993,15 @@ namespace lsn {
 	 * Pushes m_fsState.ui8Operand[1].
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff>
-	inline void CRicoh5A22::Push_Operand_High_Phi2() {
-		LSN_PUSH_SPECIAL( m_fsState.ui8Operand[1], m_ui8Speed );
+	inline void CRicoh5A22::Push_Operand_High_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_PUSH_SPECIAL( _rCpu.m_fsState.ui8Operand[1], _rCpu.m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.H onto stack.").c_str() );
 		}
 		else {
@@ -5030,13 +5019,15 @@ namespace lsn {
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff, bool _bEndInstr>
-	inline void CRicoh5A22::Push_Operand_Low_Phi2() {
-		LSN_PUSH_SPECIAL( m_fsState.ui8Operand[0], m_ui8Speed );
+	inline void CRicoh5A22::Push_Operand_Low_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_PUSH_SPECIAL( _rCpu.m_fsState.ui8Operand[0], _rCpu.m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush Operand.L onto stack.").c_str() );
 		}
 		else {
@@ -5060,19 +5051,21 @@ namespace lsn {
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff, bool _bEndInstr, bool _bSpecial>
-	inline void CRicoh5A22::Push_Pb_Phi2() {
+	inline void CRicoh5A22::Push_Pb_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		if constexpr ( _bSpecial ) {
-			LSN_PUSH_SPECIAL( m_fsState.rRegs.ui8Pb, m_ui8Speed );
+			LSN_PUSH_SPECIAL( _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_ui8Speed );
 		}
 		else {
-			LSN_PUSH( m_fsState.rRegs.ui8Pb, m_ui8Speed );
+			LSN_PUSH( _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_ui8Speed );
 		}
 
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bSpecial ) {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PB onto stack.").c_str() );
 			}
 			else {
@@ -5080,7 +5073,7 @@ namespace lsn {
 			}
 		}
 		else {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PB onto stack.").c_str() );
 			}
 			else {
@@ -5103,19 +5096,21 @@ namespace lsn {
 	 * Pushes m_fsState.rRegs.ui8Pb.
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff>
-	inline void CRicoh5A22::Push_Pb_Brk_Phi2() {
-		if LSN_UNLIKELY( m_bBrkIsReset ) {
+	inline void CRicoh5A22::Push_Pb_Brk_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		if LSN_UNLIKELY( _rCpu.m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
-			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, m_ui8Speed );
-			m_fsState.ui16SModify = uint16_t( -1 + _i8SOff );
+			LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.bEmulationMode ? (0x100 | uint8_t( _rCpu.m_fsState.rRegs.ui8S[0] + _i8SOff )) : (_rCpu.m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, _rCpu.m_ui8Speed );
+			_rCpu.m_fsState.ui16SModify = uint16_t( -1 + _i8SOff );
 		}
 		else {
-			LSN_PUSH( m_fsState.rRegs.ui8Pb, m_ui8Speed );
+			LSN_PUSH( _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_ui8Speed );
 		}
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PB onto stack.").c_str() );
 		}
 		else {
@@ -5133,18 +5128,20 @@ namespace lsn {
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff, bool _bSpecial>
-	inline void CRicoh5A22::Push_Pc_High_Phi2() {
+	inline void CRicoh5A22::Push_Pc_High_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		if constexpr ( _bSpecial ) {
-			LSN_PUSH_SPECIAL( m_fsState.rRegs.ui8Pc[1], m_ui8Speed );
+			LSN_PUSH_SPECIAL( _rCpu.m_fsState.rRegs.ui8Pc[1], _rCpu.m_ui8Speed );
 		}
 		else {
-			LSN_PUSH( m_fsState.rRegs.ui8Pc[1], m_ui8Speed );
+			LSN_PUSH( _rCpu.m_fsState.rRegs.ui8Pc[1], _rCpu.m_ui8Speed );
 		}
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bSpecial ) {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
 			}
 			else {
@@ -5152,7 +5149,7 @@ namespace lsn {
 			}
 		}
 		else {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.H onto stack.").c_str() );
 			}
 			else {
@@ -5171,25 +5168,27 @@ namespace lsn {
 	 * 
 	 * \tparam _i8SOff The offset from S to which to write the pushed value.
 	 * \tparam _bSpecial If true, LSN_PUSH_SPECIAL is used instead of LSN_PUSH.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <int8_t _i8SOff, bool _bSpecial>
-	inline void CRicoh5A22::Push_Pc_High_Brk_Phi2() {
-		if LSN_UNLIKELY( m_bBrkIsReset ) {
+	inline void CRicoh5A22::Push_Pc_High_Brk_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		if LSN_UNLIKELY( _rCpu.m_bBrkIsReset ) {
 			uint8_t ui8Tmp;
-			LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.bEmulationMode ? (0x100 | uint8_t( m_fsState.rRegs.ui8S[0] + _i8SOff )) : (m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, m_ui8Speed );
-			m_fsState.ui16SModify = uint16_t( int8_t( -1 ) + _i8SOff );
+			LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.bEmulationMode ? (0x100 | uint8_t( _rCpu.m_fsState.rRegs.ui8S[0] + _i8SOff )) : (_rCpu.m_fsState.rRegs.ui16S + _i8SOff), ui8Tmp, _rCpu.m_ui8Speed );
+			_rCpu.m_fsState.ui16SModify = uint16_t( int8_t( -1 ) + _i8SOff );
 		}
 		else {
 			if constexpr ( _bSpecial ) {
-				LSN_PUSH_SPECIAL( m_fsState.rRegs.ui8Pc[1], m_ui8Speed );
+				LSN_PUSH_SPECIAL( _rCpu.m_fsState.rRegs.ui8Pc[1], _rCpu.m_ui8Speed );
 			}
 			else {
-				LSN_PUSH( m_fsState.rRegs.ui8Pc[1], m_ui8Speed );
+				LSN_PUSH( _rCpu.m_fsState.rRegs.ui8Pc[1], _rCpu.m_ui8Speed );
 			}
 		}
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _bSpecial ) {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( ("Write to ((S.L | $0100)" + std::format( "{:+}", _i8SOff ) + ")\tPush PC.H onto stack.").c_str() );
 			}
 			else {
@@ -5197,7 +5196,7 @@ namespace lsn {
 			}
 		}
 		else {
-			if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+			if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 				lsn::DebugA( ("Write to u8(S.L" + std::format( "{:+}", _i8SOff ) + ") | $0100\tPush PC.H onto stack.").c_str() );
 			}
 			else {
