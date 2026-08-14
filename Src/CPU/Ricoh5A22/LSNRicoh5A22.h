@@ -665,67 +665,88 @@ namespace lsn {
 		template <bool _bIncPc = false>
 		static void														Cpy_BeginInst( CRicoh5A22 * _prCpu );
 		
-
-		/** Performs A--. Sets N and Z. */
-		void															DecOnA_BeginInst();
+		/**
+		 * Performs A--. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														DecOnA_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs Operand--. Sets N and Z.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Dec();
+		static void														Dec( CRicoh5A22 * _prCpu );
 
-		/** Performs X--. Sets N and Z. */
-		void															Dex_BeginInst();
+		/**
+		 * Performs X--. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Dex_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs Y--. Sets N and Z. */
-		void															Dey_BeginInst();
+		/**
+		 * Performs Y--. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Dey_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs EOR with m_fsState.ui8Operand[0].
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Eor_BeginInst();
+		static void														Eor_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Fetches m_fsState.ui8Bank and increments PC.
 		 * 
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bEndInstr = false>
-		void															Fetch_Bank_IncPc_Phi2();
+		static void														Fetch_Bank_IncPc_Phi2( CRicoh5A22 * _prCpu );
 
-		/** Fetches the current opcode and increments PC. **/
-		void															Fetch_Opcode_IncPc_Phi2();
+		/**
+		 * Fetches the current opcode and increments PC.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 **/
+		static void														Fetch_Opcode_IncPc_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Fetches m_fsState.ui8Operand[1] and increments the PC.
 		 * 
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bEndInstr = false>
-		void															Fetch_Operand_High_IncPc();
-
-		/**
-		 * Fetches the next operand and discards without incrementing PC.
-		 * 
-		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
-		 **/
-		template <bool _bEndInstr = false>
-		void															Fetch_Operand_Discard_Phi2();
+		static void														Fetch_Operand_High_IncPc( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Fetches the next operand and discards without incrementing PC, then schedules PC -= 1
 		 * for the next PHI1 (so following pushes see PC-1).
 		 *
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bEndInstr = false>
-		void															Fetch_Operand_Discard_DecPc_Phi2();
+		static void														Fetch_Operand_Discard_DecPc_Phi2( CRicoh5A22 * _prCpu );
+
+		/**
+		 * Fetches the next operand and discards without incrementing PC.
+		 * 
+		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
+		 **/
+		template <bool _bEndInstr = false>
+		static void														Fetch_Operand_Discard_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Fetches the next operand and increments the PC.
@@ -733,9 +754,10 @@ namespace lsn {
 		 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bSkipIfM = false, bool _bEndInstr = false, bool _bSkipIfX = false>
-		void															Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2();
+		static void														Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Fetches the operand and increments PC.
@@ -3210,23 +3232,28 @@ namespace lsn {
 		BeginInst<_bIncPc, false, false>( _prCpu );
 	}
 
-	/** Performs A--. Sets N and Z. */
-	inline void CRicoh5A22::DecOnA_BeginInst() {
+	/**
+	 * Performs A--. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::DecOnA_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			--m_fsState.rRegs.ui8A[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			--_rCpu.m_fsState.rRegs.ui8A[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8A[0] );
 		}
 		else {
-			--m_fsState.rRegs.ui16A;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+			--_rCpu.m_fsState.rRegs.ui16A;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16A );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform A.L -= 1, set N based off (A.L & $80), set Z based off A.L." );
 		}
 		else {
@@ -3234,27 +3261,29 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/**
 	 * Performs Operand--. Sets N and Z.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Dec() {
+	inline void CRicoh5A22::Dec( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			--m_fsState.ui8Operand[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			--_rCpu.m_fsState.ui8Operand[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.ui8Operand[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.ui8Operand[0] );
 		}
 		else {
-			--m_fsState.ui16Operand;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.ui8Operand[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui16Operand );
+			--_rCpu.m_fsState.ui16Operand;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.ui8Operand[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.ui16Operand );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -3270,7 +3299,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Perform Operand.L -= 1, set N based off (Operand.L & $80), and Z based off Operand.L." );
 		}
 		else {
@@ -3283,22 +3312,28 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	inline void CRicoh5A22::Dex_BeginInst() {
+	/**
+	 * Performs X--. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Dex_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			--m_fsState.rRegs.ui8X[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8X[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			--_rCpu.m_fsState.rRegs.ui8X[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8X[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8X[0] );
 		}
 		else {
-			--m_fsState.rRegs.ui16X;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16X );
+			--_rCpu.m_fsState.rRegs.ui16X;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8X[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16X );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform X.L -= 1, set N based off (X.L & $80), set Z based off X.L." );
 		}
 		else {
@@ -3306,26 +3341,31 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs Y--. Sets N and Z. */
-	inline void CRicoh5A22::Dey_BeginInst() {
+	/**
+	 * Performs Y--. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Dey_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			--m_fsState.rRegs.ui8Y[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8Y[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			--_rCpu.m_fsState.rRegs.ui8Y[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8Y[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8Y[0] );
 		}
 		else {
-			--m_fsState.rRegs.ui16Y;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16Y );
+			--_rCpu.m_fsState.rRegs.ui16Y;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8Y[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16Y );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform Y.L -= 1, set N based off (Y.L & $80), set Z based off Y.L." );
 		}
 		else {
@@ -3333,32 +3373,34 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/**
 	 * Performs EOR with m_fsState.ui8Operand[0].
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Eor_BeginInst() {
+	inline void CRicoh5A22::Eor_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			m_fsState.rRegs.ui8A[0] ^= m_fsState.ui8Operand[0];
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			_rCpu.m_fsState.rRegs.ui8A[0] ^= _rCpu.m_fsState.ui8Operand[0];
 		}
 		else {
-			m_fsState.rRegs.ui16A ^= m_fsState.ui16Operand;
+			_rCpu.m_fsState.rRegs.ui16A ^= _rCpu.m_fsState.ui16Operand;
 		}
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8A[0] );
 		}
 		else {
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16A );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -3367,7 +3409,7 @@ namespace lsn {
 			lsn::DebugA( "Inc. PC. " );
 		}
 
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Perform A ^= Operand. Set N based off (A.L & $80) and Z based off A.L." );
 		}
 		else {
@@ -3375,18 +3417,20 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<_bIncPc, false, false>();
+		BeginInst<_bIncPc, false, false>( _prCpu );
 	}
 
 	/**
 	 * Fetches m_fsState.ui8Bank and increments PC.
 	 * 
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bEndInstr>
-	inline void CRicoh5A22::Fetch_Bank_IncPc_Phi2() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui8Bank, m_ui8Speed );
-		m_fsState.ui16PcModify = 1;
+	inline void CRicoh5A22::Fetch_Bank_IncPc_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_fsState.ui8Bank, _rCpu.m_ui8Speed );
+		_rCpu.m_fsState.ui16PcModify = 1;
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Read PC:PB\tStores as Bank." );
@@ -3402,30 +3446,35 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 
-	/** Fetches the current opcode and increments PC. **/
-	inline void CRicoh5A22::Fetch_Opcode_IncPc_Phi2() {
+	/**
+	 * Fetches the current opcode and increments PC.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 **/
+	inline void CRicoh5A22::Fetch_Opcode_IncPc_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		uint8_t ui8Op;
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, m_ui8Speed );
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, ui8Op, _rCpu.m_ui8Speed );
 
 #ifdef LSN_CPU_VERIFY
-		m_fsState.ui16PcModify = 1;
+		_rCpu.m_fsState.ui16PcModify = 1;
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Store as OpCode." );
 #endif	// #ifdef LSN_CYCLES_DOC
 #else
-		if LSN_UNLIKELY( m_bHandleNmi || m_bHandleIrq || m_bIsReset ) {
+		if LSN_UNLIKELY( _rCpu.m_bHandleNmi || _rCpu.m_bHandleIrq || _rCpu.m_bIsReset ) {
 			ui8Op = 0;
-			m_fsState.bPushB = false;
-			m_fsState.ui16PcModify = 0;
-			m_fsState.bAllowWritingToPc = false;
+			_rCpu.m_fsState.bPushB = false;
+			_rCpu.m_fsState.ui16PcModify = 0;
+			_rCpu.m_fsState.bAllowWritingToPc = false;
 		}
 		else {
-			m_fsState.bPushB = true;
-			m_fsState.ui16PcModify = 1;
+			_rCpu.m_fsState.bPushB = true;
+			_rCpu.m_fsState.ui16PcModify = 1;
 		}
 #endif	// #ifdef LSN_CPU_VERIFY
-		m_fsState.ui16OpCode = ui8Op;
-		m_fsState.pfCurInstruction = m_iInstructionSet[m_fsState.ui16OpCode].pfHandler[m_fsState.bEmulationMode];
+		_rCpu.m_fsState.ui16OpCode = ui8Op;
+		_rCpu.m_fsState.pfCurInstruction = _rCpu.m_iInstructionSet[_rCpu.m_fsState.ui16OpCode].pfHandler[_rCpu.m_fsState.bEmulationMode];
 
 		LSN_NEXT_FUNCTION;
 
@@ -3436,35 +3485,15 @@ namespace lsn {
 	 * Fetches m_fsState.ui8Operand[1] and increments the PC.
 	 * 
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bEndInstr>
-	inline void CRicoh5A22::Fetch_Operand_High_IncPc() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui8Operand[1], m_ui8Speed );
-		m_fsState.ui16PcModify = 1;
+	inline void CRicoh5A22::Fetch_Operand_High_IncPc( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_fsState.ui8Operand[1], _rCpu.m_ui8Speed );
+		_rCpu.m_fsState.ui16PcModify = 1;
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Read PC:PB\tStore as Operand.H." );
-#endif	// #ifdef LSN_CYCLES_DOC
-		
-		if constexpr ( _bEndInstr ) {
-			LSN_FINISH_INST( true );
-		}
-		else {
-			LSN_NEXT_FUNCTION;
-		}
-
-		LSN_INSTR_END_PHI2;
-	}
-
-	/**
-	 * Fetches the next operand and discards without incrementing PC.
-	 * 
-	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
-	 **/
-	template <bool _bEndInstr>
-	inline void CRicoh5A22::Fetch_Operand_Discard_Phi2() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui8Operand[0], m_ui8Speed );
-#ifdef LSN_CYCLES_DOC
-		lsn::DebugA( "Read PC:PB\tDiscard." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		
 		if constexpr ( _bEndInstr ) {
@@ -3482,13 +3511,15 @@ namespace lsn {
 	 * for the next PHI1 (so following pushes see PC-1).
 	 *
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bEndInstr>
-	inline void CRicoh5A22::Fetch_Operand_Discard_DecPc_Phi2() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui8Operand[0], m_ui8Speed );
+	inline void CRicoh5A22::Fetch_Operand_Discard_DecPc_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_fsState.ui8Operand[0], _rCpu.m_ui8Speed );
 
 		// Back PC up by 1 on the next PHI1.
-		m_fsState.ui16PcModify = uint16_t( -1 );
+		_rCpu.m_fsState.ui16PcModify = uint16_t( -1 );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Read PC:PB\tDiscard." );
@@ -3504,6 +3535,29 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 
+	/**
+	 * Fetches the next operand and discards without incrementing PC.
+	 * 
+	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
+	 **/
+	template <bool _bEndInstr>
+	inline void CRicoh5A22::Fetch_Operand_Discard_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_fsState.ui8Operand[0], _rCpu.m_ui8Speed );
+#ifdef LSN_CYCLES_DOC
+		lsn::DebugA( "Read PC:PB\tDiscard." );
+#endif	// #ifdef LSN_CYCLES_DOC
+		
+		if constexpr ( _bEndInstr ) {
+			LSN_FINISH_INST( true );
+		}
+		else {
+			LSN_NEXT_FUNCTION;
+		}
+
+		LSN_INSTR_END_PHI2;
+	}
 
 	/**
 	 * Fetches the next operand and increments the PC.
@@ -3511,17 +3565,19 @@ namespace lsn {
 	 * \tparam _bSkipIfM If true, the next cycle is skipped if M() is set.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bSkipIfM, bool _bEndInstr, bool _bSkipIfX>
-	inline void CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui16Operand, m_ui8Speed );
-		m_fsState.ui16PcModify = 1;
+	inline void CRicoh5A22::Fetch_Operand_IncPc_SkipIfM_SkipIfX_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_fsState.ui16Operand, _rCpu.m_ui8Speed );
+		_rCpu.m_fsState.ui16PcModify = 1;
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Read PC:PB\tStore as Operand." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		if constexpr ( _bSkipIfM ) {
-			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
 				LSN_NEXT_FUNCTION_BY( 2 );
 
 				if constexpr ( _bEndInstr ) {
@@ -3540,7 +3596,7 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else if constexpr ( _bSkipIfX ) {
-			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+			if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
 				LSN_NEXT_FUNCTION_BY( 2 );
 
 				if constexpr ( _bEndInstr ) {
