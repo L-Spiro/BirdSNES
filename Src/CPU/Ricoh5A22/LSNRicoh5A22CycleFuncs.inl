@@ -69,9 +69,9 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 				&CRicoh5A22::Null_RorW<true>,													&CRicoh5A22::Push_Pb_Brk_Phi2<0>,
 				&CRicoh5A22::Null_RorW,															&CRicoh5A22::Push_Pc_High_Brk_Phi2<-1>,
 				&CRicoh5A22::Null_RorW,															&CRicoh5A22::Push_Pc_Low_Brk_Phi2<-2>,
-				&CRicoh5A22::SelectBrkVectors<false>,											&CRicoh5A22::Push_S_Brk_Phi2<-3>,
+				&CRicoh5A22::Select_Brk_Vectors<false>,											&CRicoh5A22::Push_S_Brk_Phi2<-3>,
 				&CRicoh5A22::Null<LSN_R, false, true>,											&CRicoh5A22::Copy_Vector_To_Pc_L_Phi2,
-				&CRicoh5A22::SetBrkFlags,														&CRicoh5A22::Copy_Vector_To_Pc_H_Phi2<false>,
+				&CRicoh5A22::Set_Brk_Flags,														&CRicoh5A22::Copy_Vector_To_Pc_H_Phi2<false>,
 				&CRicoh5A22::Brk_BeginInst
 			},
 			{
@@ -79,9 +79,9 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2,
 				&CRicoh5A22::Null_RorW<true>,													&CRicoh5A22::Push_Pc_High_Brk_Phi2<0>,
 				&CRicoh5A22::Null_RorW,															&CRicoh5A22::Push_Pc_Low_Brk_Phi2<-1>,
-				&CRicoh5A22::SelectBrkVectors<false>,											&CRicoh5A22::Push_S_Brk_Phi2<-2>,
+				&CRicoh5A22::Select_Brk_Vectors<false>,											&CRicoh5A22::Push_S_Brk_Phi2<-2>,
 				&CRicoh5A22::Null<LSN_R, false, true>,											&CRicoh5A22::Copy_Vector_To_Pc_L_Phi2,
-				&CRicoh5A22::SetBrkFlags,														&CRicoh5A22::Copy_Vector_To_Pc_H_Phi2<false>,
+				&CRicoh5A22::Set_Brk_Flags,														&CRicoh5A22::Copy_Vector_To_Pc_H_Phi2<false>,
 				&CRicoh5A22::Brk_BeginInst
 			},
 		},
@@ -99,9 +99,9 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Push_Pb_Phi2<0, false, false>,
 				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Push_Pc_High_Phi2<-1>,
 				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::Push_Pc_Low_Phi2<-2>,
-				&CRicoh5A22::SelectCopVectors<false>,											&CRicoh5A22::Push_S_Phi2<-3>,
+				&CRicoh5A22::Select_Cop_Vectors<false>,											&CRicoh5A22::Push_S_Phi2<-3>,
 				&CRicoh5A22::Null<LSN_R, false, true>,											&CRicoh5A22::Copy_Vector_To_Pc_L_Phi2,
-				&CRicoh5A22::SetBrkFlags,														&CRicoh5A22::Copy_Vector_To_Pc_H_Phi2<false>,
+				&CRicoh5A22::Set_Brk_Flags,														&CRicoh5A22::Copy_Vector_To_Pc_H_Phi2<false>,
 				&CRicoh5A22::Brk_BeginInst
 			},
 			{
@@ -109,9 +109,9 @@ CRicoh5A22::LSN_INSTR CRicoh5A22::m_iInstructionSet[256] = {									/**< The in
 				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2,
 				&CRicoh5A22::Null<LSN_R, true>,													&CRicoh5A22::Push_Pc_High_Phi2<0>,
 				&CRicoh5A22::Null<LSN_R>,														&CRicoh5A22::Push_Pc_Low_Phi2<-1>,
-				&CRicoh5A22::SelectCopVectors<false>,											&CRicoh5A22::Push_S_Phi2<-2>,
+				&CRicoh5A22::Select_Cop_Vectors<false>,											&CRicoh5A22::Push_S_Phi2<-2>,
 				&CRicoh5A22::Null<LSN_R, false, true>,											&CRicoh5A22::Copy_Vector_To_Pc_L_Phi2,
-				&CRicoh5A22::SetBrkFlags,														&CRicoh5A22::Copy_Vector_To_Pc_H_Phi2<false>,
+				&CRicoh5A22::Set_Brk_Flags,														&CRicoh5A22::Copy_Vector_To_Pc_H_Phi2<false>,
 				&CRicoh5A22::Brk_BeginInst
 			}
 		},
