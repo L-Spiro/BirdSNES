@@ -608,44 +608,62 @@ namespace lsn {
 
 		/**
 		 * Performs A - Operand (comparison). Sets C, N, and Z.
+		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Cmp_BeginInst();
+		static void														Cmp_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Copies m_fsState.ui8Operand[0] to m_fsState.rRegs.ui8Db. */
-		void															Copy_Operand_To_Db();
+		/**
+		 * Copies m_fsState.ui8Operand[0] to m_fsState.rRegs.ui8Db.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Copy_Operand_To_Db( CRicoh5A22 * _prCpu );
 
-		/** Copies m_fsState.ui8Operand[0] to Status with a mask. */
+		/**
+		 * Copies m_fsState.ui8Operand[0] to Status with a mask.
+		 * 
+		 * \tparam _ui8Mask The mask to apply.
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
 		template <uint8_t _ui8Mask = 0xFF>
-		void															Copy_Operand_To_Status_Mask();
+		static void														Copy_Operand_To_Status_Mask( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Copies from the vector to PC.h.
 		 * 
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bEndInstr = false>
-		void															CopyVectorToPc_H_Phi2();
+		static void														Copy_Vector_To_Pc_H_Phi2( CRicoh5A22 * _prCpu );
 			
-		/** Copies from the vector to PC.l. **/
-		void															CopyVectorToPc_L_Phi2();
+		/**
+		 * Copies from the vector to PC.l.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 **/
+		static void														Copy_Vector_To_Pc_L_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs X - Operand (comparison). Sets C, N, and Z.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Cpx_BeginInst();
+		static void														Cpx_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs Y - Operand (comparison). Sets C, N, and Z.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Cpy_BeginInst();
+		static void														Cpy_BeginInst( CRicoh5A22 * _prCpu );
 		
 
 		/** Performs A--. Sets N and Z. */
@@ -2992,17 +3010,20 @@ namespace lsn {
 
 	/**
 	 * Performs A - Operand (comparison). Sets C, N, and Z.
+	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Cmp_BeginInst() {
+	inline void CRicoh5A22::Cmp_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			Cmp( m_fsState.rRegs.ui8A[0], m_fsState.ui8Operand[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			Cmp( _prCpu, _rCpu.m_fsState.rRegs.ui8A[0], _rCpu.m_fsState.ui8Operand[0] );
 		}
 		else {
-			Cmp( m_fsState.rRegs.ui16A, m_fsState.ui16Operand );
+			Cmp( _prCpu, _rCpu.m_fsState.rRegs.ui16A, _rCpu.m_fsState.ui16Operand );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -3011,7 +3032,7 @@ namespace lsn {
 		if constexpr ( _bIncPc ) {
 			lsn::DebugA( "Inc. PC. " );
 		}
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Set C flag based off (A.L >= Operand.L), set Z flag based off (A.L == Operand.L), and set N flag based off ((A.L - Operand.L) & $80) != 0." );
 		}
 		else {
@@ -3020,14 +3041,19 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<_bIncPc, false, false>();
+		BeginInst<_bIncPc, false, false>( _prCpu );
 	}
 
-	/** Copies m_fsState.ui8Operand[0] to m_fsState.rRegs.ui8Db. */
-	inline void CRicoh5A22::Copy_Operand_To_Db() {
+	/**
+	 * Copies m_fsState.ui8Operand[0] to m_fsState.rRegs.ui8Db.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Copy_Operand_To_Db( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		m_fsState.rRegs.ui8Db = m_fsState.ui8Operand[0];
+		_rCpu.m_fsState.rRegs.ui8Db = _rCpu.m_fsState.ui8Operand[0];
 
 		LSN_UPDATE_PC;
 
@@ -3040,12 +3066,18 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Copies m_fsState.ui8Operand[0] to Status with a mask. */
+	/**
+	 * Copies m_fsState.ui8Operand[0] to Status with a mask.
+	 * 
+	 * \tparam _ui8Mask The mask to apply.
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
 	template <uint8_t _ui8Mask>
-	inline void CRicoh5A22::Copy_Operand_To_Status_Mask() {
+	inline void CRicoh5A22::Copy_Operand_To_Status_Mask( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		m_fsState.rRegs.ui8Status = (m_fsState.ui8Operand[0] & ~_ui8Mask) | (m_fsState.rRegs.ui8Status & _ui8Mask);
+		_rCpu.m_fsState.rRegs.ui8Status = (_rCpu.m_fsState.ui8Operand[0] & ~_ui8Mask) | (_rCpu.m_fsState.rRegs.ui8Status & _ui8Mask);
 
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _ui8Mask != 0x00 ) {
@@ -3065,10 +3097,12 @@ namespace lsn {
 	 * Copies from the vector to PC.h.
 	 * 
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bEndInstr>
-	inline void CRicoh5A22::CopyVectorToPc_H_Phi2() {
-		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector + 1, m_fsState.ui8Address[1], m_ui8Speed );
+	inline void CRicoh5A22::Copy_Vector_To_Pc_H_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.vBrkVector + 1, _rCpu.m_fsState.ui8Address[1], _rCpu.m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Read Vector + 1\tStore to Address.H." );
@@ -3084,9 +3118,14 @@ namespace lsn {
 		LSN_INSTR_END_PHI2;
 	}
 			
-	/** Copies from the vector to PC.l. **/
-	inline void CRicoh5A22::CopyVectorToPc_L_Phi2() {
-		LSN_INSTR_START_PHI2_READ0_BUSA( m_fsState.vBrkVector, m_fsState.ui8Address[0], m_ui8Speed );
+	/**
+	 * Copies from the vector to PC.l.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 **/
+	inline void CRicoh5A22::Copy_Vector_To_Pc_L_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ0_BUSA( _rCpu.m_fsState.vBrkVector, _rCpu.m_fsState.ui8Address[0], _rCpu.m_ui8Speed );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Read Vector\tStore to Address.L." );
@@ -3101,16 +3140,18 @@ namespace lsn {
 	 * Performs X - Operand (comparison). Sets C, N, and Z.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Cpx_BeginInst() {
+	inline void CRicoh5A22::Cpx_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			Cmp( m_fsState.rRegs.ui8X[0], m_fsState.ui8Operand[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			Cmp( _prCpu, _rCpu.m_fsState.rRegs.ui8X[0], _rCpu.m_fsState.ui8Operand[0] );
 		}
 		else {
-			Cmp( m_fsState.rRegs.ui16X, m_fsState.ui16Operand );
+			Cmp( _prCpu, _rCpu.m_fsState.rRegs.ui16X, _rCpu.m_fsState.ui16Operand );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -3120,7 +3161,7 @@ namespace lsn {
 			lsn::DebugA( "Inc. PC. " );
 		}
 
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Set C flag based off (X.L >= Operand.L), set Z flag based off (X.L == Operand.L), and set N flag based off ((X.L - Operand.L) & $80) != 0." );
 		}
 		else {
@@ -3129,23 +3170,25 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<_bIncPc, false, false>();
+		BeginInst<_bIncPc, false, false>( _prCpu );
 	}
 
 	/**
 	 * Performs Y - Operand (comparison). Sets C, N, and Z.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Cpy_BeginInst() {
+	inline void CRicoh5A22::Cpy_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			Cmp( m_fsState.rRegs.ui8Y[0], m_fsState.ui8Operand[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			Cmp( _prCpu, _rCpu.m_fsState.rRegs.ui8Y[0], _rCpu.m_fsState.ui8Operand[0] );
 		}
 		else {
-			Cmp( m_fsState.rRegs.ui16Y, m_fsState.ui16Operand );
+			Cmp( _prCpu, _rCpu.m_fsState.rRegs.ui16Y, _rCpu.m_fsState.ui16Operand );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -3155,7 +3198,7 @@ namespace lsn {
 			lsn::DebugA( "Inc. PC. " );
 		}
 
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Set C flag based off (Y.L >= Operand.L), set Z flag based off (Y.L == Operand.L), and set N flag based off ((Y.L - Operand.L) & $80) != 0." );
 		}
 		else {
@@ -3164,7 +3207,7 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<_bIncPc, false, false>();
+		BeginInst<_bIncPc, false, false>( _prCpu );
 	}
 
 	/** Performs A--. Sets N and Z. */
