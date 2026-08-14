@@ -1550,80 +1550,144 @@ namespace lsn {
 
 		/**
 		 * Copies A to m_fsState.ui16Operand.
-		 *
+		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Sta();
+		static void														Sta( CRicoh5A22 * _prCpu );
 
-		/** Stops the processor (STP). */
-		void															Stp_BeginInst();
+		/**
+		 * Stops the processor (STP).
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Stp_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Copies X to m_fsState.ui16Operand.
-		 *
+		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Stx();
+		static void														Stx( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Copies Y to m_fsState.ui16Operand.
-		 *
+		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Sty();
+		static void														Sty( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Sets m_fsState.ui16Operand to 0.
-		 *
+		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Stz();
+		static void														Stz( CRicoh5A22 * _prCpu );
 
-		/** Performs X = A. Sets N and Z. */
-		void															Tax_BeginInst();
+		/**
+		 * Performs X = A. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tax_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs Y = A. Sets N and Z. */
-		void															Tay_BeginInst();
+		/**
+		 * Performs Y = A. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tay_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Transfer 16 bit A to D. Sets N and Z. */
-		void															Tcd_BeginInst();
+		/**
+		 * Transfer 16 bit A to D. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tcd_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Transfer 16 bit A to S. Sets N and Z. */
-		void															Tcs_BeginInst();
+		/**
+		 * Transfer 16 bit A to S. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tcs_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Transfer 16-bit D to A. Sets N and Z. */
-		void															Tdc_BeginInst();
+		/**
+		 * Transfer 16-bit D to A. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tdc_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs m_ui16Operand &= ~A. Sets Z. */
-		void															Trb();
+		/**
+		 * Performs m_ui16Operand &= ~A. Sets Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Trb( CRicoh5A22 * _prCpu );
 
-		/** Performs m_ui16Operand |= A. Sets Z. */
-		void															Tsb();
+		/**
+		 * Performs m_ui16Operand |= A. Sets Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tsb( CRicoh5A22 * _prCpu );
 
-		/** Transfer 16-bit S to A. Sets N and Z. */
-		void															Tsc_BeginInst();
+		/**
+		 * Transfer 16-bit S to A. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tsc_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs X = S. Sets N and Z. */
-		void															Tsx_BeginInst();
+		/**
+		 * Performs X = S. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tsx_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs A = X. Sets N and Z. */
-		void															Txa_BeginInst();
+		/**
+		 * Performs A = X. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Txa_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs S = X. Does not set flags. */
-		void															Txs_BeginInst();
+		/**
+		 * Performs S = X. Does not set flags.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Txs_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs Y = X. Sets N and Z. */
-		void															Txy_BeginInst();
+		/**
+		 * Performs Y = X. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Txy_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs A = Y. Sets N and Z. */
-		void															Tya_BeginInst();
+		/**
+		 * Performs A = Y. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tya_BeginInst( CRicoh5A22 * _prCpu );
 
-		/** Performs X = Y. Sets N and Z. */
-		void															Tyx_BeginInst();
+		/**
+		 * Performs X = Y. Sets N and Z.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Tyx_BeginInst( CRicoh5A22 * _prCpu );
 
 		/** Executes WDM (reserved). Consumes the immediate byte; no architecturally visible effects. */
 		void															Wdm_BeginInst();
@@ -7208,14 +7272,16 @@ namespace lsn {
 
 	/**
 	 * Copies A to m_fsState.ui16Operand.
-	 *
+	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Sta() {
+	inline void CRicoh5A22::Sta( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
 
-		m_fsState.ui16Operand = m_fsState.rRegs.ui16A;
+		_rCpu.m_fsState.ui16Operand = _rCpu.m_fsState.rRegs.ui16A;
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\t" );
@@ -7237,29 +7303,36 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Stops the processor (STP). */
-	inline void CRicoh5A22::Stp_BeginInst() {
+	/**
+	 * Stops the processor (STP).
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Stp_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
-		//m_fsState.rRegs.ui16Pc--;
+		//_rCpu.m_fsState.rRegs.ui16Pc--;
 		
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tStop processor." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		// Loop this instruction forever until Reset.
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/**
 	 * Copies X to m_fsState.ui16Operand.
-	 *
+	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Stx() {
+	inline void CRicoh5A22::Stx( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
 
-		m_fsState.ui16Operand = m_fsState.rRegs.ui16X;
+		_rCpu.m_fsState.ui16Operand = _rCpu.m_fsState.rRegs.ui16X;
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\t" );
@@ -7281,12 +7354,18 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Copies Y to m_fsState.ui16Operand. **/
+	/**
+	 * Copies Y to m_fsState.ui16Operand.
+	 * 
+	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
+	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Sty() {
+	inline void CRicoh5A22::Sty( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
 
-		m_fsState.ui16Operand = m_fsState.rRegs.ui16Y;
+		_rCpu.m_fsState.ui16Operand = _rCpu.m_fsState.rRegs.ui16Y;
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\t" );
@@ -7310,14 +7389,16 @@ namespace lsn {
 
 	/**
 	 * Sets m_fsState.ui16Operand to 0.
-	 *
+	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Stz() {
+	inline void CRicoh5A22::Stz( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
 
-		m_fsState.ui16Operand = 0;
+		_rCpu.m_fsState.ui16Operand = 0;
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\t" );
@@ -7339,23 +7420,28 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Performs X = A. Sets N and Z. */
-	inline void CRicoh5A22::Tax_BeginInst() {
+	/**
+	 * Performs X = A. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tax_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			m_fsState.rRegs.ui8X[0] = m_fsState.rRegs.ui8A[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8X[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			_rCpu.m_fsState.rRegs.ui8X[0] = _rCpu.m_fsState.rRegs.ui8A[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8X[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8X[0] );
 		}
 		else {
-			m_fsState.rRegs.ui16X = m_fsState.rRegs.ui16A;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16X );
+			_rCpu.m_fsState.rRegs.ui16X = _rCpu.m_fsState.rRegs.ui16A;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8X[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16X );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform X.L = A.L, set N based off (X.L & $80), set Z based off X.L." );
 		}
 		else {
@@ -7363,26 +7449,31 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs Y = A. Sets N and Z. */
-	inline void CRicoh5A22::Tay_BeginInst() {
+	/**
+	 * Performs Y = A. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tay_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			m_fsState.rRegs.ui8Y[0] = m_fsState.rRegs.ui8A[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8Y[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			_rCpu.m_fsState.rRegs.ui8Y[0] = _rCpu.m_fsState.rRegs.ui8A[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8Y[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8Y[0] );
 		}
 		else {
-			m_fsState.rRegs.ui16Y = m_fsState.rRegs.ui16A;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16Y );
+			_rCpu.m_fsState.rRegs.ui16Y = _rCpu.m_fsState.rRegs.ui16A;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8Y[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16Y );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform Y.L = A.L, set N based off (Y.L & $80), set Z based off Y.L." );
 		}
 		else {
@@ -7390,77 +7481,97 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Transfer 16 bit A to D. Sets N and Z. */
-	inline void CRicoh5A22::Tcd_BeginInst() {
+	/**
+	 * Transfer 16 bit A to D. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tcd_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
 		// TCD transfers the full 16-bit C (A) into D regardless of M.
-		m_fsState.rRegs.ui16D = m_fsState.rRegs.ui16A;
+		_rCpu.m_fsState.rRegs.ui16D = _rCpu.m_fsState.rRegs.ui16A;
 
-		SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8D[1] & 0x80) != 0 );
-		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16D );
+		SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8D[1] & 0x80) != 0 );
+		SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16D );
 
 	#ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tSet D to A. Set N based off (D.H & $80) and Z based off D." );
 	#endif	// LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Transfer 16 bit A to S. Sets N and Z. */
-	inline void CRicoh5A22::Tcs_BeginInst() {
+	/**
+	 * Transfer 16 bit A to S. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tcs_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			m_fsState.rRegs.ui8S[0] = m_fsState.rRegs.ui8A[0];
-			m_fsState.rRegs.ui8S[1] = 1;
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
+			_rCpu.m_fsState.rRegs.ui8S[0] = _rCpu.m_fsState.rRegs.ui8A[0];
+			_rCpu.m_fsState.rRegs.ui8S[1] = 1;
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "\tSet S.L to A.L and S.H to 1." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
-			m_fsState.rRegs.ui16S = m_fsState.rRegs.ui16A;
+			_rCpu.m_fsState.rRegs.ui16S = _rCpu.m_fsState.rRegs.ui16A;
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "\tSet S to A." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Transfer 16-bit D to A. Sets N and Z. */
-	inline void CRicoh5A22::Tdc_BeginInst() {
+	/**
+	 * Transfer 16-bit D to A. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tdc_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
 		// TDC transfers the full 16-bit D into C (A) regardless of M.
-		m_fsState.rRegs.ui16A = m_fsState.rRegs.ui16D;
+		_rCpu.m_fsState.rRegs.ui16A = _rCpu.m_fsState.rRegs.ui16D;
 
-		SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[1] & 0x80) != 0 );
-		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+		SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8A[1] & 0x80) != 0 );
+		SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16A );
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "\tSet A to D. Set N based off (A.H & $80) and Z based off A." );
 #endif	// LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs m_ui16Operand &= ~A. Sets Z. */
-	inline void CRicoh5A22::Trb() {
+	/**
+	 * Performs m_ui16Operand &= ~A. Sets Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Trb( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & m_fsState.ui8Operand[0]) == 0 );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8A[0] & _rCpu.m_fsState.ui8Operand[0]) == 0 );
 		}
 		else {
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & m_fsState.ui16Operand) == 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui16A & _rCpu.m_fsState.ui16Operand) == 0 );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tSet Z based off (A.L & Operand.L)." );
 		}
 		else {
@@ -7469,7 +7580,7 @@ namespace lsn {
 		lsn::DebugA( " Perform Operand &= ~A." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		
-		m_fsState.ui16Operand &= ~m_fsState.rRegs.ui16A;
+		_rCpu.m_fsState.ui16Operand &= ~_rCpu.m_fsState.rRegs.ui16A;
 
 
 		LSN_NEXT_FUNCTION;
@@ -7477,19 +7588,24 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Performs m_ui16Operand |= A. Sets Z. */
-	inline void CRicoh5A22::Tsb() {
+	/**
+	 * Performs m_ui16Operand |= A. Sets Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tsb( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & m_fsState.ui8Operand[0]) == 0 );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8A[0] & _rCpu.m_fsState.ui8Operand[0]) == 0 );
 		}
 		else {
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & m_fsState.ui16Operand) == 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui16A & _rCpu.m_fsState.ui16Operand) == 0 );
 		}
 		
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tSet Z based off (A.L & Operand.L)." );
 		}
 		else {
@@ -7498,7 +7614,7 @@ namespace lsn {
 		lsn::DebugA( " Perform Operand |= A." );
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		m_fsState.ui16Operand |= m_fsState.rRegs.ui16A;
+		_rCpu.m_fsState.ui16Operand |= _rCpu.m_fsState.rRegs.ui16A;
 
 
 		LSN_NEXT_FUNCTION;
@@ -7506,21 +7622,26 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Transfer 16-bit S to A. Sets N and Z. */
-	inline void CRicoh5A22::Tsc_BeginInst() {
+	/**
+	 * Transfer 16-bit S to A. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tsc_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			m_fsState.rRegs.ui16A = m_fsState.rRegs.ui8S[0] | 0x0100;
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
+			_rCpu.m_fsState.rRegs.ui16A = _rCpu.m_fsState.rRegs.ui8S[0] | 0x0100;
 		}
 		else {
-			m_fsState.rRegs.ui16A = m_fsState.rRegs.ui16S;
+			_rCpu.m_fsState.rRegs.ui16A = _rCpu.m_fsState.rRegs.ui16S;
 		}
-		SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[1] & 0x80 );
-		SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+		SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[1] & 0x80 );
+		SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16A );
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tSet A to (S.L | $0100). Set N based off (A.H & $80) and Z based off A." );
 		}
 		else {
@@ -7528,26 +7649,31 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs X = S. Sets N and Z. */
-	inline void CRicoh5A22::Tsx_BeginInst() {
+	/**
+	 * Performs X = S. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tsx_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			m_fsState.rRegs.ui8X[0] = m_fsState.rRegs.ui8S[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8X[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			_rCpu.m_fsState.rRegs.ui8X[0] = _rCpu.m_fsState.rRegs.ui8S[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8X[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8X[0] );
 		}
 		else {
-			m_fsState.rRegs.ui16X = m_fsState.rRegs.ui16S;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16X );
+			_rCpu.m_fsState.rRegs.ui16X = _rCpu.m_fsState.rRegs.ui16S;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8X[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16X );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform X.L = S.L, set N based off (X.L & $80), set Z based off X.L." );
 		}
 		else {
@@ -7555,26 +7681,31 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs A = X. Sets N and Z. */
-	inline void CRicoh5A22::Txa_BeginInst() {
+	/**
+	 * Performs A = X. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Txa_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			m_fsState.rRegs.ui8A[0] = m_fsState.rRegs.ui8X[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			_rCpu.m_fsState.rRegs.ui8A[0] = _rCpu.m_fsState.rRegs.ui8X[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8A[0] );
 		}
 		else {
-			m_fsState.rRegs.ui16A = m_fsState.rRegs.ui16X;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+			_rCpu.m_fsState.rRegs.ui16A = _rCpu.m_fsState.rRegs.ui16X;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16A );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform A.L = X.L, set N based off (A.L & $80), set Z based off A.L." );
 		}
 		else {
@@ -7582,47 +7713,57 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs S = X. Does not set flags. */
-	inline void CRicoh5A22::Txs_BeginInst() {
+	/**
+	 * Performs S = X. Does not set flags.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Txs_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-			m_fsState.rRegs.ui8S[0] = m_fsState.rRegs.ui8X[0];
-			m_fsState.rRegs.ui8S[1] = 1;
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
+			_rCpu.m_fsState.rRegs.ui8S[0] = _rCpu.m_fsState.rRegs.ui8X[0];
+			_rCpu.m_fsState.rRegs.ui8S[1] = 1;
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "\tSet S.L to X.L and S.H to 1." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
-			m_fsState.rRegs.ui16S = m_fsState.rRegs.ui16X;
+			_rCpu.m_fsState.rRegs.ui16S = _rCpu.m_fsState.rRegs.ui16X;
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "\tSet S to X." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs Y = X. Sets N and Z. */
-	inline void CRicoh5A22::Txy_BeginInst() {
+	/**
+	 * Performs Y = X. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Txy_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			m_fsState.rRegs.ui8Y[0] = m_fsState.rRegs.ui8X[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8Y[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			_rCpu.m_fsState.rRegs.ui8Y[0] = _rCpu.m_fsState.rRegs.ui8X[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8Y[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8Y[0] );
 		}
 		else {
-			m_fsState.rRegs.ui16Y = m_fsState.rRegs.ui16X;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16Y );
+			_rCpu.m_fsState.rRegs.ui16Y = _rCpu.m_fsState.rRegs.ui16X;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8Y[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16Y );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform Y.L = X.L, set N based off (Y.L & $80), set Z based off Y.L." );
 		}
 		else {
@@ -7630,26 +7771,31 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs A = Y. Sets N and Z. */
-	inline void CRicoh5A22::Tya_BeginInst() {
+	/**
+	 * Performs A = Y. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tya_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			m_fsState.rRegs.ui8A[0] = m_fsState.rRegs.ui8Y[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			_rCpu.m_fsState.rRegs.ui8A[0] = _rCpu.m_fsState.rRegs.ui8Y[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8A[0] );
 		}
 		else {
-			m_fsState.rRegs.ui16A = m_fsState.rRegs.ui16Y;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+			_rCpu.m_fsState.rRegs.ui16A = _rCpu.m_fsState.rRegs.ui16Y;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16A );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform A.L = Y.L, set N based off (A.L & $80), set Z based off A.L." );
 		}
 		else {
@@ -7657,26 +7803,31 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
-	/** Performs X = Y. Sets N and Z. */
-	inline void CRicoh5A22::Tyx_BeginInst() {
+	/**
+	 * Performs X = Y. Sets N and Z.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Tyx_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			m_fsState.rRegs.ui8X[0] = m_fsState.rRegs.ui8Y[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[0] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8X[0] );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			_rCpu.m_fsState.rRegs.ui8X[0] = _rCpu.m_fsState.rRegs.ui8Y[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8X[0] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8X[0] );
 		}
 		else {
-			m_fsState.rRegs.ui16X = m_fsState.rRegs.ui16Y;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[1] & 0x80 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16X );
+			_rCpu.m_fsState.rRegs.ui16X = _rCpu.m_fsState.rRegs.ui16Y;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8X[1] & 0x80 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16X );
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "\tPerform X.L = Y.L, set N based off (X.L & $80), set Z based off X.L." );
 		}
 		else {
@@ -7684,7 +7835,7 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/** Executes WDM (reserved). Consumes the immediate byte; no architecturally visible effects. */
