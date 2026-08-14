@@ -763,43 +763,49 @@ namespace lsn {
 		 * Fetches the operand and increments PC.
 		 * 
 		 * \tparam _bSkipOnDl If true, the next cycle is skipped if D.L is 0.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bSkipOnDl = false>
-		void															Fetch_Operand_IncPc_SkipOnDl_Phi2();
+		static void														Fetch_Operand_IncPc_SkipOnDl_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Fetches to m_fsState.ui8Address[1] or m_fsState.ui8Pointer[1] and increments PC.
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
-		void															Fetch_PtrOrAddr_High_IncPc_Phi2();
+		static void														Fetch_PtrOrAddr_High_IncPc_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Fetches to m_fsState.ui16Address or m_fsState.ui16Pointer and increments PC.
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bTo = LSN_TO_A, bool _bEndInstr = false>
-		void															Fetch_PtrOrAddr_Low_IncPc_Phi2();
+		static void														Fetch_PtrOrAddr_Low_IncPc_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Fetches the source bank byte for MVP/MVN and sets DB to the destination bank.
 		 *
 		 * Destination bank is already in m_fsState.ui8Pointer[0] (Pointer.L).
 		 * Source bank is stored into m_fsState.ui8Pointer[1] (Pointer.H).
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
 		 */
-		void															Fetch_SrcBank_SetDb_IncPc_Phi2();
+		static void														Fetch_SrcBank_SetDb_IncPc_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Fixes the high bit of m_fsState.ui16Address or m_fsState.ui16Pointer.
 		 * 
 		 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bTo = LSN_TO_A>	
-		void															Fix_PtrOrAddr_From_AddrOrPtr_High();
+		static void														Fix_PtrOrAddr_From_AddrOrPtr_High( CRicoh5A22 * _prCpu );
 
 		/** Performs Operand++. Sets N and Z. */
 		void															Inc();
@@ -3630,11 +3636,13 @@ namespace lsn {
 	 * Fetches the operand and increments PC.
 	 * 
 	 * \tparam _bSkipOnDl If true, the next cycle is skipped if D.L is 0.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bSkipOnDl>
-	inline void CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui16Operand, m_ui8Speed );
-		m_fsState.ui16PcModify = 1;
+	inline void CRicoh5A22::Fetch_Operand_IncPc_SkipOnDl_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_fsState.ui16Operand, _rCpu.m_ui8Speed );
+		_rCpu.m_fsState.ui16PcModify = 1;
 
 #ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Read PC:PB\tStore as Operand." );
@@ -3642,7 +3650,7 @@ namespace lsn {
 
 
 		if constexpr ( _bSkipOnDl ) {
-			if ( !m_fsState.rRegs.ui8D[0] ) {
+			if ( !_rCpu.m_fsState.rRegs.ui8D[0] ) {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 
@@ -3661,24 +3669,26 @@ namespace lsn {
 	 * 
 	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bTo, bool _bEndInstr>
-	void CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2() {
+	void CRicoh5A22::Fetch_PtrOrAddr_High_IncPc_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		uint8_t ui8Op;
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, m_ui8Speed );
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, ui8Op, _rCpu.m_ui8Speed );
 		if constexpr ( _bTo == LSN_TO_A ) {
-			m_fsState.ui8Address[1] = ui8Op;
+			_rCpu.m_fsState.ui8Address[1] = ui8Op;
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "Read PC:PB\tStore as Address.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
-			m_fsState.ui8Pointer[1] = ui8Op;
+			_rCpu.m_fsState.ui8Pointer[1] = ui8Op;
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "Read PC:PB\tStore as Pointer.H." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
-		m_fsState.ui16PcModify = 1;
+		_rCpu.m_fsState.ui16PcModify = 1;
 
 		if constexpr ( _bEndInstr ) {
 			LSN_FINISH_INST( true );
@@ -3695,24 +3705,26 @@ namespace lsn {
 	 * 
 	 * \tparam _bTo If LSN_TO_A, the value is stored to m_fsState.ui16Address, otherwise it is stored to m_fsState.ui16Pointer.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bTo, bool _bEndInstr>
-	void CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2() {
+	void CRicoh5A22::Fetch_PtrOrAddr_Low_IncPc_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		uint8_t ui8Op;
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, ui8Op, m_ui8Speed );
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, ui8Op, _rCpu.m_ui8Speed );
 		if constexpr ( _bTo == LSN_TO_A ) {
-			m_fsState.ui16Address = ui8Op;
+			_rCpu.m_fsState.ui16Address = ui8Op;
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "Read PC:PB\tStore as Address." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
-			m_fsState.ui16Pointer = ui8Op;
+			_rCpu.m_fsState.ui16Pointer = ui8Op;
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "Read PC:PB\tStore as Pointer." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
-		m_fsState.ui16PcModify = 1;
+		_rCpu.m_fsState.ui16PcModify = 1;
 
 		if constexpr ( _bEndInstr ) {
 			LSN_FINISH_INST( true );
@@ -3729,11 +3741,14 @@ namespace lsn {
 	 *
 	 * Destination bank is already in m_fsState.ui8Pointer[0] (Pointer.L).
 	 * Source bank is stored into m_fsState.ui8Pointer[1] (Pointer.H).
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
 	 */
-	inline void CRicoh5A22::Fetch_SrcBank_SetDb_IncPc_Phi2() {
-		LSN_INSTR_START_PHI2_READ_BUSA( m_fsState.rRegs.ui16Pc, m_fsState.rRegs.ui8Pb, m_fsState.ui8Pointer[1], m_ui8Speed );
-		m_fsState.rRegs.ui8Db = m_fsState.ui8Pointer[0];
-		m_fsState.ui16PcModify = 1;
+	inline void CRicoh5A22::Fetch_SrcBank_SetDb_IncPc_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		LSN_INSTR_START_PHI2_READ_BUSA( _rCpu.m_fsState.rRegs.ui16Pc, _rCpu.m_fsState.rRegs.ui8Pb, _rCpu.m_fsState.ui8Pointer[1], _rCpu.m_ui8Speed );
+		_rCpu.m_fsState.rRegs.ui8Db = _rCpu.m_fsState.ui8Pointer[0];
+		_rCpu.m_fsState.ui16PcModify = 1;
 
 	#ifdef LSN_CYCLES_DOC
 		lsn::DebugA( "Read PC:PB\tStore as Pointer.H. Set DB to Pointer.L." );
@@ -3748,18 +3763,20 @@ namespace lsn {
 	 * Fixes the high bit of m_fsState.ui16Address or m_fsState.ui16Pointer.
 	 * 
 	 * \tparam _bTo If LSN_TO_A, the value is taken from m_fsState.ui16Pointer and stored to m_fsState.ui16Address, otherwise it is taken from m_fsState.ui16Address and stored to m_fsState.ui16Pointer.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bTo>	
-	inline void CRicoh5A22::Fix_PtrOrAddr_From_AddrOrPtr_High() {
+	inline void CRicoh5A22::Fix_PtrOrAddr_From_AddrOrPtr_High( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
 		if constexpr ( _bTo == LSN_TO_A ) {
-			m_fsState.ui8Address[1] = m_fsState.ui8Pointer[1];
+			_rCpu.m_fsState.ui8Address[1] = _rCpu.m_fsState.ui8Pointer[1];
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "\tAddress.H = Pointer.H (fixes high byte of address)." );
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else {
-			m_fsState.ui8Pointer[1] = m_fsState.ui8Address[1];
+			_rCpu.m_fsState.ui8Pointer[1] = _rCpu.m_fsState.ui8Address[1];
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "\tPointer.H = Address.H (fixes high byte of address)." );
 #endif	// #ifdef LSN_CYCLES_DOC
