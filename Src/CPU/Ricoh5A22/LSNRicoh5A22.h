@@ -869,41 +869,46 @@ namespace lsn {
 		 * Performs Operand >>= 1. Sets C, N, and Z, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Lsr();
+		static void														Lsr( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs A = Operand. Sets N and Z.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Lda_BeginInst();
+		static void														Lda_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs X = Operand. Sets N and Z.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Ldx_BeginInst();
+		static void														Ldx_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs Y = Operand. Sets N and Z.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															Ldy_BeginInst();
+		static void														Ldy_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs A >>= 1. Sets C, N, and Z, optionally increases PC.
 		 * 
 		 * \tparam _bIncPc If true, PC is updated.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false>
-		void															LsrOnA_BeginInst();
+		static void														LsrOnA_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Adjusts A/X/Y for MVP and adjusts m_fsState.rRegs.ui16Pc by either 0 (done) or -3 (repeat).
@@ -911,12 +916,17 @@ namespace lsn {
 		 * Notes:
 		 * - A is treated as 16-bit counter for block moves.
 		 * - If X flag is set, X/Y are adjusted as 8-bit (stay within page 0).
+		 * \param _prCpu The CRicoh5A22 instance.
 		 */
 		template <int16_t _i16AddrAdj = -1>
-		void															MvX_Adjust_And_SetRepeat();
+		static void														MvX_Adjust_And_SetRepeat( CRicoh5A22 * _prCpu );
 
-		/** Performs NOP. */
-		void															Nop_BeginInst();
+		/**
+		 * Performs NOP.
+		 * 
+		 * \param _prCpu The CRicoh5A22 instance.
+		 */
+		static void														Nop_BeginInst( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Generic null operation.
@@ -925,9 +935,10 @@ namespace lsn {
 		 * \tparam _bIncPc If true, PC is updated.
 		 * \tparam _bAdjS If true, S is updated.
 		 * \tparam _bBeginInstr If true, BeginInst() is called.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <CRicoh5A22::LSN_CYCLE_TYPE _ctReadWriteNull = CRicoh5A22::LSN_CT_NULL, bool _bIncPc = false, bool _bAdjS = false, bool _bBeginInstr = false>
-		void															Null();
+		static void														Null( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Generic null operation on PHI2. Sets the bus access speed to Fast.
@@ -936,9 +947,10 @@ namespace lsn {
 		 * \tparam _i8SOff If not INT8_MIN, S is scheduled to be adjusted by the given amount on the next PHI1.
 		 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 		 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bSkipIfM = false, int8_t _i8SOff = INT8_MIN, bool _bEndInstr = false, bool _bSkipIfX = false>
-		void															Null_Phi2();
+		static void														Null_Phi2( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Generic null operation for BRK that can be either a read or write, depending on RESET.
@@ -946,9 +958,10 @@ namespace lsn {
 		 * \tparam _bIncPc If true, PC is updated.
 		 * \tparam _bAdjS If true, S is updated.
 		 * \tparam _bBeginInstr If true, BeginInst() is called.
+		 * \param _prCpu The CRicoh5A22 instance.
 		 **/
 		template <bool _bIncPc = false, bool _bAdjS = false, bool _bBeginInstr = false>
-		void															Null_RorW();
+		static void														Null_RorW( CRicoh5A22 * _prCpu );
 
 		/**
 		 * Performs ORA with m_fsState.ui8Operand[0].
@@ -4060,26 +4073,28 @@ namespace lsn {
 	 * Performs Operand >>= 1. Sets C, N, and Z, optionally increases PC.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Lsr() {
+	inline void CRicoh5A22::Lsr( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x01) != 0 );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<C()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.ui8Operand[0] & 0x01) != 0 );
 
-			m_fsState.ui8Operand[0] >>= 1;
+			_rCpu.m_fsState.ui8Operand[0] >>= 1;
 
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui8Operand[0] & 0x80) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui8Operand[0] );
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.ui8Operand[0] & 0x80) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.ui8Operand[0] );
 		}
 		else {
-			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.ui16Operand & 0x0001) != 0 );
+			SetBit<C()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.ui16Operand & 0x0001) != 0 );
 
-			m_fsState.ui16Operand >>= 1;
+			_rCpu.m_fsState.ui16Operand >>= 1;
 
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.ui16Operand & 0x8000) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.ui16Operand );
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.ui16Operand & 0x8000) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.ui16Operand );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -4095,7 +4110,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Set C based off (Operand.L & $01). Perform Operand.L >>= 1. Set N based off (Operand.L & $80) and Z based off Operand.L." );
 		}
 		else {
@@ -4112,20 +4127,22 @@ namespace lsn {
 	 * Performs A = Operand. Sets N and Z.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Lda_BeginInst() {
+	inline void CRicoh5A22::Lda_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			m_fsState.rRegs.ui8A[0] = m_fsState.ui8Operand[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & 0x80) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8A[0] == 0 );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			_rCpu.m_fsState.rRegs.ui8A[0] = _rCpu.m_fsState.ui8Operand[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8A[0] & 0x80) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8A[0] == 0 );
 		}
 		else {
-			m_fsState.rRegs.ui16A = m_fsState.ui16Operand;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & 0x8000) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16A == 0 );
+			_rCpu.m_fsState.rRegs.ui16A = _rCpu.m_fsState.ui16Operand;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui16A & 0x8000) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui16A == 0 );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -4141,7 +4158,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Set A.L to Operand.L. Set N based off (A.L & $80). Set Z based off A.L." );
 		}
 		else {
@@ -4149,27 +4166,29 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/**
 	 * Performs X = Operand. Sets N and Z.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Ldx_BeginInst() {
+	inline void CRicoh5A22::Ldx_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			m_fsState.rRegs.ui8X[0] = m_fsState.ui8Operand[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8X[0] & 0x80) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8X[0] == 0 );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			_rCpu.m_fsState.rRegs.ui8X[0] = _rCpu.m_fsState.ui8Operand[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8X[0] & 0x80) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8X[0] == 0 );
 		}
 		else {
-			m_fsState.rRegs.ui16X = m_fsState.ui16Operand;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16X & 0x8000) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16X == 0 );
+			_rCpu.m_fsState.rRegs.ui16X = _rCpu.m_fsState.ui16Operand;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui16X & 0x8000) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui16X == 0 );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -4185,7 +4204,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Set X.L to Operand.L. Set N based off (X.L & $80). Set Z based off X.L." );
 		}
 		else {
@@ -4193,27 +4212,29 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/**
 	 * Performs Y = Operand. Sets N and Z.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::Ldy_BeginInst() {
+	inline void CRicoh5A22::Ldy_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			m_fsState.rRegs.ui8Y[0] = m_fsState.ui8Operand[0];
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8Y[0] & 0x80) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui8Y[0] == 0 );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			_rCpu.m_fsState.rRegs.ui8Y[0] = _rCpu.m_fsState.ui8Operand[0];
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8Y[0] & 0x80) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui8Y[0] == 0 );
 		}
 		else {
-			m_fsState.rRegs.ui16Y = m_fsState.ui16Operand;
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16Y & 0x8000) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, m_fsState.rRegs.ui16Y == 0 );
+			_rCpu.m_fsState.rRegs.ui16Y = _rCpu.m_fsState.ui16Operand;
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui16Y & 0x8000) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, _rCpu.m_fsState.rRegs.ui16Y == 0 );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -4229,7 +4250,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Set Y.L to Operand.L. Set N based off (Y.L & $80). Set Z based off Y.L." );
 		}
 		else {
@@ -4237,33 +4258,35 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/**
 	 * Performs A >>= 1. Sets C, N, and Z, optionally increases PC.
 	 * 
 	 * \tparam _bIncPc If true, PC is updated.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc>
-	inline void CRicoh5A22::LsrOnA_BeginInst() {
+	inline void CRicoh5A22::LsrOnA_BeginInst( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( true );
 
-		if ( (m_fsState.rRegs.ui8Status & M()) ) {
-			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & 0x01) != 0 );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
+			SetBit<C()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8A[0] & 0x01) != 0 );
 
-			m_fsState.rRegs.ui8A[0] >>= 1;
+			_rCpu.m_fsState.rRegs.ui8A[0] >>= 1;
 
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui8A[0] & 0x80) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui8A[0] );
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui8A[0] & 0x80) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui8A[0] );
 		}
 		else {
-			SetBit<C()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & 0x0001) != 0 );
+			SetBit<C()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui16A & 0x0001) != 0 );
 
-			m_fsState.rRegs.ui16A >>= 1;
+			_rCpu.m_fsState.rRegs.ui16A >>= 1;
 
-			SetBit<N()>( m_fsState.rRegs.ui8Status, (m_fsState.rRegs.ui16A & 0x8000) != 0 );
-			SetBit<Z()>( m_fsState.rRegs.ui8Status, !m_fsState.rRegs.ui16A );
+			SetBit<N()>( _rCpu.m_fsState.rRegs.ui8Status, (_rCpu.m_fsState.rRegs.ui16A & 0x8000) != 0 );
+			SetBit<Z()>( _rCpu.m_fsState.rRegs.ui8Status, !_rCpu.m_fsState.rRegs.ui16A );
 		}
 
 #ifdef LSN_CYCLES_DOC
@@ -4279,7 +4302,7 @@ namespace lsn {
 		}
 
 #ifdef LSN_CYCLES_DOC
-		if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
+		if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
 			lsn::DebugA( "Set C based off (A.L & $01). Perform A.L >>= 1. Set N based off (A.L & $80) and Z based off A.L." );
 		}
 		else {
@@ -4287,7 +4310,7 @@ namespace lsn {
 		}
 #endif	// #ifdef LSN_CYCLES_DOC
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/**
@@ -4296,29 +4319,31 @@ namespace lsn {
 	 * Notes:
 	 * - A is treated as 16-bit counter for block moves.
 	 * - If X flag is set, X/Y are adjusted as 8-bit (stay within page 0).
+	 * \param _prCpu The CRicoh5A22 instance.
 	 */
 	template <int16_t _i16AddrAdj>
-	inline void CRicoh5A22::MvX_Adjust_And_SetRepeat() {
+	inline void CRicoh5A22::MvX_Adjust_And_SetRepeat( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		LSN_INSTR_START_PHI1( false );
 
 		// A is the 16-bit counter for block moves.
-		--m_fsState.rRegs.ui16A;
+		--_rCpu.m_fsState.rRegs.ui16A;
 
 		// X/Y obey the X flag width.
-		if ( (m_fsState.rRegs.ui8Status & X()) ) {
-			m_fsState.rRegs.ui8X[0] += uint8_t( _i16AddrAdj );
-			m_fsState.rRegs.ui8Y[0] += uint8_t( _i16AddrAdj );
+		if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
+			_rCpu.m_fsState.rRegs.ui8X[0] += uint8_t( _i16AddrAdj );
+			_rCpu.m_fsState.rRegs.ui8Y[0] += uint8_t( _i16AddrAdj );
 		}
 		else {
-			m_fsState.rRegs.ui16X += uint16_t( _i16AddrAdj );
-			m_fsState.rRegs.ui16Y += uint16_t( _i16AddrAdj );
+			_rCpu.m_fsState.rRegs.ui16X += uint16_t( _i16AddrAdj );
+			_rCpu.m_fsState.rRegs.ui16Y += uint16_t( _i16AddrAdj );
 		}
 
 		// If A != $FFFF, repeat by rewinding PC to opcode (3-byte instruction).
-		if LSN_LIKELY( m_fsState.rRegs.ui16A != 0xFFFF ) {
-			m_fsState.rRegs.ui16Pc -= 3;
+		if LSN_LIKELY( _rCpu.m_fsState.rRegs.ui16A != 0xFFFF ) {
+			_rCpu.m_fsState.rRegs.ui16Pc -= 3;
 		}
-		m_fsState.ui16PcModify = 0;
+		_rCpu.m_fsState.ui16PcModify = 0;
 
 #ifdef LSN_CYCLES_DOC
 		if constexpr ( _i16AddrAdj > 0 ) {
@@ -4334,11 +4359,15 @@ namespace lsn {
 		LSN_INSTR_END_PHI1;
 	}
 
-	/** Performs NOP. */
-	inline void CRicoh5A22::Nop_BeginInst() {
+	/**
+	 * Performs NOP.
+	 * 
+	 * \param _prCpu The CRicoh5A22 instance.
+	 */
+	inline void CRicoh5A22::Nop_BeginInst( CRicoh5A22 * _prCpu ) {
 		LSN_INSTR_START_PHI1( true );
 
-		BeginInst<false, false, false>();
+		BeginInst<false, false, false>( _prCpu );
 	}
 
 	/**
@@ -4348,11 +4377,12 @@ namespace lsn {
 	 * \tparam _bIncPc If true, PC is updated.
 	 * \tparam _bAdjS If true, S is updated.
 	 * \tparam _bBeginInstr If true, BeginInst() is called.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <CRicoh5A22::LSN_CYCLE_TYPE _ctReadWriteNull, bool _bIncPc, bool _bAdjS, bool _bBeginInstr>
-	inline void CRicoh5A22::Null() {
+	inline void CRicoh5A22::Null( CRicoh5A22 * _prCpu ) {
 		if constexpr ( _bBeginInstr ) {
-			BeginInst<_bIncPc, _bAdjS>();
+			BeginInst<_bIncPc, _bAdjS>( _prCpu );
 		}
 		else {
 #ifdef LSN_CYCLES_DOC
@@ -4362,7 +4392,7 @@ namespace lsn {
 
 			if constexpr ( _bIncPc ) {
 #ifdef LSN_CYCLES_DOC
-				if ( int16_t( m_fsState.ui16PcModify ) < 0 ) {
+				if ( int16_t( _rCpu.m_fsState.ui16PcModify ) < 0 ) {
 					sDebug += "Dec. PC. ";
 				}
 				else {
@@ -4373,20 +4403,20 @@ namespace lsn {
 			}
 			if constexpr ( _bAdjS ) {
 #ifdef LSN_CYCLES_DOC
-				if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-					if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
-						sDebug += "Dec. S.L by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
+				if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
+					if ( int16_t( _rCpu.m_fsState.ui16SModify ) < 0 ) {
+						sDebug += "Dec. S.L by " + std::to_string( -int16_t( _rCpu.m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
 					}
-					else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
-						sDebug += "Inc. S.L by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
+					else if ( int16_t( _rCpu.m_fsState.ui16SModify ) > 0 ) {
+						sDebug += "Inc. S.L by " + std::to_string( int16_t( _rCpu.m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
 					}
 				}
 				else {
-					if ( int16_t( m_fsState.ui16SModify ) < 0 ) {
-						sDebug += "Dec. S by " + std::to_string( -int16_t( m_fsState.ui16SModify ) ) + ". ";
+					if ( int16_t( _rCpu.m_fsState.ui16SModify ) < 0 ) {
+						sDebug += "Dec. S by " + std::to_string( -int16_t( _rCpu.m_fsState.ui16SModify ) ) + ". ";
 					}
-					else if ( int16_t( m_fsState.ui16SModify ) > 0 ) {
-						sDebug += "Inc. S by " + std::to_string( int16_t( m_fsState.ui16SModify ) ) + ". ";
+					else if ( int16_t( _rCpu.m_fsState.ui16SModify ) > 0 ) {
+						sDebug += "Inc. S by " + std::to_string( int16_t( _rCpu.m_fsState.ui16SModify ) ) + ". ";
 					}
 				}
 #endif	// #ifdef LSN_CYCLES_DOC
@@ -4409,21 +4439,23 @@ namespace lsn {
 	 * \tparam _i8SOff If not INT8_MIN, S is scheduled to be adjusted by the given amount on the next PHI1.
 	 * \tparam _bEndInstr Indicates the PHI2 that polls interrupts, typically the last PHI2 in the instruction.
 	 * \tparam _bSkipIfX If true, the next cycle is skipped if X() is set.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bSkipIfM, int8_t _i8SOff, bool _bEndInstr, bool _bSkipIfX>
-	inline void CRicoh5A22::Null_Phi2() {
-		m_ui8Speed = m_ui8FastDiv;
+	inline void CRicoh5A22::Null_Phi2( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
+		_rCpu.m_ui8Speed = _rCpu.m_ui8FastDiv;
 
 #ifdef LSN_CYCLES_DOC
 			lsn::DebugA( "\t" );
 #endif	// #ifdef LSN_CYCLES_DOC
 
 		if constexpr ( _i8SOff != INT8_MIN ) {
-			m_fsState.ui16SModify = uint16_t( int16_t( _i8SOff ) );
+			_rCpu.m_fsState.ui16SModify = uint16_t( int16_t( _i8SOff ) );
 		}
 		
 		if constexpr ( _bSkipIfM ) {
-			if ( (m_fsState.rRegs.ui8Status & M()) ) {
+			if ( (_rCpu.m_fsState.rRegs.ui8Status & M()) ) {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 			LSN_NEXT_FUNCTION;
@@ -4432,7 +4464,7 @@ namespace lsn {
 #endif	// #ifdef LSN_CYCLES_DOC
 		}
 		else if constexpr ( _bSkipIfX ) {
-			if ( (m_fsState.rRegs.ui8Status & X()) ) {
+			if ( (_rCpu.m_fsState.rRegs.ui8Status & X()) ) {
 				LSN_NEXT_FUNCTION_BY( 2 );
 			}
 			LSN_NEXT_FUNCTION;
@@ -4458,17 +4490,19 @@ namespace lsn {
 	 * \tparam _bIncPc If true, PC is updated.
 	 * \tparam _bAdjS If true, S is updated.
 	 * \tparam _bBeginInstr If true, BeginInst() is called.
+	 * \param _prCpu The CRicoh5A22 instance.
 	 **/
 	template <bool _bIncPc, bool _bAdjS, bool _bBeginInstr>
-	inline void CRicoh5A22::Null_RorW() {
+	inline void CRicoh5A22::Null_RorW( CRicoh5A22 * _prCpu ) {
+		CRicoh5A22 &_rCpu = (*_prCpu);
 		if constexpr ( _bBeginInstr ) {
-			BeginInst<_bIncPc, _bAdjS>();
+			BeginInst<_bIncPc, _bAdjS>( _prCpu );
 		}
 		else {
 #ifdef LSN_CYCLES_DOC
 			std::string sDebug = "\t";
 #endif	// #ifdef LSN_CYCLES_DOC
-			if LSN_UNLIKELY( m_bIsReset ) {
+			if LSN_UNLIKELY( _rCpu.m_bIsReset ) {
 				LSN_INSTR_START_PHI1( true );
 			}
 			else {
@@ -4484,20 +4518,20 @@ namespace lsn {
 			if constexpr ( _bAdjS ) {
 				LSN_UPDATE_S;
 #ifdef LSN_CYCLES_DOC
-				if LSN_UNLIKELY( m_fsState.bEmulationMode ) {
-					if ( m_fsState.ui16SModify < 0 ) {
-						sDebug += "Dec. S.L by " + std::to_string( -m_fsState.ui16SModify ) + " and set S.H to 1. ";
+				if LSN_UNLIKELY( _rCpu.m_fsState.bEmulationMode ) {
+					if ( _rCpu.m_fsState.ui16SModify < 0 ) {
+						sDebug += "Dec. S.L by " + std::to_string( -_rCpu.m_fsState.ui16SModify ) + " and set S.H to 1. ";
 					}
-					else if ( m_fsState.ui16SModify > 0 ) {
-						sDebug += "Inc. S.L by " + std::to_string( m_fsState.ui16SModify ) + " and set S.H to 1. ";
+					else if ( _rCpu.m_fsState.ui16SModify > 0 ) {
+						sDebug += "Inc. S.L by " + std::to_string( _rCpu.m_fsState.ui16SModify ) + " and set S.H to 1. ";
 					}
 				}
 				else {
-					if ( m_fsState.ui16SModify < 0 ) {
-						sDebug += "Dec. S by " + std::to_string( -m_fsState.ui16SModify ) + ". ";
+					if ( _rCpu.m_fsState.ui16SModify < 0 ) {
+						sDebug += "Dec. S by " + std::to_string( -_rCpu.m_fsState.ui16SModify ) + ". ";
 					}
-					else if ( m_fsState.ui16SModify > 0 ) {
-						sDebug += "Inc. S by " + std::to_string( m_fsState.ui16SModify ) + ". ";
+					else if ( _rCpu.m_fsState.ui16SModify > 0 ) {
+						sDebug += "Inc. S by " + std::to_string( _rCpu.m_fsState.ui16SModify ) + ". ";
 					}
 				}
 #endif	// #ifdef LSN_CYCLES_DOC
