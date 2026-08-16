@@ -4581,7 +4581,7 @@ namespace lsn {
 
 			if constexpr ( _bIncPc ) {
 #ifdef LSN_CYCLES_DOC
-				if ( int16_t( rCpu.m_fsState.ui16PcModify ) < 0 ) {
+				if ( int16_t( _prCpu->m_fsState.ui16PcModify ) < 0 ) {
 					sDebug += "Dec. PC. ";
 				}
 				else {
@@ -4592,20 +4592,20 @@ namespace lsn {
 			}
 			if constexpr ( _bAdjS ) {
 #ifdef LSN_CYCLES_DOC
-				if LSN_UNLIKELY( rCpu.m_fsState.bEmulationMode ) {
-					if ( int16_t( rCpu.m_fsState.ui16SModify ) < 0 ) {
-						sDebug += "Dec. S.L by " + std::to_string( -int16_t( rCpu.m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
+				if LSN_UNLIKELY( _prCpu->m_fsState.bEmulationMode ) {
+					if ( int16_t( _prCpu->m_fsState.ui16SModify ) < 0 ) {
+						sDebug += "Dec. S.L by " + std::to_string( -int16_t( _prCpu->m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
 					}
-					else if ( int16_t( rCpu.m_fsState.ui16SModify ) > 0 ) {
-						sDebug += "Inc. S.L by " + std::to_string( int16_t( rCpu.m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
+					else if ( int16_t( _prCpu->m_fsState.ui16SModify ) > 0 ) {
+						sDebug += "Inc. S.L by " + std::to_string( int16_t( _prCpu->m_fsState.ui16SModify ) ) + " and set S.H to 1. ";
 					}
 				}
 				else {
-					if ( int16_t( rCpu.m_fsState.ui16SModify ) < 0 ) {
-						sDebug += "Dec. S by " + std::to_string( -int16_t( rCpu.m_fsState.ui16SModify ) ) + ". ";
+					if ( int16_t( _prCpu->m_fsState.ui16SModify ) < 0 ) {
+						sDebug += "Dec. S by " + std::to_string( -int16_t( _prCpu->m_fsState.ui16SModify ) ) + ". ";
 					}
-					else if ( int16_t( rCpu.m_fsState.ui16SModify ) > 0 ) {
-						sDebug += "Inc. S by " + std::to_string( int16_t( rCpu.m_fsState.ui16SModify ) ) + ". ";
+					else if ( int16_t( _prCpu->m_fsState.ui16SModify ) > 0 ) {
+						sDebug += "Inc. S by " + std::to_string( int16_t( _prCpu->m_fsState.ui16SModify ) ) + ". ";
 					}
 				}
 #endif	// #ifdef LSN_CYCLES_DOC
