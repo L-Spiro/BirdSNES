@@ -2071,7 +2071,7 @@ namespace lsn {
 		}
 		else {
 			lsn::DebugA( 
-				"\tIf M flag == 0 (8-bit):\r\n"
+				"\tIf M flag == 1 (8-bit):\r\n"
 				"\t\t  If D flag == 0:\r\n"
 				"\t\t    Result = ui16(A.L) + ui16(Operand) + C flag.\r\n"
 				"\t\t    V flag = (~(ui16(A.L) ^ ui16(Operand)) & (ui16(A.L) ^ ui8(Result)) & $80) != 0.\r\n"

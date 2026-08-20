@@ -1025,8 +1025,8 @@ namespace lsn {
 	inline void CSpc700::AbsBitModify( CSpc700 * _psSpc700 ) {
 		CSpc700 & r7Spc = (*_psSpc700);
 		LSN_SPC700_INSTR_START_PHI1( false );
-		const bool bC = ( r7Spc.m_fsState.rRegs.ui8Status & C() );
-		const uint8_t ui8Bit = ( r7Spc.m_fsState.ui16Address >> 13 );
+		const bool bC = (r7Spc.m_fsState.rRegs.ui8Status & C());
+		const uint8_t ui8Bit = (r7Spc.m_fsState.ui16Address >> 13);
 
 #ifdef LSN_SPC700_CYCLES_DOC
 		lsn::DebugA( "\t" );
@@ -1037,42 +1037,42 @@ namespace lsn {
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 		
 		if constexpr ( _bmBitMod == LSN_BM_OR ) {
-			const bool bO = ( r7Spc.m_fsState.ui8Operand & ( 1 << ui8Bit ) ) != 0;
+			const bool bO = (r7Spc.m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
 			SetBit<C()>( r7Spc.m_fsState.rRegs.ui8Status, uint8_t( bC ) | uint8_t( bO ) );
 			LSN_CYCLES_DOC_TMP( "C flag |= ((Operand & (1 << Bit)) != 0)." );
 		}
 		else if constexpr ( _bmBitMod == LSN_BM_NOR ) {
-			const bool bO = ( r7Spc.m_fsState.ui8Operand & ( 1 << ui8Bit ) ) == 0;
+			const bool bO = (r7Spc.m_fsState.ui8Operand & (1 << ui8Bit)) == 0;
 			SetBit<C()>( r7Spc.m_fsState.rRegs.ui8Status, uint8_t( bC ) | uint8_t( bO ) );
 			LSN_CYCLES_DOC_TMP( "C flag |= ((Operand & (1 << Bit)) == 0)." );
 		}
 		else if constexpr ( _bmBitMod == LSN_BM_AND ) {
-			const bool bO = ( r7Spc.m_fsState.ui8Operand & ( 1 << ui8Bit ) ) != 0;
+			const bool bO = (r7Spc.m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
 			SetBit<C()>( r7Spc.m_fsState.rRegs.ui8Status, uint8_t( bC ) & uint8_t( bO ) );
 			LSN_CYCLES_DOC_TMP( "C flag &= ((Operand & (1 << Bit)) != 0)." );
 		}
 		else if constexpr ( _bmBitMod == LSN_BM_NAND ) {
-			const bool bO = ( r7Spc.m_fsState.ui8Operand & ( 1 << ui8Bit ) ) == 0;
+			const bool bO = (r7Spc.m_fsState.ui8Operand & (1 << ui8Bit)) == 0;
 			SetBit<C()>( r7Spc.m_fsState.rRegs.ui8Status, uint8_t( bC ) & uint8_t( bO ) );
 			LSN_CYCLES_DOC_TMP( "C flag &= ((Operand & (1 << Bit)) == 0)." );
 		}
 		else if constexpr ( _bmBitMod == LSN_BM_EOR ) {
-			const bool bO = ( r7Spc.m_fsState.ui8Operand & ( 1 << ui8Bit ) ) != 0;
+			const bool bO = (r7Spc.m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
 			SetBit<C()>( r7Spc.m_fsState.rRegs.ui8Status, uint8_t( bC ) ^ uint8_t( bO ) );
 			LSN_CYCLES_DOC_TMP( "C flag ^= ((Operand & (1 << Bit)) != 0)." );
 		}
 		else if constexpr ( _bmBitMod == LSN_BM_LOAD ) {
-			const bool bO = ( r7Spc.m_fsState.ui8Operand & ( 1 << ui8Bit ) ) != 0;
+			const bool bO = (r7Spc.m_fsState.ui8Operand & (1 << ui8Bit)) != 0;
 			SetBit<C()>( r7Spc.m_fsState.rRegs.ui8Status, bO );
 			LSN_CYCLES_DOC_TMP( "C flag = ((Operand & (1 << Bit)) != 0)." );
 		}
 		else if constexpr ( _bmBitMod == LSN_BM_STORE ) {
-			r7Spc.m_fsState.ui8Operand &= ~( 1 << ui8Bit );
-			r7Spc.m_fsState.ui8Operand |= ( ( r7Spc.m_fsState.rRegs.ui8Status & C() ) != 0 ? 1 : 0 ) << ui8Bit;
+			r7Spc.m_fsState.ui8Operand &= ~(1 << ui8Bit);
+			r7Spc.m_fsState.ui8Operand |= ((r7Spc.m_fsState.rRegs.ui8Status & C()) != 0 ? 1 : 0) << ui8Bit;
 			LSN_CYCLES_DOC_TMP( "Operand &= ~(1 << Bit).\r\n\t\tOperand |= (C flag << Bit)." );
 		}
 		else if constexpr ( _bmBitMod == LSN_BM_NOT ) {
-			r7Spc.m_fsState.ui8Operand ^= ( 1 << ui8Bit );
+			r7Spc.m_fsState.ui8Operand ^= (1 << ui8Bit);
 			LSN_CYCLES_DOC_TMP( "Operand ^= (1 << Bit)." );
 		}
 		
