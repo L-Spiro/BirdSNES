@@ -3286,9 +3286,11 @@ namespace lsn {
 		if constexpr ( _bIncPc ) {
 			LSN_SPC700_PRINT_PC;
 		}
-		lsn::DebugA( std::format( "{0} = {1}.", RegTypeToString( _rtDstRegType ), RegTypeToString( _rtSrcRegType ) ).c_str() );
-		if constexpr ( _rtDstRegType != LSN_RT_PC && _rtDstRegType != LSN_RT_ADDR && _rtDstRegType != LSN_RT_SP ) {
-			lsn::DebugA( std::format( " N flag = ({0} & $80), Z flag = !{0}.", RegTypeToString( _rtDstRegType ), RegTypeToString( _rtSrcRegType ) ).c_str() );
+		if constexpr ( _rtDstRegType != LSN_RT_DUMMY ) {
+			lsn::DebugA( std::format( "{0} = {1}.", RegTypeToString( _rtDstRegType ), RegTypeToString( _rtSrcRegType ) ).c_str() );
+			if constexpr ( _rtDstRegType != LSN_RT_PC && _rtDstRegType != LSN_RT_ADDR && _rtDstRegType != LSN_RT_SP ) {
+				lsn::DebugA( std::format( " N flag = ({0} & $80), Z flag = !{0}.", RegTypeToString( _rtDstRegType ), RegTypeToString( _rtSrcRegType ) ).c_str() );
+			}
 		}
 #endif	// #ifdef LSN_SPC700_CYCLES_DOC
 

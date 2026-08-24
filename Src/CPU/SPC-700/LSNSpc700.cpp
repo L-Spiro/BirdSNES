@@ -179,12 +179,17 @@ namespace lsn {
 						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].ui8Value ) + std::string( " Got: " ) + std::to_string( m_bbBusB.ReadWriteLog()[J].ui8Value ) ).c_str() );
 						lsn::DebugA( "\r\n\r\n" ); bErrored = true;
 					}
-					/*if ( m_bbBusB.ReadWriteLog()[J].bRead != (cvoVerifyMe.vCycles[I].sStatus[3] == 'r') ) {
-						lsn::DebugA( cvoVerifyMe.sName.c_str() );
-						lsn::DebugA( "\r\nCPU Failure: Cycle Read/Write Wrong\r\n" );
-						lsn::DebugA( (std::string( "Expected: ") + std::to_string( cvoVerifyMe.vCycles[I].sStatus[3] ) + std::string( " Got: " ) + std::to_string( m_bbBusB.ReadWriteLog()[J].bRead ) ).c_str() );
-						lsn::DebugA( "\r\n\r\n" ); bErrored = true;
-					}*/
+				}
+				else if ( m_bbBusB.ReadWriteLog()[J].i8Read == -1 ) {
+					// Pass.
+				}
+				else if ( ((cvoVerifyMe.vCycles[I].sStatus[0] == 'r') && m_bbBusB.ReadWriteLog()[J].i8Read != int8_t( true )) ||
+					((cvoVerifyMe.vCycles[I].sStatus[1] == 'r') && m_bbBusB.ReadWriteLog()[J].i8Read != int8_t( false )) ||
+					((cvoVerifyMe.vCycles[I].sStatus == "wait") && m_bbBusB.ReadWriteLog()[J].i8Read != -1) ) {
+					lsn::DebugA( cvoVerifyMe.sName.c_str() );
+					lsn::DebugA( "\r\nCPU Failure: Cycle Read/Write Wrong\r\n" );
+					lsn::DebugA( (std::string( "Expected: ") + cvoVerifyMe.vCycles[I].sStatus + std::string( " Got: " ) + std::to_string( m_bbBusB.ReadWriteLog()[J].i8Read ) ).c_str() );
+					lsn::DebugA( "\r\n\r\n" ); bErrored = true;
 				}
 				++J;
 			}

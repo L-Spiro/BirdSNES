@@ -80,7 +80,7 @@ namespace lsn {
 			if ( m_vReadWriteLog.size() ) {
 				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui16Address = _ui16Addr;
 				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui8Value = ui8Ret;
-				m_vReadWriteLog[m_vReadWriteLog.size()-1].bRead = true;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].i8Read = int8_t( true );
 			}
 #endif	// #ifdef LSN_SPC700_CPU_VERIFY
 			return ui8Ret;
@@ -105,7 +105,7 @@ namespace lsn {
 			if ( m_vReadWriteLog.size() ) {
 				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui16Address = _ui16Addr;
 				m_vReadWriteLog[m_vReadWriteLog.size()-1].ui8Value = _ui8Val;
-				m_vReadWriteLog[m_vReadWriteLog.size()-1].bRead = false;
+				m_vReadWriteLog[m_vReadWriteLog.size()-1].i8Read = int8_t( false );
 			}
 #endif	// #ifdef LSN_SPC700_CPU_VERIFY
 		}
@@ -213,7 +213,7 @@ namespace lsn {
 		struct LSN_READ_WRITE_LOG {
 			uint16_t								ui16Address;
 			uint8_t									ui8Value;
-			bool									bRead;
+			int8_t									i8Read = -1;
 		};
 
 
