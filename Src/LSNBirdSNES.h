@@ -112,6 +112,39 @@ namespace lsn {
 		LSN_CS_SPC700_EXP_DIVISOR			= 3ULL,								/**< 24576000 / 3 = 8192000. */
 
 
+		LSN_CS_EXTERN_DSPn					= 7600000ULL,						/**< DSPn Plastic Type "[M]7600A". */
+		LSN_CS_EXTERN_DSPn_DIVISOR			= 1ULL,								/**< 7600000 / 1 = 7600000. */
+
+		LSN_CS_EXTERN_ST010					= 22000000ULL,						/**< Plastic Type "[M]22000C". */
+		LSN_CS_EXTERN_ST010_DIVISOR			= 2ULL,								/**< 22000000 / 2 = 11000000. */
+
+		LSN_CS_EXTERN_ST011					= 15000000ULL,						/**< Ceramic Type "15.00X". */
+		LSN_CS_EXTERN_ST011_DIVISOR			= 1ULL,								/**< 15000000 / 1 = 15000000. */
+
+		LSN_CS_EXTERN_ST018					= 24440000ULL,						/**< Plastic Type "[M]21440C". */
+		LSN_CS_EXTERN_ST018_DIVISOR			= 1ULL,								/**< 24440000 / 1 = 24440000. */
+
+		LSN_CS_EXTERN_CX4					= 20000000ULL,						/**< 20.000MHz   Plastic Type "[M]20000C" or "20.0MC/TDKY". */
+		LSN_CS_EXTERN_CX4_DIVISOR			= 1ULL,								/**< 20000000 / 1 = 20000000. */
+
+		LSN_CS_EXTERN_GSU1					= 21400000ULL,						/**< 21.4MHz     Plastic Type "21.4MC/TDKT". */
+		LSN_CS_EXTERN_GSU1_DIVISOR			= 1ULL,								/**< 21400000 / 1 = 21400000. */
+
+		LSN_CS_EXTERN_GSU2					= 21440000ULL,						/**< 21.44MHz    Plastic Type "[M]21440C". */
+		LSN_CS_EXTERN_GSU2_DIVISOR			= 1ULL,								/**< 21440000 / 1 = 21440000. */
+
+		LSN_CS_EXTERN_SGB2					= 20900000ULL,						/**< 20.9MHz     External oscillator (located on PCBs solder-side). */
+		LSN_CS_EXTERN_SGB2_DIVISOR			= 1ULL,								/**< 20900000 / 1 = 20900000. */
+
+		LSN_CS_EXTERN_BS_X					= 18432000ULL,						/**< 18.432MHz   Satellaview Receiver Unit (on expansion port). */
+		LSN_CS_EXTERN_BS_X_DIVISOR			= 1ULL,								/**< 18432000 / 1 = 18432000. */
+
+		LSN_CS_EXTERN_RTC_4513				= 32786000ULL,						/**< 32.768kHz   On-chip 32.768kHz quartz crystal in RTC chip. */
+		LSN_CS_EXTERN_RTC_4513_DIVISOR		= 1ULL,								/**< 32786000 / 1 = 32786000. */
+
+		LSN_CS_EXTERN_S_3520				= 32786000ULL,						/**< 32.768kHz   External 32.768kHz quartz crystal (SFC-Box). */
+		LSN_CS_EXTERN_S_3520_DIVISOR		= 1ULL,								/**< 32786000 / 1 = 32786000. */
+
 		/*
 		 * To run clocks precisely, floating-point math must be avoided.  All inputs must be accumulated in integers.
 		 * The formula to determine how many cycles go into a single tick is:
@@ -121,8 +154,8 @@ namespace lsn {
 		 * In PAL, that would be:
 		 *	2000000 * 53203425ULL / (1000000 * 2ULL * 16ULL) = 3325214 cycles.
 		 * 
-		 * NTSC FPS:	60.098813897440515529533511098629.
-		 *				29.992002132764596107704612103439.
+		 * NTSC FPS:	60.098806265845099981531539094374.
+		 *				29.991998324256388772517804775869.
 		 * PAL FPS:		50.006978908188585607940446650124.
 		 *				24.963425305747083291300196363176.
 		 * 
